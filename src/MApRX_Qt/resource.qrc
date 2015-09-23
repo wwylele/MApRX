@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/Essence.png</file>
+        <file>image/ICON.png</file>
+        <file>image/LICON.png</file>
+        <file>text/RoomName.txt</file>
+        <file>image/Redo.png</file>
+        <file>image/Undo.png</file>
+        <file>image/Open.png</file>
+        <file>image/Save.png</file>
+        <file>image/NDS.png</file>
+        <file>image/Properties.png</file>
+        <file>maprx_zh.qm</file>
+    </qresource>
+</RCC>
