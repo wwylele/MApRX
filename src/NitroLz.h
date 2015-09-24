@@ -22,7 +22,7 @@
 #define _NITROLZ_H_
 #include "Nitro.h"
 
-void UncompressLZ(const u8* srcp,u8 *destp);
-u32 CompressLZ(const u8* srcp,u32 size,u8* destp);
-u32 GetLengthLZ(const u8* srcp);
+void uncompressLZ(const u8* srcp,u8 *destp);
+u32 compressLZ(const u8* srcp,u32 size,u8* destp);
+u32 getLengthLZ(const u8* srcp);
 #endif

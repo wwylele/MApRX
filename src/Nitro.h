@@ -37,19 +37,19 @@ struct Color15
     inline Color15(){}
     inline Color15(u16 tr,u16 tg,u16 tb):r(tr),g(tg),b(tb){}
 
-    inline u32 ToARGB32()const {
+    inline u32 toARGB32()const {
         u8 tr,tg,tb;
         tr=(r*255+15)/31;
         tg=(g*255+15)/31;
         tb=(b*255+15)/31;
         return 0xFF000000|(tr<<16)|(tg<<8)|tb;
     }
-    inline u32 ToGrey32()const {
+    inline u32 toGray32()const {
         u8 t;
         t=((r+g+b)/3*255+15)/31;
         return 0xFF000000|(t<<16)|(t<<8)|t;
     }
-    static inline Color15 Lerp(Color15 Zero,Color15 One,float v){
+    static inline Color15 lerp(Color15 Zero,Color15 One,float v){
         return Color15((u16)(Zero.r*(1-v)+One.r*v),
                        (u16)(Zero.g*(1-v)+One.g*v),
                        (u16)(Zero.b*(1-v)+One.b*v)
@@ -68,116 +68,98 @@ class KfPlt;
 struct Tile8bpp
 {
     u8 data[64];
-    inline u8& Pixel(u8 x/*0~7*/,u8 y/*0~7*/){
+    inline u8& pixel(u8 x/*0~7*/,u8 y/*0~7*/){
         return data[x|(y<<3)];
     }
-    inline u8 Pixel(u8 x/*0~7*/,u8 y/*0~7*/)const{
+    inline u8 pixel(u8 x/*0~7*/,u8 y/*0~7*/)const{
         return data[x|(y<<3)];
     }
     template<typename T/* [](int x,int y,const Color15&) */>
-    void Draw(T fSetPixel,const KfPlt& plt,int dx,int dy,bool flipX,bool flipY)const{
+    void draw(T fSetPixel,const KfPlt& plt,int dx,int dy,bool flipX,bool flipY)const{
         for(int x=0;x<8;x++)for(int y=0;y<8;y++){
             u8 c;
-            c=Pixel(flipX?7-x:x,flipY?7-y:y);
+            c=pixel(flipX?7-x:x,flipY?7-y:y);
             if(c)fSetPixel(dx+x,dy+y,plt.Colors(c));
         }
     }
 };
 
 
-    struct ROM_HEADER
-    {
+struct ROM_HEADER
+{
 
-        u8 name[12];
-        u8 id[4];
-        u8 maker_code[2];
-        u8 product_code;
-        u8 device_type;
-        u8 device_caps;
-        u8 rom_version;
-        u16 rom_ctrl_info[5];
+    u8 name[12];
+    u8 id[4];
+    u8 maker_code[2];
+    u8 product_code;
+    u8 device_type;
+    u8 device_caps;
+    u8 rom_version;
+    u16 rom_ctrl_info[5];
 
-        //
-        // 0x020 b)  Parameter for static module
-        //
-        //    ARM9
-        u32    main_rom_offset;    // Transmit source ROM offset
-        u32    main_entry_address;    // Execution start address (not implemented)
-        u32    main_ram_address;    // Transmit destination RAM address
-        u32    main_size;    // Transmit size
-        //    ARM7
-        u32    sub_rom_offset;    // Transmit source ROM offset
-        u32    sub_entry_address;    // Execution start address (not implemented)
-        u32    sub_ram_address;    // Transmit destination RAM address
-        u32    sub_size;    // Transmit size
+    u32    main_rom_offset;    // Transmit source ROM offset
+    u32    main_entry_address;    // Execution start address (not implemented)
+    u32    main_ram_address;    // Transmit destination RAM address
+    u32    main_size;    // Transmit size
+    //    ARM7
+    u32    sub_rom_offset;    // Transmit source ROM offset
+    u32    sub_entry_address;    // Execution start address (not implemented)
+    u32    sub_ram_address;    // Transmit destination RAM address
+    u32    sub_size;    // Transmit size
 
-        //
-        // 0x040 c)  Parameter for file name table
-        //
-        u32    fnt_offset;    // Top ROM offset
-        u32    fnt_size;    // Table size
-        //
-        // 0x048 e)  Parameter for file allocation table
-        //
-        u32    fat_offset;    // Top ROM offset
-        u32    fat_size;    // Table size
-        //
-        // 0x0050 d)  Parameter for overlay header table
-        //
-        //    ARM9
-        u32    main_ovt_offset;    // Top ROM offset
-        u32    main_ovt_size;    // Table size
+    u32    fnt_offset;    // Top ROM offset
+    u32    fnt_size;    // Table size
 
-        //    ARM7
-        u32    sub_ovt_offset;    // Top ROM offset
-        u32    sub_ovt_size;    // Table size
+    u32    fat_offset;    // Top ROM offset
+    u32    fat_size;    // Table size
 
-        //
-        // 0x0060 - 0x04000 Reserved region for system B
-        //
-        //u8    reserved_B[16];
-        u32 reserved_B1;
-        u32 reserved_B2;
-        u32 title_offset;
-        u16 CRC16;
-        u16 ROMtimeout;
+    //    ARM9
+    u32    main_ovt_offset;    // Top ROM offset
+    u32    main_ovt_size;    // Table size
 
-        /*
-        u8    reserved_C[4*1024-0x70];    // Reserved for system C
-        u8    reserved_D[12*1024];    // Reserved for system D
-        */
-        u32     ARM9unk;
-        u32     ARM7unk;
-
-        u8      unknown3c[8];
-        u32     ROMSize;
-        u32     HeaderSize;
-        u8      unknown5[56];
-        u8      logo[156];
-        u16     logoCRC16;
-        u16     headerCRC16;
-        u8      reserved[160];
-
-    };
-    struct ROM_FNTDir
-    {
-        u32    entry_start;    // Reference location of entry name
-        u16    entry_file_id;    // File ID of top entry
-        u16    parent_id;    // ID of parent directory
-    };
-    struct ROM_FAT
-    {
-        u32    top;    // Top ROM address of file
-        u32    bottom;    // Bottom ROM address of file
-    };
+    //    ARM7
+    u32    sub_ovt_offset;    // Top ROM offset
+    u32    sub_ovt_size;    // Table size
 
 
-    u16 nitroGetSubFileId(FILE *file, const char* subfilename);
+    u32 reserved_B1;
+    u32 reserved_B2;
+    u32 title_offset;
+    u16 CRC16;
+    u16 ROMtimeout;
 
-    u32 nitroGetSubFileOffset(FILE *file, u16 Id, u32* getlen=0);
-    void nitroSetSubFileOffset(FILE *file, u16 Id, u32 from, u32 len);
+    u32     ARM9unk;
+    u32     ARM7unk;
 
-    u16 nitroCrc16(void *buf,u32 length);
+    u8      unknown3c[8];
+    u32     ROMSize;
+    u32     HeaderSize;
+    u8      unknown5[56];
+    u8      logo[156];
+    u16     logoCRC16;
+    u16     headerCRC16;
+    u8      reserved[160];
+
+};
+struct ROM_FNTDir
+{
+    u32    entry_start;    // Reference location of entry name
+    u16    entry_file_id;    // File ID of top entry
+    u16    parent_id;    // ID of parent directory
+};
+struct ROM_FAT
+{
+    u32    top;    // Top ROM address of file
+    u32    bottom;    // Bottom ROM address of file
+};
+
+
+u16 nitroGetSubFileId(FILE *file, const char* subfilename);
+
+u32 nitroGetSubFileOffset(FILE *file, u16 Id, u32* getlen=0);
+void nitroSetSubFileOffset(FILE *file, u16 Id, u32 from, u32 len);
+
+u16 nitroCrc16(void *buf,u32 length);
 
 
 #endif

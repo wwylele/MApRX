@@ -11,11 +11,11 @@ MainWindow::MoEditCell::MoEditCell(u16 _x,u16 _y,u16 toBe)
 }
 
 void MainWindow::MoEditCell::doOperation(){
-    pMap->At(x,y).blockId=blockIdToBe;
+    pMap->at(x,y).blockId=blockIdToBe;
 }
 
 MainWindow::MapOperation* MainWindow::MoEditCell::generateReversal(){
-    return new MoEditCell(x,y,pMap->At(x,y).blockId);
+    return new MoEditCell(x,y,pMap->at(x,y).blockId);
 }
 
 void MainWindow::clearOperationStack(){

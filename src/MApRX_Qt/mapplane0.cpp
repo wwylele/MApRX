@@ -32,10 +32,10 @@ void MapPlane0::paintEvent(QPaintEvent *){
     if(!pMainWindow->map.Loaded())return;
     QPainter painter(this);
     if(pMainWindow->showEssence){
-        for(u32 x=0;x<pMainWindow->map.GetWidth();x++)
-            for(u32 y=0;y<pMainWindow->map.GetHeight();y++){
+        for(u32 x=0;x<pMainWindow->map.getWidth();x++)
+            for(u32 y=0;y<pMainWindow->map.getHeight();y++){
                 BlockEssence e;
-                e=pMainWindow->blocks.Essences(pMainWindow->map.At(x,y).blockId);
+                e=pMainWindow->blocks.Essences(pMainWindow->map.at(x,y).blockId);
                 painter.drawPixmap(x*24,y*24,pMainWindow->essenceSheet,
                                    (e%16)*24,e/16*24,24,24);
             }
@@ -43,19 +43,19 @@ void MapPlane0::paintEvent(QPaintEvent *){
     else{
         QImage image(width,height,QImage::Format_ARGB32);
         if(pMainWindow->showItems){
-            pMainWindow->map.Draw([this,&image](int x,int y,const Color15& c15){
-                u32 c=c15.ToGrey32();
+            pMainWindow->map.draw([this,&image](int x,int y,const Color15& c15){
+                u32 c=c15.toGray32();
                 image.setPixel(x,y,c);
             },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
         }
         else{
-            if(pMainWindow->bckScr.Loaded())pMainWindow->bckScr.Draw([this,&image](int x,int y,const Color15& c15){
-                u32 c=c15.ToARGB32();
-                for(;x<width;x+=pMainWindow->bckScr.GetWidth()*8)for(;y<height;y+=pMainWindow->bckScr.GetHeight()*8)
+            if(pMainWindow->bckScr.Loaded())pMainWindow->bckScr.draw([this,&image](int x,int y,const Color15& c15){
+                u32 c=c15.toARGB32();
+                for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)for(;y<height;y+=pMainWindow->bckScr.getHeight()*8)
                     image.setPixel(x,y,c);
             },pMainWindow->bckPlt,0,0,pMainWindow->bckTiles);
-            pMainWindow->map.Draw([this,&image](int x,int y,const Color15& c15){
-                u32 c=c15.ToARGB32();
+            pMainWindow->map.draw([this,&image](int x,int y,const Color15& c15){
+                u32 c=c15.toARGB32();
                 image.setPixel(x,y,c);
             },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
         }
@@ -69,9 +69,9 @@ void MapPlane0::paintEvent(QPaintEvent *){
     if(pMainWindow->showScript){
         if(!pMainWindow->showItems){
             QBrush brushScript(QColor(255,0,255,100),Qt::SolidPattern);
-            for(u32 x=0;x<pMainWindow->map.GetWidth();x++)
-                for(u32 y=0;y<pMainWindow->map.GetHeight();y++){
-                    if(!pMainWindow->map.At(x,y).scripts.empty()){
+            for(u32 x=0;x<pMainWindow->map.getWidth();x++)
+                for(u32 y=0;y<pMainWindow->map.getHeight();y++){
+                    if(!pMainWindow->map.at(x,y).scripts.empty()){
                         painter.fillRect(x*24,y*24,24,24,brushScript);
                     }
                 }

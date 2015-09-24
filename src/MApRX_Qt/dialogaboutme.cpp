@@ -36,6 +36,8 @@ DialogAboutMe::DialogAboutMe(QWidget *parent) :
                       "<a href=\"http://icons8.com/\">"
                       "icons8</a><br><br>"
 
+                "MApRX is on <a href=\"https://github.com/wwylele/MApRX\">github</a>!<br><br>"
+
                 "Copyright 2015 wwylele<br>"
                 "This program comes with ABSOLUTELY NO WARRANTY.<br>"
                 "This is free software, and you are welcome<br>"

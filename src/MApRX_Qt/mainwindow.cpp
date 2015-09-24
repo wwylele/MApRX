@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Open a file
     QString fileName="D:/KSSU_MAP/mapdata";
     FILE* file=_wfopen(fileName.toStdWString().data(),L"rb");
-    mapdata.FromFile(file);
+    mapdata.fromFile(file);
     fclose(file);
     currentFileName=fileName;
     ui->action_Save->setEnabled(true);
@@ -93,11 +93,11 @@ MainWindow::MainWindow(QWidget *parent) :
     //check maps
     FILE* report=fopen("D:\\Github\\MApRX\\temp\\effectList.txt","w");
     for(u32 i=0;i<MAP_COUNT;i++){
-        map.ReadFile(mapdata.rawMaps(i));
+        map.readFile(mapdata.rawMaps(i));
         if(map.metaData.globalEffect!=0x80){
             fprintf(report,"%d:effect=%02X\n",i,map.metaData.globalEffect);
         }
-        map.Unload();
+        map.unload();
     }
 
 
@@ -133,8 +133,8 @@ void MainWindow::updateItemList(){
 void MainWindow::saveCurrentRoom(){
     u8* p;
     u32 len;
-    p=map.AllocFile(&len);
-    mapdata.WriteMap(curRoomId,p,len);
+    p=map.generateFile(&len);
+    mapdata.writeMap(curRoomId,p,len);
     delete[] p;
 }
 
@@ -143,37 +143,37 @@ void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
     if(currentFileName==QString::null)return;
     mapUpdateTimer.stop();
     int roomId=item->data(Qt::UserRole).toInt();
-    MapInfo &pMapInfo=mapdata.mapInfos[roomId];
+    RoomInfo &pMapInfo=mapdata.roomInfos[roomId];
 
-    if(pMapInfo.subFileIdSlots.rawFrtPltId==MapInfo::invalidId){
+    if(pMapInfo.subFileIdSlots.rawFrtPltId==RoomInfo::invalidId){
         QMessageBox msgBox;
         msgBox.setText("Failed to load block set data.\nDefault block set data will be used.");
         msgBox.setIcon(QMessageBox::Icon::Warning);
         msgBox.exec();
         //return;
-        plt.ReadFile(mapdata.rawFrtPlts(0));
-        tiles.ReadFile(mapdata.rawFrtTileSets(0));
-        blocks.ReadFile(mapdata.rawFrtBlockSets(0));
+        plt.readFile(mapdata.rawFrtPlts(0));
+        tiles.readFile(mapdata.rawFrtTileSets(0));
+        blocks.readFile(mapdata.rawFrtBlockSets(0));
     }
     else{
-        plt.ReadFile(mapdata.rawFrtPlts(pMapInfo.subFileIdSlots.rawFrtPltId));
-        tiles.ReadFile(mapdata.rawFrtTileSets(pMapInfo.subFileIdSlots.rawFrtTileSetId));
-        blocks.ReadFile(mapdata.rawFrtBlockSets(pMapInfo.subFileIdSlots.rawFrtBlockSetId));
+        plt.readFile(mapdata.rawFrtPlts(pMapInfo.subFileIdSlots.rawFrtPltId));
+        tiles.readFile(mapdata.rawFrtTileSets(pMapInfo.subFileIdSlots.rawFrtTileSetId));
+        blocks.readFile(mapdata.rawFrtBlockSets(pMapInfo.subFileIdSlots.rawFrtBlockSetId));
     }
 
     if(map.Loaded()){
         saveCurrentRoom();
     }
 
-    map.ReadFile(mapdata.rawMaps(pMapInfo.subFileIdSlots.rawMapId));
+    map.readFile(mapdata.rawMaps(pMapInfo.subFileIdSlots.rawMapId));
 
-    if(pMapInfo.subFileIdSlots.rawBckScrId==MapInfo::invalidId){
-        bckScr.Unload();
+    if(pMapInfo.subFileIdSlots.rawBckScrId==RoomInfo::invalidId){
+        bckScr.unload();
     }
     else{
-        bckPlt.ReadFile(mapdata.rawBckPlts(pMapInfo.subFileIdSlots.rawBckPltId));
-        bckTiles.ReadFile(mapdata.rawBckTileSets(pMapInfo.subFileIdSlots.rawBckTileSetId));
-        bckScr.ReadFile(mapdata.rawBckScrs(pMapInfo.subFileIdSlots.rawBckScrId));
+        bckPlt.readFile(mapdata.rawBckPlts(pMapInfo.subFileIdSlots.rawBckPltId));
+        bckTiles.readFile(mapdata.rawBckTileSets(pMapInfo.subFileIdSlots.rawBckTileSetId));
+        bckScr.readFile(mapdata.rawBckScrs(pMapInfo.subFileIdSlots.rawBckScrId));
     }
 
     ui->mapPlane0->reset();
@@ -199,11 +199,11 @@ void MainWindow::on_updateMap(){
     while(timeA>=16){
         timeA-=16;
 
-        plt.Tick();
-        tiles.Tick();
+        plt.tick();
+        tiles.tick();
         if(bckScr.Loaded()){
-            bckPlt.Tick();
-            bckTiles.Tick();
+            bckPlt.tick();
+            bckTiles.tick();
         }
         ui->mapPlane0->update();
         ui->blockStore->update();
@@ -238,12 +238,12 @@ void MainWindow::openMapdata(QString fileName){
         msgBox.exec();
         return;
     }
-    mapdata.FromFile(file);
+    mapdata.fromFile(file);
     fclose(file);
     currentFileName=fileName;
 
     mapUpdateTimer.stop();
-    map.Unload();
+    map.unload();
 
     ui->action_Save->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
@@ -263,7 +263,7 @@ void MainWindow::on_action_Save_triggered()
         return;
     }
     if(map.Loaded())saveCurrentRoom();
-    mapdata.ToFile(file);
+    mapdata.toFile(file);
     fclose(file);
 }
 void MainWindow::on_actionSave_As_triggered(){
@@ -280,7 +280,7 @@ void MainWindow::on_actionSave_As_triggered(){
         return;
     }
     if(map.Loaded())saveCurrentRoom();
-    mapdata.ToFile(file);
+    mapdata.toFile(file);
     fclose(file);
     currentFileName=fileName;
 }

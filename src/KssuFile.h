@@ -67,9 +67,9 @@ public:
     inline const Color15& Colors(u8 i)const{
         return finalColors[i];
     }
-    void Tick();
-    void ReadFile(const u8* src);
-    void LoadDefault();
+    void tick();
+    void readFile(const u8* src);
+    void loadDefault();
 };
 
 //#1,#5
@@ -97,24 +97,24 @@ protected:
     std::vector<Thread> threads;
 
 public:
-    void ReadFile(const u8* src);
+    void readFile(const u8* src);
     inline const Tile8bpp& operator [](u16 tileId)const{
         return finalTiles[tileId];
     }
-    void Tick();
+    void tick();
 };
 
 struct Block{
     CharData data[9];
-    inline const CharData& TileAt(u8 x/*0~2*/,u8 y/*0~2*/)const{
+    inline const CharData& tileAt(u8 x/*0~2*/,u8 y/*0~2*/)const{
         return data[x+y*3];
     }
     template<typename T/* [](int x,int y,const Color15&) */>
-    void Draw(T fSetPixel,const KfPlt& plt,int dx,int dy,const KfTileSet& tileSet)const{
+    void draw(T fSetPixel,const KfPlt& plt,int dx,int dy,const KfTileSet& tileSet)const{
         for(int x=0;x<3;x++)for(int y=0;y<3;y++){
             const CharData *pchar;
-            pchar=&TileAt(x,y);
-            tileSet[pchar->tileId].Draw(fSetPixel,plt,dx+x*8,dy+y*8,pchar->flipX,pchar->flipY);
+            pchar=&tileAt(x,y);
+            tileSet[pchar->tileId].draw(fSetPixel,plt,dx+x*8,dy+y*8,pchar->flipX,pchar->flipY);
         }
     }
 };
@@ -128,8 +128,8 @@ protected:
     std::vector<BlockEssence> essences;
     bool loaded=false;
 public:
-    void ReadFile(const u8* src);
-    void LoadDefault();
+    void readFile(const u8* src);
+    void loadDefault();
     inline const Block& operator [](u16 blockId)const{
         return blocks[blockId];
     }
@@ -137,7 +137,7 @@ public:
         return essences[blockId];
     }
 
-    inline u32 BlockCount()const{
+    inline u32 blockCount()const{
         return blocks.size();
     }
     inline bool Loaded(){
@@ -187,11 +187,11 @@ protected:
     std::vector<RipeItem> items;
 public:
     inline bool Loaded(){return loaded;}
-    void Unload();
+    void unload();
 
-    void ReadFile(const u8* src);
+    void readFile(const u8* src);
 
-    u8* AllocFile(u32 *length);
+    u8* generateFile(u32 *length);
 
     struct MetaData_Struct/*28 bytes*/{
         u16 width;
@@ -219,24 +219,24 @@ public:
         u8 data[1];
     };
 
-    static u32 GetScripteLength(u8 *pScript);
+    static u32 getScripteLength(u8 *pScript);
 
-    inline RipeCell& At(u16 x,u16 y){
+    inline RipeCell& at(u16 x,u16 y){
         return cells[x+y*metaData.width];
     }
     inline RipeItem& Items(u8 i){
         return items[i];
     }
     template<typename T/* [](int x,int y,const Color15&) */>
-    void Draw(T fSetPixel,KfPlt& plt,int dx,int dy,
+    void draw(T fSetPixel,KfPlt& plt,int dx,int dy,
         const KfBlockSet& blockSet,const KfTileSet& tileSet){
         for(u16 x=0;x<metaData.width;x++)for(u16 y=0;y<metaData.height;y++){
-            blockSet[At(x,y).blockId].Draw(fSetPixel,plt,dx+x*24,dy+y*24,tileSet);
+            blockSet[at(x,y).blockId].draw(fSetPixel,plt,dx+x*24,dy+y*24,tileSet);
 
         }
     }
-    inline u16 GetWidth(){ return metaData.width; }
-    inline u16 GetHeight(){ return metaData.height; }
+    inline u16 getWidth(){ return metaData.width; }
+    inline u16 getHeight(){ return metaData.height; }
 };
 
 //#6
@@ -247,28 +247,28 @@ protected:
     std::vector<CharData> chars;
     bool loaded=false;
 public:
-    void ReadFile(const u8* src);
+    void readFile(const u8* src);
     inline bool Loaded(){return loaded;}
-    inline void Unload(){
+    inline void unload(){
         loaded=false;
         chars.clear();
     }
 
     template<typename T/* [](int x,int y,const Color15&) */>
-    void Draw(T fSetPixel,KfPlt& plt,int dx,int dy,const KfTileSet& tileSet){
+    void draw(T fSetPixel,KfPlt& plt,int dx,int dy,const KfTileSet& tileSet){
         for(u16 x=0;x<width;x++)for(u16 y=0;y<height;y++){
             const CharData *pchar;
             pchar=&chars[x+y*width];
-            tileSet[pchar->tileId].Draw(fSetPixel,plt,dx+x*8,dy+y*8,pchar->flipX,pchar->flipY);
+            tileSet[pchar->tileId].draw(fSetPixel,plt,dx+x*8,dy+y*8,pchar->flipX,pchar->flipY);
         }
     }
-    inline u16 GetWidth(){ return width; }
-    inline u16 GetHeight(){ return height; }
+    inline u16 getWidth(){ return width; }
+    inline u16 getHeight(){ return height; }
 };
 
 #define MAP_COUNT 548
 
-union MapInfo{
+union RoomInfo{
     u32 subFileId[7];
     struct SUB_FILE_ID_SLOTS{
         u32 rawFrtPltId;
@@ -294,10 +294,10 @@ private:
 public:
     std::vector<rawFile> rawSubFiles[7];
 public:
-    MapInfo mapInfos[MAP_COUNT];
+    RoomInfo roomInfos[MAP_COUNT];
     
-    void FromFile(FILE* file);
-    void ToFile(FILE* file);
+    void fromFile(FILE* file);
+    void toFile(FILE* file);
 
     inline u8* rawFrtPlts(u32 i){
         return rawSubFiles[0][i].ptr.get();
@@ -321,7 +321,7 @@ public:
         return rawSubFiles[6][i].ptr.get();
     }
 
-    inline void WriteMap(u32 i,const u8* p,u32 len){
+    inline void writeMap(u32 i,const u8* p,u32 len){
         rawSubFiles[3][i].ptr.reset(new u8[len]);
         rawSubFiles[3][i].length=len;
         memcpy(rawSubFiles[3][i].ptr.get(),p,len);

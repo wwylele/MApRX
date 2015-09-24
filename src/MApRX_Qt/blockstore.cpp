@@ -31,7 +31,7 @@ void BlockStore::paintEvent(QPaintEvent *){
     QPainter painter(this);
 
     if(pMainWindow->showEssence){
-        for(u32 i=0;i<pMainWindow->blocks.BlockCount();i++){
+        for(u32 i=0;i<pMainWindow->blocks.blockCount();i++){
             painter.drawPixmap((i%blockStoreColumnCount)*24,(i/blockStoreColumnCount)*24,
                     pMainWindow->essenceSheet,
                     (pMainWindow->blocks.Essences(i)%16)*24,
@@ -40,9 +40,9 @@ void BlockStore::paintEvent(QPaintEvent *){
     }
     else{
         QImage image(width,height,QImage::Format_ARGB32);
-        for(u32 i=0;i<pMainWindow->blocks.BlockCount();i++){
-            pMainWindow->blocks[i].Draw([this,&image](int x,int y,const Color15& c15){
-                u32 c=c15.ToARGB32();
+        for(u32 i=0;i<pMainWindow->blocks.blockCount();i++){
+            pMainWindow->blocks[i].draw([this,&image](int x,int y,const Color15& c15){
+                u32 c=c15.toARGB32();
                 image.setPixel(x,y,c);
             },pMainWindow->plt,(i%blockStoreColumnCount)*24,(i/blockStoreColumnCount)*24,pMainWindow->tiles);
         }
@@ -68,7 +68,7 @@ void BlockStore::paintEvent(QPaintEvent *){
 
 void BlockStore::reset(){
     width=blockStoreColumnCount*24;
-    height=(pMainWindow->blocks.BlockCount()/blockStoreColumnCount+1)*24;
+    height=(pMainWindow->blocks.blockCount()/blockStoreColumnCount+1)*24;
     setMinimumSize(width,height);
     resize(width,height);
     curBlock=-1;
@@ -80,7 +80,7 @@ void BlockStore::mouseMoveEvent(QMouseEvent * event){
     }
     else{
         int i=event->x()/24 + event->y()/24*blockStoreColumnCount;
-        if(i<0 || (u32)i>pMainWindow->blocks.BlockCount()){
+        if(i<0 || (u32)i>pMainWindow->blocks.blockCount()){
             curBlock=-1;
         }
         else{

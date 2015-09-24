@@ -35,7 +35,7 @@ const int MetaDataLength[7]={
 };
 
 
-void KfPlt::ReadFile(const u8* src){
+void KfPlt::readFile(const u8* src){
     src+=2;//skip field DataLength
     u8 threadCount=*(src++);
     memcpy(colors,src,512);src+=512;
@@ -71,7 +71,7 @@ void KfPlt::ReadFile(const u8* src){
         threads[thri].shiftState=Thread::NONE;
     }
 }
-void KfPlt::Tick(){
+void KfPlt::tick(){
     for(u32 thri=0;thri<threads.size();thri++){
         u8 frameId;
         while(!threads[thri].time){
@@ -134,7 +134,7 @@ void KfPlt::Tick(){
             threads[thri].numer--;
             for(u32 i=0;i<threads[thri].beforeMixColor.size();i++){
                 finalColors[i+threads[thri].mixId]=
-                        Color15::Lerp(threads[thri].frames[threads[thri].mixFrameId].aniColors[i],
+                        Color15::lerp(threads[thri].frames[threads[thri].mixFrameId].aniColors[i],
                         threads[thri].beforeMixColor[i],(float)threads[thri].numer/threads[thri].denom);
             }
         }
@@ -162,7 +162,7 @@ void KfPlt::Tick(){
         }
     }
 }
-void KfPlt::LoadDefault(){
+void KfPlt::loadDefault(){
     threads.clear();
     memset(colors,0,512);//ZeroMemory(colors,512);
     colors[1]=Color15(0,0,0);
@@ -170,7 +170,7 @@ void KfPlt::LoadDefault(){
     memcpy(finalColors,colors,512);
 }
 
-void KfTileSet::ReadFile(const u8* src){
+void KfTileSet::readFile(const u8* src){
     u32 compressedDataLength;
     memcpy(&compressedDataLength,src,4);src+=4;
     u16 tileCount;
@@ -179,7 +179,7 @@ void KfTileSet::ReadFile(const u8* src){
     u8 threadCount=*(src++);
     tiles.resize(tileCount);
     if(compressed){
-        UncompressLZ(src,(u8*)tiles.data());
+        uncompressLZ(src,(u8*)tiles.data());
         src+=compressedDataLength;
     }
     else{
@@ -222,8 +222,8 @@ void KfTileSet::ReadFile(const u8* src){
     while(1){
         memcpy(&partitionLength,p,2);p+=2;
         if(!partitionLength)break;
-        t=GetLengthLZ(p);
-        UncompressLZ(p,q);
+        t=getLengthLZ(p);
+        uncompressLZ(p,q);
         q+=t;
         total+=t;
         p+=partitionLength;
@@ -234,7 +234,7 @@ void KfTileSet::ReadFile(const u8* src){
 
 }
 
-void KfTileSet::Tick(){
+void KfTileSet::tick(){
     for(u32 thri=0;thri<threads.size();thri++){
 
         while(!threads[thri].time){
@@ -270,7 +270,7 @@ void KfTileSet::Tick(){
         threads[thri].time--;
     }
 }
-void KfBlockSet::LoadDefault(){
+void KfBlockSet::loadDefault(){
     const u16 count=4096;
     blocks.resize(count);
     essences.resize(count,0);
@@ -284,20 +284,20 @@ void KfBlockSet::LoadDefault(){
     loaded=true;
 }
 
-void KfBlockSet::ReadFile(const u8* src){
+void KfBlockSet::readFile(const u8* src){
     src+=2;//field DataLength
     u16 blockCount;
     memcpy(&blockCount,src,2);src+=2;
     blocks.resize(blockCount);
     essences.resize(blockCount);
-    std::unique_ptr<u8[]> buf(new u8[GetLengthLZ(src)]);
-    UncompressLZ(src,buf.get());
+    std::unique_ptr<u8[]> buf(new u8[getLengthLZ(src)]);
+    uncompressLZ(src,buf.get());
     memcpy(blocks.data(),buf.get(),blocks.size()*sizeof(Block));
     memcpy(essences.data(),buf.get()+blocks.size()*sizeof(Block),blocks.size());
     loaded=true;
 }
 
-u32 KfMap::GetScripteLength(u8 *pScript){
+u32 KfMap::getScripteLength(u8 *pScript){
     s16 temp;
     switch(*pScript){
     case 1:case 6:
@@ -316,7 +316,7 @@ u32 KfMap::GetScripteLength(u8 *pScript){
     default:;assert(0);return 0;
     }
 }
-void KfMap::ReadFile(const u8* src){
+void KfMap::readFile(const u8* src){
     src+=2;//field DataLength
     
     memcpy(&metaData,src,28);
@@ -326,10 +326,10 @@ void KfMap::ReadFile(const u8* src){
     items.resize(metaData.itemCount);
     src+=28;
 
-    u32 length=GetLengthLZ(src);
+    u32 length=getLengthLZ(src);
     u8* p;
     std::unique_ptr<u8[]> buf(p=new u8[length]);
-    UncompressLZ(src,buf.get());
+    uncompressLZ(src,buf.get());
     for(u16 i=0;i<metaData.width*metaData.height;i++){
         memcpy(&cells[i].blockId,p,2);p+=2;
         cells[i].blockId&=0x7FFF;//Erase the field hasScript
@@ -363,7 +363,7 @@ void KfMap::ReadFile(const u8* src){
         }
         memcpy(p+1,&CCCC,2);//Erase field hostID
         tid=ntid;
-        len=GetScripteLength(p);
+        len=getScripteLength(p);
         pScriptList->emplace_back(len);
         memcpy(pScriptList->back().data(),p,len);
         p+=len;
@@ -380,16 +380,16 @@ void KfMap::ReadFile(const u8* src){
 }
 
 
-u8* KfMap::AllocFile(u32 *length){
+u8* KfMap::generateFile(u32 *length){
     assert(loaded);
     assert(metaData.itemCount==items.size());
 
     u32 scriptsLen=1,dataLen;
     for(RipeCell& cell:cells){
-        for(Script& s:cell.scripts)scriptsLen+=GetScripteLength(s.data());
+        for(Script& s:cell.scripts)scriptsLen+=getScripteLength(s.data());
     }
     for(RipeItem& item:items){
-        for(Script& s:item.scripts)scriptsLen+=GetScripteLength(s.data());
+        for(Script& s:item.scripts)scriptsLen+=getScripteLength(s.data());
     }
     std::unique_ptr<u8[]> buf(new u8[dataLen=
         metaData.width*metaData.height*2+
@@ -407,7 +407,7 @@ u8* KfMap::AllocFile(u32 *length){
         rawCell.hasScript=cells[i].scripts.empty()?0:1;
         memcpy(p,&rawCell,2);p+=2;
         for(u32 j=0;j<cells[i].scripts.size();j++){
-            slen=GetScripteLength(cells[i].scripts[j].data());
+            slen=getScripteLength(cells[i].scripts[j].data());
             scripts.emplace_back(slen);
             memcpy(scripts.back().data(),cells[i].scripts[j].data(),slen);
             memcpy(scripts.back().data()+1,&i,2);//fill hostID
@@ -417,7 +417,7 @@ u8* KfMap::AllocFile(u32 *length){
         items[i].basic.hasScript=items[i].scripts.empty()?0:1;//Not sure
         memcpy(p,&items[i].basic,8);p+=8;
         for(u32 j=0;j<items[i].scripts.size();j++){
-            slen=GetScripteLength(items[i].scripts[j].data());
+            slen=getScripteLength(items[i].scripts[j].data());
             scripts.emplace_back(slen);
             memcpy(scripts.back().data(),items[i].scripts[j].data(),slen);
             u16 hostID;
@@ -428,7 +428,7 @@ u8* KfMap::AllocFile(u32 *length){
 
     for(u32 i=0;i<scripts.size();i++){
         
-        slen=GetScripteLength(scripts[i].data());
+        slen=getScripteLength(scripts[i].data());
         memcpy(p,scripts[i].data(),slen);
         p+=slen;
     }
@@ -436,7 +436,7 @@ u8* KfMap::AllocFile(u32 *length){
 
     u8* pAlloc=new u8[(2+MetaDataLength[3]+dataLen)*2];
     memcpy(pAlloc+2,&metaData,MetaDataLength[3]);
-    dataLen=CompressLZ(buf.get(),dataLen,pAlloc+2+MetaDataLength[3]);
+    dataLen=compressLZ(buf.get(),dataLen,pAlloc+2+MetaDataLength[3]);
     if(!dataLen){
         fprintf(stderr,"CompressLZ-FAILED\n");
         delete pAlloc;return 0;
@@ -446,18 +446,18 @@ u8* KfMap::AllocFile(u32 *length){
     return pAlloc;
 }
 
-void KfMap::Unload(){
+void KfMap::unload(){
     cells.clear();
     items.clear();
     loaded=false;
 }
 
-void KfBckScr::ReadFile(const u8 *src){
+void KfBckScr::readFile(const u8 *src){
     src+=2;
     memcpy(&width,src,2);src+=2;
     memcpy(&height,src,2);src+=2;
     chars.resize(width*height);
-    UncompressLZ(src,(u8*)chars.data());
+    uncompressLZ(src,(u8*)chars.data());
     loaded=true;
 }
 
@@ -469,8 +469,8 @@ template<typename T> u32 GetIdInVector(std::vector<T>& vector,const T& item_to_f
     return vector.size()-1;
 }
 
-const u32 MapInfo::invalidId=0xFFFFFFFFUL;
-void Kf_mapdata::FromFile(FILE* file){
+const u32 RoomInfo::invalidId=0xFFFFFFFFUL;
+void Kf_mapdata::fromFile(FILE* file){
     std::vector<u16> subFileShortAddr[7];
     u16 shortAddr;
     fseek(file,0,SEEK_SET);
@@ -478,10 +478,10 @@ void Kf_mapdata::FromFile(FILE* file){
         for(int j=0;j<7;j++){
             fread(&shortAddr,2,1,file);
             if(shortAddr){
-                mapInfos[i].subFileId[j]=GetIdInVector(subFileShortAddr[j],shortAddr);
+                roomInfos[i].subFileId[j]=GetIdInVector(subFileShortAddr[j],shortAddr);
             }
             else{
-                mapInfos[i].subFileId[j]=MapInfo::invalidId;
+                roomInfos[i].subFileId[j]=RoomInfo::invalidId;
             }
         }
     }
@@ -547,18 +547,18 @@ void Kf_mapdata::FromFile(FILE* file){
     }
 
 }
-void Kf_mapdata::ToFile(FILE* file){
+void Kf_mapdata::toFile(FILE* file){
     u16 subFileAddrSlots[MAP_COUNT][7];
     using idPair=std::tuple<u32/*0~6*/,u32/*id*/>;
     std::vector<idPair> idList;
     for(u32 i=0;i<MAP_COUNT;i++){
         for(u32 j=0;j<7;j++){
-            if(mapInfos[i].subFileId[j]==MapInfo::invalidId){
+            if(roomInfos[i].subFileId[j]==RoomInfo::invalidId){
                 subFileAddrSlots[i][j]=0;
             }
             else{
                 u32 index;
-                index=GetIdInVector(idList,idPair(j,mapInfos[i].subFileId[j]));
+                index=GetIdInVector(idList,idPair(j,roomInfos[i].subFileId[j]));
                 subFileAddrSlots[i][j]=(u16)(index*4+MAP_COUNT*7*2);
             }
         }
