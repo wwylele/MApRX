@@ -44,4 +44,5 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resource.qrc
 
-DISTFILES +=
+RC_FILE += \
+    winres.rc
