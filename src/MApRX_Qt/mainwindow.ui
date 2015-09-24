@@ -97,7 +97,7 @@
                <x>0</x>
                <y>0</y>
                <width>361</width>
-               <height>217</height>
+               <height>237</height>
               </rect>
              </property>
              <property name="mouseTracking">
@@ -138,6 +138,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="action_Open"/>
+    <addaction name="actionExtract"/>
+    <addaction name="separator"/>
     <addaction name="action_Save"/>
     <addaction name="actionSave_As"/>
     <addaction name="separator"/>
@@ -192,7 +194,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionShow_Essence"/>
    <addaction name="actionShow_Script"/>
@@ -371,6 +373,11 @@
   <action name="actionChinese">
    <property name="text">
     <string>Chinese</string>
+   </property>
+  </action>
+  <action name="actionExtract">
+   <property name="text">
+    <string>Extract &amp;Map From ROM...</string>
    </property>
   </action>
  </widget>

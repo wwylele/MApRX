@@ -114,6 +114,10 @@ private slots:
 
     void on_actionChinese_triggered();
 
+    void on_actionExtract_triggered();
+
+    void openMapdata(QString fileName);
+
 private:
     Ui::MainWindow *ui;
     QTimer mapUpdateTimer;

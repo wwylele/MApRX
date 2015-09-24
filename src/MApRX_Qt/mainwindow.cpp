@@ -226,6 +226,10 @@ void MainWindow::on_action_Open_triggered()
         "",
         "mapdata File(*.*)");
     if(fileName==QString::null)return;
+    openMapdata(fileName);
+}
+
+void MainWindow::openMapdata(QString fileName){
     FILE* file=_wfopen(fileName.toStdWString().data(),L"rb");
     if(file==nullptr){
         QMessageBox msgBox;
@@ -372,4 +376,48 @@ void MainWindow::on_actionChinese_triggered()
 {
     pApp->installTranslator(&translator);
     ui->retranslateUi(this);
+}
+void MainWindow::on_actionExtract_triggered(){
+    QString fileName=QFileDialog::getOpenFileName(this, "Select ROM",
+        "",
+        "ROM File(*.nds *.bin);;Any files(*.*)");
+    if(fileName==QString::null)return;
+    FILE* rom=_wfopen(fileName.toStdWString().data(),L"rb");
+    if(rom==nullptr){
+        QMessageBox msgBox;
+        msgBox.setText("Failed to open the ROM.");
+        msgBox.setIcon(QMessageBox::Icon::Critical);
+        msgBox.exec();
+        return;
+    }
+
+    fileName=QFileDialog::getSaveFileName(this, "Save mapdata to...",
+        "",
+        "mapdata File(*.bin)");
+    if(fileName==QString::null)return;
+    FILE* mapdataFile=_wfopen(fileName.toStdWString().c_str(),L"wb");
+    if(mapdataFile==nullptr){
+        QMessageBox msgBox;
+        msgBox.setText("Failed to open mapdata file.");
+        msgBox.setIcon(QMessageBox::Icon::Critical);
+        msgBox.exec();
+        fclose(rom);
+        return;
+    }
+
+    u16 id=nitroGetSubFileId(rom,"rom/map01/mapdata");
+    u32 off,len;
+    off=nitroGetSubFileOffset(rom,id,&len);
+    std::unique_ptr<u8[]> buf(new u8[len]);
+    fseek(rom,off,SEEK_SET);
+    fread(buf.get(),len,1,rom);
+    fwrite(buf.get(),len,1,mapdataFile);
+    fclose(rom);
+    fclose(mapdataFile);
+
+    QMessageBox msgBox;
+    msgBox.setText("Succeeded to extract mapdata from ROM.");
+    msgBox.exec();
+
+    openMapdata(fileName);
 }
