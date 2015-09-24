@@ -30,10 +30,10 @@ typedef signed long s32;
 
 struct Color15
 {
-	u16 r:5;
-	u16 g:5;
-	u16 b:5;
-	u16 dummy:1;
+    u16 r:5;
+    u16 g:5;
+    u16 b:5;
+    u16 dummy:1;
     inline Color15(){}
     inline Color15(u16 tr,u16 tg,u16 tb):r(tr),g(tg),b(tb){}
 
@@ -43,7 +43,7 @@ struct Color15
         tg=(g*255+15)/31;
         tb=(b*255+15)/31;
         return 0xFF000000|(tr<<16)|(tg<<8)|tb;
-	}
+    }
     inline u32 ToGrey32()const {
         u8 t;
         t=((r+g+b)/3*255+15)/31;
@@ -55,33 +55,33 @@ struct Color15
                        (u16)(Zero.b*(1-v)+One.b*v)
                        );
     }
-	
+    
 };
 struct CharData
 {
-	u16 tileId:10;
-	u16 flipX:1;
-	u16 flipY:1;
-	u16 dummy:4;
+    u16 tileId:10;
+    u16 flipX:1;
+    u16 flipY:1;
+    u16 dummy:4;
 };
 class KfPlt;
 struct Tile8bpp
 {
-	u8 data[64];
-	inline u8& Pixel(u8 x/*0~7*/,u8 y/*0~7*/){
-		return data[x|(y<<3)];
-	}
+    u8 data[64];
+    inline u8& Pixel(u8 x/*0~7*/,u8 y/*0~7*/){
+        return data[x|(y<<3)];
+    }
     inline u8 Pixel(u8 x/*0~7*/,u8 y/*0~7*/)const{
         return data[x|(y<<3)];
     }
     template<typename T/* [](int x,int y,const Color15&) */>
     void Draw(T fSetPixel,const KfPlt& plt,int dx,int dy,bool flipX,bool flipY)const{
-		for(int x=0;x<8;x++)for(int y=0;y<8;y++){
-			u8 c;
-			c=Pixel(flipX?7-x:x,flipY?7-y:y);
+        for(int x=0;x<8;x++)for(int y=0;y<8;y++){
+            u8 c;
+            c=Pixel(flipX?7-x:x,flipY?7-y:y);
             if(c)fSetPixel(dx+x,dy+y,plt.Colors(c));
-		}
-	}
+        }
+    }
 };
 
 
@@ -100,42 +100,42 @@ struct Tile8bpp
         //
         // 0x020 b)  Parameter for static module
         //
-        //	ARM9
-        u32	main_rom_offset;	// Transmit source ROM offset
-        u32	main_entry_address;	// Execution start address (not implemented)
-        u32	main_ram_address;	// Transmit destination RAM address
-        u32	main_size;	// Transmit size
-        //	ARM7
-        u32	sub_rom_offset;	// Transmit source ROM offset
-        u32	sub_entry_address;	// Execution start address (not implemented)
-        u32	sub_ram_address;	// Transmit destination RAM address
-        u32	sub_size;	// Transmit size
+        //    ARM9
+        u32    main_rom_offset;    // Transmit source ROM offset
+        u32    main_entry_address;    // Execution start address (not implemented)
+        u32    main_ram_address;    // Transmit destination RAM address
+        u32    main_size;    // Transmit size
+        //    ARM7
+        u32    sub_rom_offset;    // Transmit source ROM offset
+        u32    sub_entry_address;    // Execution start address (not implemented)
+        u32    sub_ram_address;    // Transmit destination RAM address
+        u32    sub_size;    // Transmit size
 
         //
         // 0x040 c)  Parameter for file name table
         //
-        u32	fnt_offset;	// Top ROM offset
-        u32	fnt_size;	// Table size
+        u32    fnt_offset;    // Top ROM offset
+        u32    fnt_size;    // Table size
         //
         // 0x048 e)  Parameter for file allocation table
         //
-        u32	fat_offset;	// Top ROM offset
-        u32	fat_size;	// Table size
+        u32    fat_offset;    // Top ROM offset
+        u32    fat_size;    // Table size
         //
         // 0x0050 d)  Parameter for overlay header table
         //
-        //	ARM9
-        u32	main_ovt_offset;	// Top ROM offset
-        u32	main_ovt_size;	// Table size
+        //    ARM9
+        u32    main_ovt_offset;    // Top ROM offset
+        u32    main_ovt_size;    // Table size
 
-        //	ARM7
-        u32	sub_ovt_offset;	// Top ROM offset
-        u32	sub_ovt_size;	// Table size
+        //    ARM7
+        u32    sub_ovt_offset;    // Top ROM offset
+        u32    sub_ovt_size;    // Table size
 
         //
         // 0x0060 - 0x04000 Reserved region for system B
         //
-        //u8	reserved_B[16];
+        //u8    reserved_B[16];
         u32 reserved_B1;
         u32 reserved_B2;
         u32 title_offset;
@@ -143,8 +143,8 @@ struct Tile8bpp
         u16 ROMtimeout;
 
         /*
-        u8	reserved_C[4*1024-0x70];	// Reserved for system C
-        u8	reserved_D[12*1024];	// Reserved for system D
+        u8    reserved_C[4*1024-0x70];    // Reserved for system C
+        u8    reserved_D[12*1024];    // Reserved for system D
         */
         u32     ARM9unk;
         u32     ARM7unk;
@@ -161,14 +161,14 @@ struct Tile8bpp
     };
     struct ROM_FNTDir
     {
-        u32	entry_start;	// Reference location of entry name
-        u16	entry_file_id;	// File ID of top entry
-        u16	parent_id;	// ID of parent directory
+        u32    entry_start;    // Reference location of entry name
+        u16    entry_file_id;    // File ID of top entry
+        u16    parent_id;    // ID of parent directory
     };
     struct ROM_FAT
     {
-        u32	top;	// Top ROM address of file
-        u32	bottom;	// Bottom ROM address of file
+        u32    top;    // Top ROM address of file
+        u32    bottom;    // Bottom ROM address of file
     };
 
 

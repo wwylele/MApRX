@@ -68,14 +68,14 @@ public:
         return finalColors[i];
     }
     void Tick();
-	void ReadFile(const u8* src);
+    void ReadFile(const u8* src);
     void LoadDefault();
 };
 
 //#1,#5
 class KfTileSet{
 protected:
-	std::vector<Tile8bpp> tiles;
+    std::vector<Tile8bpp> tiles;
     std::vector<Tile8bpp> aniTiles;
     std::vector<Tile8bpp> finalTiles;
     struct Thread{
@@ -97,26 +97,26 @@ protected:
     std::vector<Thread> threads;
 
 public:
-	void ReadFile(const u8* src);
+    void ReadFile(const u8* src);
     inline const Tile8bpp& operator [](u16 tileId)const{
         return finalTiles[tileId];
-	}
+    }
     void Tick();
 };
 
 struct Block{
-	CharData data[9];
+    CharData data[9];
     inline const CharData& TileAt(u8 x/*0~2*/,u8 y/*0~2*/)const{
-		return data[x+y*3];
-	}
+        return data[x+y*3];
+    }
     template<typename T/* [](int x,int y,const Color15&) */>
     void Draw(T fSetPixel,const KfPlt& plt,int dx,int dy,const KfTileSet& tileSet)const{
-		for(int x=0;x<3;x++)for(int y=0;y<3;y++){
+        for(int x=0;x<3;x++)for(int y=0;y<3;y++){
             const CharData *pchar;
             pchar=&TileAt(x,y);
-			tileSet[pchar->tileId].Draw(fSetPixel,plt,dx+x*8,dy+y*8,pchar->flipX,pchar->flipY);
-		}
-	}
+            tileSet[pchar->tileId].Draw(fSetPixel,plt,dx+x*8,dy+y*8,pchar->flipX,pchar->flipY);
+        }
+    }
 };
 typedef u8 BlockEssence;
 
@@ -124,15 +124,15 @@ typedef u8 BlockEssence;
 class KfBlockSet{
 
 protected:
-	std::vector<Block> blocks;
-	std::vector<BlockEssence> essences;
+    std::vector<Block> blocks;
+    std::vector<BlockEssence> essences;
     bool loaded=false;
 public:
-	void ReadFile(const u8* src);
+    void ReadFile(const u8* src);
     void LoadDefault();
     inline const Block& operator [](u16 blockId)const{
-		return blocks[blockId];
-	}
+        return blocks[blockId];
+    }
     inline BlockEssence Essences(u16 blockId)const{
         return essences[blockId];
     }
@@ -143,26 +143,26 @@ public:
     inline bool Loaded(){
         return loaded;
     }
-	
+    
 };
 
 
 //#3
 class KfMap{
 public:
-	typedef std::vector<u8> Script;
-	struct Cell{
-		u16 blockId:15;
-		u16 hasScript:1;
-	};
-	struct RipeCell{
-		u16 blockId;
-		std::vector<Script> scripts;
-		bool operator==(const RipeCell& c)const{
-			return blockId==c.blockId && scripts==c.scripts;
-		}
-	};
-	struct Item{
+    typedef std::vector<u8> Script;
+    struct Cell{
+        u16 blockId:15;
+        u16 hasScript:1;
+    };
+    struct RipeCell{
+        u16 blockId;
+        std::vector<Script> scripts;
+        bool operator==(const RipeCell& c)const{
+            return blockId==c.blockId && scripts==c.scripts;
+        }
+    };
+    struct Item{
         u8 species:8;
         u8 behavior:6;
         u8 flagA:1;
@@ -170,73 +170,73 @@ public:
         u8 param:8;
         u8 catagory:7;
         u8 hasScript:1;//Not sure
-		u16 x;
-		u16 y;
-	};
-	struct RipeItem{
-		Item basic;
-		std::vector<Script> scripts;
-		bool operator==(const RipeItem& c)const{
-			return memcmp(this,&c,8)==0 && scripts==c.scripts;
-		}
-	};
+        u16 x;
+        u16 y;
+    };
+    struct RipeItem{
+        Item basic;
+        std::vector<Script> scripts;
+        bool operator==(const RipeItem& c)const{
+            return memcmp(this,&c,8)==0 && scripts==c.scripts;
+        }
+    };
 
 protected:
     bool loaded=false;
-	std::vector<RipeCell> cells;
-	std::vector<RipeItem> items;
+    std::vector<RipeCell> cells;
+    std::vector<RipeItem> items;
 public:
     inline bool Loaded(){return loaded;}
     void Unload();
 
-	void ReadFile(const u8* src);
+    void ReadFile(const u8* src);
 
-	u8* AllocFile(u32 *length);
+    u8* AllocFile(u32 *length);
 
-	struct MetaData_Struct/*28 bytes*/{
-		u16 width;
-		u16 height;
-		u16 clipTop;
-		u16 clipBottom;
-		u16 clipLeft;
-		u16 clipRight;
-		s16 bckOffsetHori;
-		s16 bckOffsetVert;
-		s16 bckSpeedHori;
-		s16 bckSpeedVert;
-		u8 globalEffect;
-		u8 bgm;
-		u8 itemCount;
-		u8 itemPlts[5];
-	}metaData;
+    struct MetaData_Struct/*28 bytes*/{
+        u16 width;
+        u16 height;
+        u16 clipTop;
+        u16 clipBottom;
+        u16 clipLeft;
+        u16 clipRight;
+        s16 bckOffsetHori;
+        s16 bckOffsetVert;
+        s16 bckSpeedHori;
+        s16 bckSpeedVert;
+        u8 globalEffect;
+        u8 bgm;
+        u8 itemCount;
+        u8 itemPlts[5];
+    }metaData;
 
-	
-	struct Script_{
-		u32 code:8;
-		u32 hostId:15;
-		u32 hostIsAItem:1;
-		u32 data0:8;
-		u8 data[1];
-	};
+    
+    struct Script_{
+        u32 code:8;
+        u32 hostId:15;
+        u32 hostIsAItem:1;
+        u32 data0:8;
+        u8 data[1];
+    };
 
-	static u32 GetScripteLength(u8 *pScript);
+    static u32 GetScripteLength(u8 *pScript);
 
-	inline RipeCell& At(u16 x,u16 y){
-		return cells[x+y*metaData.width];
-	}
-	inline RipeItem& Items(u8 i){
-		return items[i];
-	}
+    inline RipeCell& At(u16 x,u16 y){
+        return cells[x+y*metaData.width];
+    }
+    inline RipeItem& Items(u8 i){
+        return items[i];
+    }
     template<typename T/* [](int x,int y,const Color15&) */>
     void Draw(T fSetPixel,KfPlt& plt,int dx,int dy,
         const KfBlockSet& blockSet,const KfTileSet& tileSet){
-		for(u16 x=0;x<metaData.width;x++)for(u16 y=0;y<metaData.height;y++){
-			blockSet[At(x,y).blockId].Draw(fSetPixel,plt,dx+x*24,dy+y*24,tileSet);
+        for(u16 x=0;x<metaData.width;x++)for(u16 y=0;y<metaData.height;y++){
+            blockSet[At(x,y).blockId].Draw(fSetPixel,plt,dx+x*24,dy+y*24,tileSet);
 
-		}
-	}
-	inline u16 GetWidth(){ return metaData.width; }
-	inline u16 GetHeight(){ return metaData.height; }
+        }
+    }
+    inline u16 GetWidth(){ return metaData.width; }
+    inline u16 GetHeight(){ return metaData.height; }
 };
 
 //#6
@@ -269,63 +269,63 @@ public:
 #define MAP_COUNT 548
 
 union MapInfo{
-	u32 subFileId[7];
-	struct SUB_FILE_ID_SLOTS{
-		u32 rawFrtPltId;
-		u32 rawFrtTileSetId;
-		u32 rawFrtBlockSetId;
-		u32 rawMapId;//should be always equal to map index
-		u32 rawBckPltId;
-		u32 rawBckTileSetId;
-		u32 rawBckScrId;
-	}subFileIdSlots;
-	static const u32 invalidId;
+    u32 subFileId[7];
+    struct SUB_FILE_ID_SLOTS{
+        u32 rawFrtPltId;
+        u32 rawFrtTileSetId;
+        u32 rawFrtBlockSetId;
+        u32 rawMapId;//should be always equal to map index
+        u32 rawBckPltId;
+        u32 rawBckTileSetId;
+        u32 rawBckScrId;
+    }subFileIdSlots;
+    static const u32 invalidId;
 };
 class Kf_mapdata{
 private:
-	struct rawFile{
-		std::unique_ptr<u8[]> ptr;
-		u32 length;
-		rawFile(){}
-		rawFile(rawFile&& c):length(c.length){
-			ptr.reset(c.ptr.release());
-		}
-	};
+    struct rawFile{
+        std::unique_ptr<u8[]> ptr;
+        u32 length;
+        rawFile(){}
+        rawFile(rawFile&& c):length(c.length){
+            ptr.reset(c.ptr.release());
+        }
+    };
 public:
-	std::vector<rawFile> rawSubFiles[7];
+    std::vector<rawFile> rawSubFiles[7];
 public:
-	MapInfo mapInfos[MAP_COUNT];
-	
-	void FromFile(FILE* file);
-	void ToFile(FILE* file);
+    MapInfo mapInfos[MAP_COUNT];
+    
+    void FromFile(FILE* file);
+    void ToFile(FILE* file);
 
-	inline u8* rawFrtPlts(u32 i){
-		return rawSubFiles[0][i].ptr.get();
-	}
-	inline u8* rawFrtTileSets(u32 i){
-		return rawSubFiles[1][i].ptr.get();
-	}
-	inline u8* rawFrtBlockSets(u32 i){
-		return rawSubFiles[2][i].ptr.get();
-	}
-	inline u8* rawMaps(u32 i){
-		return rawSubFiles[3][i].ptr.get();
-	}
+    inline u8* rawFrtPlts(u32 i){
+        return rawSubFiles[0][i].ptr.get();
+    }
+    inline u8* rawFrtTileSets(u32 i){
+        return rawSubFiles[1][i].ptr.get();
+    }
+    inline u8* rawFrtBlockSets(u32 i){
+        return rawSubFiles[2][i].ptr.get();
+    }
+    inline u8* rawMaps(u32 i){
+        return rawSubFiles[3][i].ptr.get();
+    }
     inline u8* rawBckPlts(u32 i){
-		return rawSubFiles[4][i].ptr.get();
-	}
-	inline u8* rawBckTileSets(u32 i){
-		return rawSubFiles[5][i].ptr.get();
-	}
-	inline u8* rawBckScrs(u32 i){
-		return rawSubFiles[6][i].ptr.get();
-	}
+        return rawSubFiles[4][i].ptr.get();
+    }
+    inline u8* rawBckTileSets(u32 i){
+        return rawSubFiles[5][i].ptr.get();
+    }
+    inline u8* rawBckScrs(u32 i){
+        return rawSubFiles[6][i].ptr.get();
+    }
 
-	inline void WriteMap(u32 i,const u8* p,u32 len){
-		rawSubFiles[3][i].ptr.reset(new u8[len]);
-		rawSubFiles[3][i].length=len;
-		memcpy(rawSubFiles[3][i].ptr.get(),p,len);
-	}
+    inline void WriteMap(u32 i,const u8* p,u32 len){
+        rawSubFiles[3][i].ptr.reset(new u8[len]);
+        rawSubFiles[3][i].length=len;
+        memcpy(rawSubFiles[3][i].ptr.get(),p,len);
+    }
 };
 
 
