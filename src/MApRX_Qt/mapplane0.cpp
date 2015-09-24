@@ -21,6 +21,7 @@
 #include "mapplane0.h"
 #include <QPainter>
 #include <QImage>
+#include <QMouseEvent>
 MapPlane0::MapPlane0(QWidget *parent) : QWidget(parent)
 {
 }
@@ -92,6 +93,15 @@ void MapPlane0::paintEvent(QPaintEvent *){
                              pMainWindow->map.Items(i).basic.y-8,
                              16,16,Qt::AlignCenter,str);
         }
+    }else{
+        if(curX!=-1){
+            QPen penCur;
+            penCur.setColor(QColor(255,255,0));
+            penCur.setWidth(2);
+            painter.setPen(penCur);
+            painter.drawRect(curX*24,curY*24,
+                             24,24);
+        }
     }
 
 
@@ -103,4 +113,36 @@ void MapPlane0::reset(){
     setMinimumSize(width,height);
     resize(width,height);
 
+}
+
+void MapPlane0::mouseMoveEvent(QMouseEvent * event){
+    if(!pMainWindow->showItems){
+        if(event->x()>pMainWindow->map.metaData.width*24||
+           event->y()>pMainWindow->map.metaData.height*24||
+                event->x()<0||event->y()<0){
+            curX=curY=-1;
+        }
+        else{
+            curX=event->x()/24;
+            curY=event->y()/24;
+        }
+    }
+
+
+    repaint();
+}
+
+void MapPlane0::mousePressEvent(QMouseEvent* ){
+    if(!pMainWindow->showItems){
+        if(curX!=-1){
+            if(!pMainWindow->showScript){
+                MainWindow::MoEditCell editCell(curX,curY,pMainWindow->selBlock);
+                pMainWindow->doOperation(&editCell);
+            }
+        }
+    }
+}
+void MapPlane0::leaveEvent(QEvent * ){
+    curX=curY=-1;
+    repaint();
 }

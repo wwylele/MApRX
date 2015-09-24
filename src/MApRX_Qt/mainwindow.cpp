@@ -43,12 +43,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mapPlane0->pMainWindow=this;
     ui->blockStore->pMainWindow=this;
 
+    MainWindow::MapOperation::pMap=&map;
+
     this->grabKeyboard();
 
     essenceSheet.load(":/image/Essence.png");
 
     connect(&mapUpdateTimer, SIGNAL(timeout()), this, SLOT(on_updateMap()));
-
+    connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(redo()));
 
     QString roomName[MAP_COUNT];
     QFile roomNameResFile(":/text/RoomName.txt");
@@ -74,6 +77,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->listRoom->addItem(newItem);
 
     }
+
+    clearOperationStack();
 
 #ifdef _DEBUG
     //Open a file
@@ -178,6 +183,8 @@ void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
 
     curRoomId=roomId;
 
+    clearOperationStack();
+
     mapUpdateTimer.start(5);
 
 }
@@ -237,6 +244,7 @@ void MainWindow::on_action_Open_triggered()
     ui->action_Save->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
     ui->actionMake_Rom->setEnabled(true);
+    clearOperationStack();
 }
 
 void MainWindow::on_action_Save_triggered()

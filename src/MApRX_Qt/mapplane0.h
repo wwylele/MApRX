@@ -34,13 +34,13 @@ public:
     MainWindow* pMainWindow;
 
 protected:
-
+    int curX,curY;
     int width;
     int height;
     void paintEvent(QPaintEvent *event);
-    //void mouseMoveEvent(QMouseEvent * event);
-    //void mousePressEvent(QMouseEvent * event);
-    //void leaveEvent(QEvent * event);
+    void mouseMoveEvent(QMouseEvent * event);
+    void mousePressEvent(QMouseEvent * event);
+    void leaveEvent(QEvent * event);
 signals:
 
 public slots:

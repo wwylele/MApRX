@@ -27,6 +27,8 @@
 #include <QTimer>
 #include <QImage>
 #include <QPixmap>
+#include <stack>
+#include <memory>
 
 namespace Ui {
     class MainWindow;
@@ -35,6 +37,34 @@ namespace Ui {
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+
+public:
+    class MapOperation{
+    public:
+        static KfMap* pMap;
+        virtual void doOperation()=0;
+        virtual MapOperation* generateReversal()=0;//Call before doOperation
+        virtual ~MapOperation();
+    };
+    class MoEditCell:public MapOperation{
+    private:
+        u16 x,y;
+        u16 blockIdToBe;
+    public:
+        MoEditCell(u16 _x,u16 _y,u16 toBe);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
+
+    std::stack<std::unique_ptr<MapOperation>> undoStack;//store the reversal of history operation
+    std::stack<std::unique_ptr<MapOperation>> redoStack;//store the reversal of operation pop from undoStack
+
+    void clearOperationStack();
+    void doOperation(MapOperation *op);
+public slots:
+    void undo();
+    void redo();
+
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -52,6 +82,8 @@ public:
     bool showAnimation=true;
     bool showItems=false;
     QPixmap essenceSheet;
+
+    int selBlock;
 protected:
     void keyPressEvent(QKeyEvent * event);
     void keyReleaseEvent(QKeyEvent * event);

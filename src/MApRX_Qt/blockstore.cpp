@@ -59,8 +59,8 @@ void BlockStore::paintEvent(QPaintEvent *){
                      (curBlock/blockStoreColumnCount)*24,
                      24,24);
     painter.setPen(penSel);
-    painter.drawRect((selBlock%blockStoreColumnCount)*24,
-                     (selBlock/blockStoreColumnCount)*24,
+    painter.drawRect((pMainWindow->selBlock%blockStoreColumnCount)*24,
+                     (pMainWindow->selBlock/blockStoreColumnCount)*24,
                      24,24);
 
 
@@ -72,7 +72,7 @@ void BlockStore::reset(){
     setMinimumSize(width,height);
     resize(width,height);
     curBlock=-1;
-    selBlock=0;
+    pMainWindow->selBlock=0;
 }
 void BlockStore::mouseMoveEvent(QMouseEvent * event){
     if(event->x()>blockStoreColumnCount*24 || event->x()<0||event->y()<0){
@@ -92,7 +92,7 @@ void BlockStore::mouseMoveEvent(QMouseEvent * event){
 }
 
 void BlockStore::mousePressEvent(QMouseEvent* ){
-    if(curBlock!=-1)selBlock=curBlock;
+    if(curBlock!=-1)pMainWindow->selBlock=curBlock;
     repaint();
 }
 void BlockStore::leaveEvent(QEvent * ){

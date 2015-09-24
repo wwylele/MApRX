@@ -33,10 +33,10 @@ public:
     explicit BlockStore(QWidget *parent = 0);
     void reset();
     MainWindow* pMainWindow;
-    int curBlock,selBlock;
+
 signals:
 protected:
-
+    int curBlock;
     int width;
     int height;
     void paintEvent(QPaintEvent *event);
