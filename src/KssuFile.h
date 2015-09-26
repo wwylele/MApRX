@@ -328,5 +328,6 @@ public:
     }
 };
 
+extern u8 itemCatagory[256/*species*/];
 
 #endif

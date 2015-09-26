@@ -29,10 +29,28 @@
 #include <QPixmap>
 #include <stack>
 #include <memory>
+#include <QAbstractTableModel>
 
 namespace Ui {
     class MainWindow;
 }
+
+class MainWindow;
+class ItemTableModal:public QAbstractTableModel{
+    Q_OBJECT
+    KfMap* pMap;
+    MainWindow* pMainWindow;
+public:
+    ItemTableModal(MainWindow* _pMainWindow,QObject *parent=0);
+    void itemChanged(u8 id);
+    int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE ;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const Q_DECL_OVERRIDE;
+    Qt::ItemFlags flags(const QModelIndex & index) const Q_DECL_OVERRIDE ;
+    bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole) Q_DECL_OVERRIDE;
+
+};
 
 class MainWindow : public QMainWindow
 {
@@ -42,6 +60,7 @@ public:
     class MapOperation{
     public:
         static KfMap* pMap;
+        static MainWindow* pMainWindow;
         virtual void doOperation()=0;
         virtual MapOperation* generateReversal()=0;//Call before doOperation
         virtual ~MapOperation();
@@ -55,6 +74,15 @@ public:
         void doOperation();
         MapOperation* generateReversal();
     };
+    class MoEditItemBasic:public MapOperation{
+    private:
+        u8 itemId;
+        KfMap::Item itemBasicToBe;
+    public:
+        MoEditItemBasic(u8 _itemId, const KfMap::Item& toBe);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
 
     std::stack<std::unique_ptr<MapOperation>> undoStack;//store the reversal of history operation
     std::stack<std::unique_ptr<MapOperation>> redoStack;//store the reversal of operation pop from undoStack
@@ -65,6 +93,9 @@ public slots:
     void undo();
     void redo();
 
+protected:
+
+    ItemTableModal itemTableModal;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -84,9 +115,6 @@ public:
     QPixmap essenceSheet;
 
     int selBlock;
-protected:
-    void keyPressEvent(QKeyEvent * event);
-    void keyReleaseEvent(QKeyEvent * event);
 private slots:
     void on_listRoom_itemDoubleClicked(QListWidgetItem * item);
     void on_updateMap();
@@ -124,7 +152,6 @@ private:
 
     QString currentFileName;
     Kf_mapdata mapdata;
-    void updateItemList();
     void saveCurrentRoom();
 
 

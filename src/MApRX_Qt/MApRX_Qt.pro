@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     dialogmakerom.cpp \
     dialogproperties.cpp \
     ../Nitro.cpp \
-    mainwindow_mapoperation.cpp
+    mainwindow_mapoperation.cpp \
+    ../itemcatagory.cpp
 
 TRANSLATIONS = maprx_zh.ts
 

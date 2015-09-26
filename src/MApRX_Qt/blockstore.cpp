@@ -75,6 +75,11 @@ void BlockStore::reset(){
     pMainWindow->selBlock=0;
 }
 void BlockStore::mouseMoveEvent(QMouseEvent * event){
+    if(!pMainWindow->blocks.Loaded()){
+        curBlock=-1;
+        return;
+    }
+
     if(event->x()>blockStoreColumnCount*24 || event->x()<0||event->y()<0){
         curBlock=-1;
     }
@@ -92,6 +97,9 @@ void BlockStore::mouseMoveEvent(QMouseEvent * event){
 }
 
 void BlockStore::mousePressEvent(QMouseEvent* ){
+    if(!pMainWindow->blocks.Loaded()){
+        return;
+    }
     if(curBlock!=-1)pMainWindow->selBlock=curBlock;
     repaint();
 }

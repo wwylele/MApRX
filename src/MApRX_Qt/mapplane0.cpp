@@ -116,6 +116,10 @@ void MapPlane0::reset(){
 }
 
 void MapPlane0::mouseMoveEvent(QMouseEvent * event){
+    if(!pMainWindow->map.Loaded()){
+        curX=curY=-1;
+        return;
+    }
     if(!pMainWindow->showItems){
         if(event->x()>pMainWindow->map.metaData.width*24||
            event->y()>pMainWindow->map.metaData.height*24||
@@ -133,6 +137,9 @@ void MapPlane0::mouseMoveEvent(QMouseEvent * event){
 }
 
 void MapPlane0::mousePressEvent(QMouseEvent* ){
+    if(!pMainWindow->map.Loaded()){
+        return;
+    }
     if(!pMainWindow->showItems){
         if(curX!=-1){
             if(!pMainWindow->showScript){

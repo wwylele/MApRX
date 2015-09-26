@@ -28,14 +28,152 @@
 #include "dialogaboutme.h"
 #include "dialogmakerom.h"
 #include "dialogproperties.h"
-
+#include <assert.h>
 #include <set>
 #include <QDebug>
+
+
+ItemTableModal::ItemTableModal
+    (MainWindow *_pMainWindow, QObject *parent):
+    pMainWindow(_pMainWindow),
+    QAbstractTableModel(parent){
+    pMap=&pMainWindow->map;
+}
+int ItemTableModal::columnCount(const QModelIndex &) const{
+    return 7;
+}
+int ItemTableModal::rowCount(const QModelIndex &) const{
+    if(!pMap->Loaded())return 0;
+    return pMap->metaData.itemCount;
+}
+QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
+
+    if(!pMap->Loaded())return QVariant();
+    u8 itemId=index.row();
+    if(itemId>=pMap->metaData.itemCount)return QVariant();
+    if(role==Qt::DisplayRole){
+        switch(index.column()){
+        case 0:
+            return QString::number(pMap->Items(itemId).basic.species);
+        case 1:
+            return QString::number(pMap->Items(itemId).basic.behavior);
+
+        case 4:
+            return QString::number(pMap->Items(itemId).basic.param);
+        case 5:
+            return QString::number(pMap->Items(itemId).scripts.size());
+        case 6:{
+            int x,y;
+            x=pMap->Items(itemId).basic.x;
+            y=pMap->Items(itemId).basic.y;
+            return QString("(%1.%2,%3.%4)").arg(x/24).arg(x%24).arg(y/24).arg(y%24);
+        }
+        }
+    }else if(role==Qt::CheckStateRole){
+        switch(index.column()){
+        case 2:
+            return pMap->Items(itemId).basic.flagA?Qt::Checked:Qt::Unchecked;
+        case 3:
+            return pMap->Items(itemId).basic.flagB?Qt::Checked:Qt::Unchecked;
+        }
+    }else if(role==Qt::BackgroundRole){
+        static QBrush itemBackground[13]{
+                    QColor(255,255,255),
+                    QColor(128,255,128),
+                    QColor(255,255,128),
+                    QColor(255,128,128),
+                    QColor(255,128,255),
+                    QColor(128,128,255),
+                    QColor(128,255,255),
+                    Qt::transparent,
+                    Qt::transparent,
+                    Qt::transparent,
+                    QColor(128,128,128),
+                    QColor(192,192,192),
+                    QColor(255,192,128)
+        };
+        if(pMap->Items(itemId).basic.catagory>=13)return itemBackground[0];
+        return itemBackground[pMap->Items(itemId).basic.catagory];
+    }
+    return QVariant();
+}
+Qt::ItemFlags ItemTableModal::flags(const QModelIndex &index) const
+{
+    switch(index.column()){
+    case 0:
+    case 1:
+    case 4:
+        return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
+    case 2:
+    case 3:
+        return Qt::ItemIsUserCheckable | QAbstractTableModel::flags(index);
+    default:
+        return  QAbstractTableModel::flags(index);
+    }
+
+
+}
+QVariant ItemTableModal::headerData(int section, Qt::Orientation orientation, int role) const{
+    if(role==Qt::DisplayRole){
+        if(orientation==Qt::Horizontal){
+            switch(section){
+            case 0:return "Species";
+            case 1:return "Behavior";
+            case 2:return "A";
+            case 3:return "B";
+            case 4:return "Parameter";
+            case 5:return "Script";
+            case 6:return "Position";
+            }
+        }
+        else{
+            return QString::number(section);
+        }
+    }
+    return QVariant();
+}
+void ItemTableModal::itemChanged(u8 id){
+    emit dataChanged(createIndex(id,0),createIndex(id,6));
+}
+
+bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, int role){
+    KfMap::Item itemBasic=pMap->Items(index.row()).basic;
+    if(role==Qt::EditRole){
+        if(index.column()==0){
+            itemBasic.species=value.toString().toInt();
+            itemBasic.catagory=itemCatagory[itemBasic.species];
+        }
+        else if(index.column()==1){
+            itemBasic.behavior=value.toString().toInt()&0xF;
+        }
+        else if(index.column()==4){
+            itemBasic.param=value.toString().toInt();
+        }
+        else return false;
+        MainWindow::MoEditItemBasic op(index.row(),itemBasic);
+        pMainWindow->doOperation(&op);
+
+        return true;
+    }else if(role==Qt::CheckStateRole){
+        if(index.column()==2){
+            itemBasic.flagA=value.toBool()?1:0;
+        }
+        else if(index.column()==3){
+            itemBasic.flagB=value.toBool()?1:0;
+        }
+        else return false;
+        MainWindow::MoEditItemBasic op(index.row(),itemBasic);
+        pMainWindow->doOperation(&op);
+    }
+    return false;
+}
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    mapUpdateTimer(this)
+    mapUpdateTimer(this),
+    itemTableModal(this)
 {
     ui->setupUi(this);
     ui->actionShow_Animation->setChecked(true);
@@ -43,9 +181,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mapPlane0->pMainWindow=this;
     ui->blockStore->pMainWindow=this;
 
-    MainWindow::MapOperation::pMap=&map;
+    ui->itemTable->setModel(&itemTableModal);
+    ui->itemTable->resizeRowsToContents();
+    ui->itemTable->resizeColumnsToContents();
 
-    this->grabKeyboard();
+    MapOperation::pMap=&map;
+    MapOperation::pMainWindow=this;
 
     essenceSheet.load(":/image/Essence.png");
 
@@ -90,16 +231,25 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->action_Save->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
     ui->actionMake_Rom->setEnabled(true);
+
     //check maps
-    FILE* report=fopen("D:\\Github\\MApRX\\temp\\effectList.txt","w");
+    u8 ctg[256];
+    for(int i=0;i<256;i++)ctg[i]=0xFF;
+    FILE* report=fopen("D:\\Github\\MApRX\\temp\\itemcatagory.txt","w");
     for(u32 i=0;i<MAP_COUNT;i++){
         map.readFile(mapdata.rawMaps(i));
-        if(map.metaData.globalEffect!=0x80){
-            fprintf(report,"%d:effect=%02X\n",i,map.metaData.globalEffect);
+        for(u8 j=0;j<map.metaData.itemCount;j++){
+            if(ctg[map.Items(j).basic.species]==0xFF){
+                ctg[map.Items(j).basic.species]=map.Items(j).basic.catagory;
+            }else{
+                assert(ctg[map.Items(j).basic.species]==map.Items(j).basic.catagory);
+            }
         }
         map.unload();
     }
-
+    for(int i=0;i<256;i++){
+        fprintf(report,"    %d,\n",ctg[i]);
+    }
 
     fclose(report);
 #endif
@@ -111,24 +261,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::updateItemList(){
-    ui->itemList->clear();
-    for(u32 i=0;i<map.metaData.itemCount;i++){
-        QString str;
-        str.sprintf("[%d]%d<%d behavior=0x%02X%c%c param=0x%02X %c",i,
-                    map.Items(i).basic.species,
-                    map.Items(i).basic.catagory,
-                    map.Items(i).basic.behavior,
-                    map.Items(i).basic.flagA?'+':'-',
-                    map.Items(i).basic.flagB?'+':'-',
-                    map.Items(i).basic.param,
-                    map.Items(i).basic.hasScript?' ':'*');
-        QListWidgetItem *newItem;
-        newItem=new QListWidgetItem(str);
-        newItem->setData(Qt::UserRole,QVariant((int)i));
-        ui->itemList->addItem(newItem);
-    }
-}
 
 void MainWindow::saveCurrentRoom(){
     u8* p;
@@ -179,11 +311,15 @@ void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
     ui->mapPlane0->reset();
     ui->blockStore->reset();
 
-    updateItemList();
+
 
     curRoomId=roomId;
 
     clearOperationStack();
+
+    emit itemTableModal.layoutChanged();
+    ui->itemTable->resizeRowsToContents();
+    ui->itemTable->resizeColumnsToContents();
 
     mapUpdateTimer.start(5);
 
@@ -285,43 +421,6 @@ void MainWindow::on_actionSave_As_triggered(){
     currentFileName=fileName;
 }
 
-void MainWindow::keyPressEvent(QKeyEvent * event){
-    switch(event->key()){
-    case Qt::Key_E:
-        ui->actionShow_Essence->setChecked(true);
-        on_actionShow_Essence_triggered(true);
-        break;
-    case Qt::Key_S:
-        ui->actionShow_Script->setChecked(true);
-        on_actionShow_Script_triggered(true);
-        break;
-    case Qt::Key_I:
-        ui->actionShow_Items->setChecked(true);
-        on_actionShow_Items_triggered(true);
-        break;
-    default:
-        QWidget::keyPressEvent(event);
-    }
-}
-
-void MainWindow::keyReleaseEvent(QKeyEvent * event){
-    switch(event->key()){
-    case Qt::Key_E:
-        ui->actionShow_Essence->setChecked(false);
-        on_actionShow_Essence_triggered(false);
-        break;
-    case Qt::Key_S:
-        ui->actionShow_Script->setChecked(false);
-        on_actionShow_Script_triggered(false);
-        break;
-    case Qt::Key_I:
-        ui->actionShow_Items->setChecked(false);
-        on_actionShow_Items_triggered(false);
-        break;
-    default:
-        QWidget::keyReleaseEvent(event);
-    }
-}
 
 void MainWindow::on_actionShow_Essence_triggered(bool checked)
 {
@@ -358,11 +457,9 @@ void MainWindow::on_actionMap_Properties_triggered()
     if(!map.Loaded()){
         return;
     }
-    this->releaseKeyboard();
     DialogProperties dlg(map.metaData);
     if(QDialog::Accepted==dlg.exec())
         map.metaData=dlg.metaData;
-    this->grabKeyboard();
 }
 
 extern QTranslator translator;

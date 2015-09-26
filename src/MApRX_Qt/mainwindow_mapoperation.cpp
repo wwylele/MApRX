@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <assert.h>
 KfMap* MainWindow::MapOperation::pMap=0;
+MainWindow* MainWindow::MapOperation::pMainWindow=0;
 MainWindow::MapOperation::~MapOperation(){
 
 }
@@ -16,6 +17,18 @@ void MainWindow::MoEditCell::doOperation(){
 
 MainWindow::MapOperation* MainWindow::MoEditCell::generateReversal(){
     return new MoEditCell(x,y,pMap->at(x,y).blockId);
+}
+
+MainWindow::MoEditItemBasic::MoEditItemBasic(u8 _itemId, const KfMap::Item &toBe)
+    :itemId(_itemId),itemBasicToBe(toBe){
+
+}
+void MainWindow::MoEditItemBasic::doOperation(){
+    pMap->Items(itemId).basic=itemBasicToBe;
+    pMainWindow->itemTableModal.itemChanged(itemId);
+}
+MainWindow::MapOperation* MainWindow::MoEditItemBasic::generateReversal(){
+    return new MoEditItemBasic(itemId,pMap->Items(itemId).basic);
 }
 
 void MainWindow::clearOperationStack(){
