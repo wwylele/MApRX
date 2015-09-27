@@ -30,6 +30,52 @@ void MainWindow::MoEditItemBasic::doOperation(){
 MainWindow::MapOperation* MainWindow::MoEditItemBasic::generateReversal(){
     return new MoEditItemBasic(itemId,pMap->Items(itemId).basic);
 }
+MainWindow::MoSwapItem::MoSwapItem(u8 _firstItemId):
+    firstItemId(_firstItemId){
+
+}
+
+void MainWindow::MoSwapItem::doOperation(){
+    pMap->swapItem(firstItemId);
+    pMainWindow->itemTableModal.itemChanged(firstItemId);
+    pMainWindow->itemTableModal.itemChanged(firstItemId+1);
+}
+
+MainWindow::MapOperation* MainWindow::MoSwapItem::generateReversal(){
+    return new MoSwapItem(firstItemId);
+}
+
+
+MainWindow::MoDeleteItem::MoDeleteItem(u8 _itemId)
+    :itemId(_itemId){
+
+}
+
+void MainWindow::MoDeleteItem::doOperation(){
+    pMap->deleteItem(itemId);
+    emit pMainWindow->itemTableModal.layoutChanged();
+}
+
+MainWindow::MapOperation* MainWindow::MoDeleteItem::generateReversal(){
+    return new MoNewItem(itemId,pMap->Items(itemId));
+}
+
+
+MainWindow::MoNewItem::MoNewItem(u8 _itemId,const KfMap::RipeItem& item)
+    :itemId(_itemId),itemToInsert(item){
+
+}
+
+void MainWindow::MoNewItem::doOperation(){
+    pMap->newItem(itemId,itemToInsert);
+    emit pMainWindow->itemTableModal.layoutChanged();
+}
+
+MainWindow::MapOperation* MainWindow::MoNewItem::generateReversal(){
+    return new MoDeleteItem(itemId);
+}
+
+
 
 void MainWindow::clearOperationStack(){
     while(!undoStack.empty())undoStack.pop();
@@ -64,3 +110,4 @@ void MainWindow::redo(){
     ui->mapPlane0->update();
 
 }
+

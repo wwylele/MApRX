@@ -23,6 +23,7 @@
 
 #include <QWidget>
 #include "MainWindow.h"
+#include "blockstore.h"
 #include "../KssuFile.h"
 
 class MapPlane0 : public QWidget
@@ -32,7 +33,7 @@ public:
     explicit MapPlane0(QWidget *parent = 0);
     void reset();
     MainWindow* pMainWindow;
-
+    BlockStore* pBlockStore;
 protected:
     int curX,curY;
     int width;

@@ -49,7 +49,8 @@ void MapPlane0::paintEvent(QPaintEvent *){
             },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
         }
         else{
-            if(pMainWindow->bckScr.Loaded())pMainWindow->bckScr.draw([this,&image](int x,int y,const Color15& c15){
+            if(pMainWindow->showBackground &&pMainWindow->bckScr.Loaded())
+                pMainWindow->bckScr.draw([this,&image](int x,int y,const Color15& c15){
                 u32 c=c15.toARGB32();
                 for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)for(;y<height;y+=pMainWindow->bckScr.getHeight()*8)
                     image.setPixel(x,y,c);
@@ -79,13 +80,14 @@ void MapPlane0::paintEvent(QPaintEvent *){
 
     }
     if(pMainWindow->showItems){
-        QPen itemPen;
-        itemPen.setColor(QColor(255,255,0));
-        itemPen.setWidth(3);
-        painter.setPen(itemPen);
+        extern QBrush itemBackground[13];
+
         for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
             QString str;
             str.sprintf("%d",i);
+            u8 catagory=pMainWindow->map.Items(i).basic.catagory;
+            if(catagory>=13)catagory=0;
+            painter.setBrush(itemBackground[catagory]);
             painter.drawEllipse(pMainWindow->map.Items(i).basic.x-8,
                                 pMainWindow->map.Items(i).basic.y-8,
                                 16,16);
@@ -136,16 +138,20 @@ void MapPlane0::mouseMoveEvent(QMouseEvent * event){
     repaint();
 }
 
-void MapPlane0::mousePressEvent(QMouseEvent* ){
+void MapPlane0::mousePressEvent(QMouseEvent* event){
     if(!pMainWindow->map.Loaded()){
         return;
     }
     if(!pMainWindow->showItems){
         if(curX!=-1){
-            if(!pMainWindow->showScript){
+            if(event->button()==Qt::LeftButton){
                 MainWindow::MoEditCell editCell(curX,curY,pMainWindow->selBlock);
                 pMainWindow->doOperation(&editCell);
+            }else if(event->button()==Qt::MidButton){
+                pMainWindow->selBlock=pMainWindow->map.at(curX,curY).blockId;
+                pBlockStore->repaint();
             }
+
         }
     }
 }

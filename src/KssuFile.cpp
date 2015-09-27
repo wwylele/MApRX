@@ -452,6 +452,46 @@ void KfMap::unload(){
     loaded=false;
 }
 
+
+void KfMap::swapItem(u8 firstItemId){
+    assert(firstItemId<items.size()-1);
+    std::swap(items[firstItemId],items[firstItemId+1]);
+    forEachItemReferenceInScripts([firstItemId](u8& itemId){
+        if(itemId==firstItemId){
+            itemId++;
+        }else if(itemId==firstItemId+1){
+            itemId--;
+        }
+    });
+}
+
+void KfMap::deleteItem(u8 itemId){
+    assert(itemId<items.size());
+    items.erase(items.begin()+itemId);
+    metaData.itemCount--;
+    forEachItemReferenceInScripts([itemId](u8& itemIdR){
+        if(itemIdR==itemId){
+            itemIdR=0;
+        }else if(itemIdR>itemId){
+            itemIdR--;
+        }
+    });
+}
+
+void KfMap::newItem(u8 before_itemId,const RipeItem& item){
+    assert(items.size()<256);
+    assert(before_itemId<=items.size());
+
+    forEachItemReferenceInScripts([before_itemId](u8& itemIdR){
+        if(itemIdR>=before_itemId){
+            itemIdR++;
+        }
+    });
+    items.insert(items.begin()+before_itemId,item);
+
+    metaData.itemCount++;
+}
+
 void KfBckScr::readFile(const u8 *src){
     src+=2;
     memcpy(&width,src,2);src+=2;

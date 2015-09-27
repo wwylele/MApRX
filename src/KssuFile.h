@@ -179,6 +179,9 @@ public:
         bool operator==(const RipeItem& c)const{
             return memcmp(this,&c,8)==0 && scripts==c.scripts;
         }
+        RipeItem():scripts(){
+            basic=Item{1,0,0,0,0,2,0,24,24};
+        }
     };
 
 protected:
@@ -237,6 +240,36 @@ public:
     }
     inline u16 getWidth(){ return metaData.width; }
     inline u16 getHeight(){ return metaData.height; }
+
+    template <class T/* void (*)(u8& itemIdReference) */>
+    void forEachItemReferenceInScripts(T doWhat){
+        auto fetrisl=[&doWhat](std::vector<Script> &scripts){
+            for(Script& script:scripts){
+                if(script[0]==4){
+                    doWhat(script[3]);
+                }
+                else if(script[0]==6){
+                    u8 size;
+                    size=script[3];
+                    for(int i=0;i<size;i++){
+                        doWhat(script[4+i*2]);
+                    }
+                }
+
+            }
+        };
+        for(RipeCell & cell:cells){
+            fetrisl(cell.scripts);
+        }
+        for(RipeItem & item:items){
+            fetrisl(item.scripts);
+        }
+    }
+
+    void swapItem(u8 firstItemId);
+    void deleteItem(u8 itemId);
+    void newItem(u8 before_itemId,const RipeItem& item);
+
 };
 
 //#6

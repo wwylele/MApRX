@@ -96,7 +96,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>361</width>
+               <width>411</width>
                <height>237</height>
               </rect>
              </property>
@@ -115,6 +115,12 @@
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QTableView" name="itemTable">
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
             <property name="gridStyle">
              <enum>Qt::NoPen</enum>
             </property>
@@ -125,7 +131,7 @@
             <item>
              <widget class="QPushButton" name="buttonItemUp">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -141,7 +147,7 @@
             <item>
              <widget class="QPushButton" name="buttonItemDown">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -157,7 +163,7 @@
             <item>
              <widget class="QPushButton" name="buttonItemNew">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -173,7 +179,7 @@
             <item>
              <widget class="QPushButton" name="buttonItemDelete">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -285,6 +291,8 @@
    <addaction name="actionShow_Script"/>
    <addaction name="actionShow_Items"/>
    <addaction name="actionShow_Animation"/>
+   <addaction name="actionShow_Background"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolBar">
@@ -383,7 +391,13 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Essence (E)</string>
+    <string>Show Essence</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Essence</string>
+   </property>
+   <property name="shortcut">
+    <string>E</string>
    </property>
   </action>
   <action name="actionShow_Script">
@@ -391,7 +405,13 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Script (S)</string>
+    <string>Show Script</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Script</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
    </property>
   </action>
   <action name="actionShow_Animation">
@@ -401,13 +421,22 @@
    <property name="text">
     <string>Show Animation</string>
    </property>
+   <property name="shortcut">
+    <string>A</string>
+   </property>
   </action>
   <action name="actionShow_Items">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Items (I)</string>
+    <string>Show Items</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Items</string>
+   </property>
+   <property name="shortcut">
+    <string>I</string>
    </property>
   </action>
   <action name="actionSave_As">
@@ -463,6 +492,17 @@
   <action name="actionExtract">
    <property name="text">
     <string>Extract &amp;Map From ROM...</string>
+   </property>
+  </action>
+  <action name="actionShow_Background">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Background</string>
+   </property>
+   <property name="shortcut">
+    <string>B</string>
    </property>
   </action>
  </widget>

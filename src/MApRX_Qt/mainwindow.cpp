@@ -32,6 +32,21 @@
 #include <set>
 #include <QDebug>
 
+QBrush itemBackground[13]{
+                    QColor(255,255,255),
+                    QColor(128,255,128),
+                    QColor(255,255,128),
+                    QColor(255,128,128),
+                    QColor(255,128,255),
+                    QColor(128,128,255),
+                    QColor(128,255,255),
+                    Qt::transparent,
+                    Qt::transparent,
+                    Qt::transparent,
+                    QColor(128,128,128),
+                    QColor(192,192,192),
+                    QColor(255,192,128)
+};
 
 ItemTableModal::ItemTableModal
     (MainWindow *_pMainWindow, QObject *parent):
@@ -77,21 +92,6 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
             return pMap->Items(itemId).basic.flagB?Qt::Checked:Qt::Unchecked;
         }
     }else if(role==Qt::BackgroundRole){
-        static QBrush itemBackground[13]{
-                    QColor(255,255,255),
-                    QColor(128,255,128),
-                    QColor(255,255,128),
-                    QColor(255,128,128),
-                    QColor(255,128,255),
-                    QColor(128,128,255),
-                    QColor(128,255,255),
-                    Qt::transparent,
-                    Qt::transparent,
-                    Qt::transparent,
-                    QColor(128,128,128),
-                    QColor(192,192,192),
-                    QColor(255,192,128)
-        };
         if(pMap->Items(itemId).basic.catagory>=13)return itemBackground[0];
         return itemBackground[pMap->Items(itemId).basic.catagory];
     }
@@ -136,24 +136,32 @@ void ItemTableModal::itemChanged(u8 id){
     emit dataChanged(createIndex(id,0),createIndex(id,6));
 }
 
+QModelIndex ItemTableModal::getIndex(int row,int column){
+    return createIndex(row,column);
+}
+
 bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, int role){
     KfMap::Item itemBasic=pMap->Items(index.row()).basic;
     if(role==Qt::EditRole){
+        bool toIntOk;
+        int toIntBuf;
         if(index.column()==0){
-            itemBasic.species=value.toString().toInt();
+            toIntBuf=value.toString().toInt(&toIntOk);
+            if(!toIntOk || toIntBuf<0 || toIntBuf>255)return false;
+            itemBasic.species=toIntBuf;
             itemBasic.catagory=itemCatagory[itemBasic.species];
         }
         else if(index.column()==1){
-            itemBasic.behavior=value.toString().toInt()&0xF;
+            toIntBuf=value.toString().toInt(&toIntOk);
+            if(!toIntOk || toIntBuf<0 || toIntBuf>15)return false;
+            itemBasic.behavior=toIntBuf;
         }
         else if(index.column()==4){
-            itemBasic.param=value.toString().toInt();
+            toIntBuf=value.toString().toInt(&toIntOk);
+            if(!toIntOk || toIntBuf<0 || toIntBuf>255)return false;
+            itemBasic.param=toIntBuf;
         }
         else return false;
-        MainWindow::MoEditItemBasic op(index.row(),itemBasic);
-        pMainWindow->doOperation(&op);
-
-        return true;
     }else if(role==Qt::CheckStateRole){
         if(index.column()==2){
             itemBasic.flagA=value.toBool()?1:0;
@@ -162,10 +170,10 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
             itemBasic.flagB=value.toBool()?1:0;
         }
         else return false;
-        MainWindow::MoEditItemBasic op(index.row(),itemBasic);
-        pMainWindow->doOperation(&op);
-    }
-    return false;
+    }else return false;
+    MainWindow::MoEditItemBasic op(index.row(),itemBasic);
+    pMainWindow->doOperation(&op);
+    return true;
 }
 
 
@@ -179,6 +187,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionShow_Animation->setChecked(true);
 
     ui->mapPlane0->pMainWindow=this;
+    ui->mapPlane0->pBlockStore=ui->blockStore;
     ui->blockStore->pMainWindow=this;
 
     ui->itemTable->setModel(&itemTableModal);
@@ -233,25 +242,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionMake_Rom->setEnabled(true);
 
     //check maps
-    u8 ctg[256];
-    for(int i=0;i<256;i++)ctg[i]=0xFF;
-    FILE* report=fopen("D:\\Github\\MApRX\\temp\\itemcatagory.txt","w");
+    //FILE* report=fopen("D:\\Github\\MApRX\\temp\\itemcatagory.txt","w");
     for(u32 i=0;i<MAP_COUNT;i++){
         map.readFile(mapdata.rawMaps(i));
-        for(u8 j=0;j<map.metaData.itemCount;j++){
+        /*for(u8 j=0;j<map.metaData.itemCount;j++){
             if(ctg[map.Items(j).basic.species]==0xFF){
                 ctg[map.Items(j).basic.species]=map.Items(j).basic.catagory;
             }else{
                 assert(ctg[map.Items(j).basic.species]==map.Items(j).basic.catagory);
             }
-        }
+        }*/
         map.unload();
     }
-    for(int i=0;i<256;i++){
-        fprintf(report,"    %d,\n",ctg[i]);
-    }
 
-    fclose(report);
+   // fclose(report);
 #endif
 
 }
@@ -318,6 +322,7 @@ void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
     clearOperationStack();
 
     emit itemTableModal.layoutChanged();
+    ui->itemTable->clearSelection();
     ui->itemTable->resizeRowsToContents();
     ui->itemTable->resizeColumnsToContents();
 
@@ -440,8 +445,15 @@ void MainWindow::on_actionShow_Animation_triggered(bool checked)
 }
 void MainWindow::on_actionShow_Items_triggered(bool checked)
 {
-    ui->mapPlane0->update();
+
     showItems=checked;
+    ui->mapPlane0->update();
+}
+void MainWindow::on_actionShow_Background_triggered(bool checked)
+{
+
+    showBackground=checked;
+    ui->mapPlane0->update();
 }
 
 
@@ -517,4 +529,49 @@ void MainWindow::on_actionExtract_triggered(){
     msgBox.exec();
 
     openMapdata(fileName);
+}
+
+void MainWindow::on_buttonItemUp_clicked()
+{
+    if(!map.Loaded())return;
+    QModelIndex selection=ui->itemTable->currentIndex();
+    if(!selection.isValid())return;
+    u8 selItem=selection.row();
+    if(selItem==0)return;
+    MoSwapItem mo(selItem-1);
+    doOperation(&mo);
+
+    ui->itemTable->setCurrentIndex(itemTableModal.getIndex(selItem-1,selection.column()));
+}
+
+void MainWindow::on_buttonItemDown_clicked()
+{
+    if(!map.Loaded())return;
+    QModelIndex selection=ui->itemTable->currentIndex();
+    if(!selection.isValid())return;
+    u8 selItem=selection.row();
+    if(selItem==map.metaData.itemCount-1)return;
+    MoSwapItem mo(selItem);
+    doOperation(&mo);
+
+    ui->itemTable->setCurrentIndex(itemTableModal.getIndex(selItem+1,selection.column()));
+}
+
+void MainWindow::on_buttonItemDelete_clicked()
+{
+    if(!map.Loaded())return;
+    QModelIndex selection=ui->itemTable->currentIndex();
+    if(!selection.isValid())return;
+    u8 selItem=selection.row();
+    MoDeleteItem mo(selItem);
+    doOperation(&mo);
+}
+
+void MainWindow::on_buttonItemNew_clicked()
+{
+    if(!map.Loaded())return;
+    MoNewItem mo(map.metaData.itemCount,KfMap::RipeItem());
+    doOperation(&mo);
+    ui->itemTable->setCurrentIndex(itemTableModal.getIndex(
+                                       map.metaData.itemCount-1,0));
 }

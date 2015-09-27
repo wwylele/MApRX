@@ -43,6 +43,7 @@ class ItemTableModal:public QAbstractTableModel{
 public:
     ItemTableModal(MainWindow* _pMainWindow,QObject *parent=0);
     void itemChanged(u8 id);
+    QModelIndex getIndex(int row,int column);
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE ;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
@@ -83,6 +84,31 @@ public:
         void doOperation();
         MapOperation* generateReversal();
     };
+    class MoSwapItem:public MapOperation{
+    private:
+        u8 firstItemId;
+    public:
+        MoSwapItem(u8 itemId);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
+    class MoDeleteItem:public MapOperation{
+    private:
+        u8 itemId;
+    public:
+        MoDeleteItem(u8 _itemId);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
+    class MoNewItem:public MapOperation{
+    private:
+        u8 itemId;
+        KfMap::RipeItem itemToInsert;
+    public:
+        MoNewItem(u8 _itemId,const KfMap::RipeItem& item);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
 
     std::stack<std::unique_ptr<MapOperation>> undoStack;//store the reversal of history operation
     std::stack<std::unique_ptr<MapOperation>> redoStack;//store the reversal of operation pop from undoStack
@@ -112,6 +138,7 @@ public:
     bool showScript=false;
     bool showAnimation=true;
     bool showItems=false;
+    bool showBackground=false;
     QPixmap essenceSheet;
 
     int selBlock;
@@ -132,6 +159,8 @@ private slots:
 
     void on_actionShow_Items_triggered(bool checked);
 
+    void on_actionShow_Background_triggered(bool checked);
+
     void on_actionSave_As_triggered();
 
     void on_actionMake_Rom_triggered();
@@ -145,6 +174,14 @@ private slots:
     void on_actionExtract_triggered();
 
     void openMapdata(QString fileName);
+
+    void on_buttonItemUp_clicked();
+
+    void on_buttonItemDown_clicked();
+
+    void on_buttonItemDelete_clicked();
+
+    void on_buttonItemNew_clicked();
 
 private:
     Ui::MainWindow *ui;
