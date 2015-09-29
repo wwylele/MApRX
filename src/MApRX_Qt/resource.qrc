@@ -11,5 +11,10 @@
         <file>image/NDS.png</file>
         <file>image/Properties.png</file>
         <file>maprx_zh.qm</file>
+        <file>image/animation.png</file>
+        <file>image/Background.png</file>
+        <file>image/script.png</file>
+        <file>image/essenceicon.png</file>
+        <file>image/Item.png</file>
     </qresource>
 </RCC>

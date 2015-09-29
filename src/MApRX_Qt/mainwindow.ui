@@ -23,7 +23,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="splitterMain">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -44,11 +44,11 @@
         </sizepolicy>
        </property>
       </widget>
-      <widget class="QSplitter" name="splitter">
+      <widget class="QSplitter" name="splitterRight">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QScrollArea" name="scrollArea">
+       <widget class="QScrollArea" name="mapPlane0ScrollArea">
         <property name="widgetResizable">
          <bool>false</bool>
         </property>
@@ -81,13 +81,13 @@
         <property name="currentIndex">
          <number>1</number>
         </property>
-        <widget class="QWidget" name="tab">
+        <widget class="QWidget" name="tabBlocks">
          <attribute name="title">
           <string>Blocks</string>
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QScrollArea" name="scrollArea_2">
+           <widget class="QScrollArea" name="blocksScrollArea">
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
@@ -97,7 +97,7 @@
                <x>0</x>
                <y>0</y>
                <width>411</width>
-               <height>237</height>
+               <height>201</height>
               </rect>
              </property>
              <property name="mouseTracking">
@@ -108,7 +108,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_2">
+        <widget class="QWidget" name="tabBlocks2">
          <attribute name="title">
           <string>Items</string>
          </attribute>
@@ -172,7 +172,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>New</string>
+               <string>Add</string>
               </property>
              </widget>
             </item>
@@ -255,8 +255,12 @@
     <property name="title">
      <string>&amp;Map</string>
     </property>
+    <addaction name="actionDiscard_Changes"/>
+    <addaction name="separator"/>
     <addaction name="action_Resize_Map"/>
     <addaction name="actionMap_Properties"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_to_Image"/>
    </widget>
    <widget class="QMenu" name="menu_Language">
     <property name="title">
@@ -278,6 +282,12 @@
      <height>0</height>
     </size>
    </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonTextBesideIcon</enum>
    </property>
@@ -285,7 +295,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
    <addaction name="actionShow_Essence"/>
    <addaction name="actionShow_Script"/>
@@ -309,7 +319,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
    <addaction name="action_Open"/>
    <addaction name="action_Save"/>
@@ -390,6 +400,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/image/essenceicon.png</normaloff>:/image/essenceicon.png</iconset>
+   </property>
    <property name="text">
     <string>Show Essence</string>
    </property>
@@ -403,6 +417,10 @@
   <action name="actionShow_Script">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/image/script.png</normaloff>:/image/script.png</iconset>
    </property>
    <property name="text">
     <string>Show Script</string>
@@ -418,6 +436,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/image/animation.png</normaloff>:/image/animation.png</iconset>
+   </property>
    <property name="text">
     <string>Show Animation</string>
    </property>
@@ -429,8 +451,12 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/image/Item.png</normaloff>:/image/Item.png</iconset>
+   </property>
    <property name="text">
-    <string>Show Items</string>
+    <string>Show Item</string>
    </property>
    <property name="toolTip">
     <string>Show Items</string>
@@ -498,11 +524,28 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/image/Background.png</normaloff>:/image/Background.png</iconset>
+   </property>
    <property name="text">
     <string>Show Background</string>
    </property>
    <property name="shortcut">
     <string>B</string>
+   </property>
+  </action>
+  <action name="actionDiscard_Changes">
+   <property name="text">
+    <string>Discard &amp;Changes</string>
+   </property>
+   <property name="toolTip">
+    <string>Discard Changes</string>
+   </property>
+  </action>
+  <action name="actionSave_to_Image">
+   <property name="text">
+    <string>Save to &amp;Image...</string>
    </property>
   </action>
  </widget>

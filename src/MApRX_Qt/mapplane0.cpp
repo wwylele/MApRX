@@ -22,6 +22,7 @@
 #include <QPainter>
 #include <QImage>
 #include <QMouseEvent>
+#include "dialogscripts.h"
 MapPlane0::MapPlane0(QWidget *parent) : QWidget(parent)
 {
 }
@@ -146,10 +147,15 @@ void MapPlane0::mousePressEvent(QMouseEvent* event){
         if(curX!=-1){
             if(event->button()==Qt::LeftButton){
                 MainWindow::MoEditCell editCell(curX,curY,pMainWindow->selBlock);
+                editCell.toolTip=QString("Edit cell(%1,%2)").arg(curX).arg(curY);
                 pMainWindow->doOperation(&editCell);
             }else if(event->button()==Qt::MidButton){
                 pMainWindow->selBlock=pMainWindow->map.at(curX,curY).blockId;
                 pBlockStore->repaint();
+            }else if(event->button()==Qt::RightButton){
+                DialogScripts dlg(pMainWindow->map.at(curX,curY).scripts,pMainWindow);
+                dlg.setWindowTitle(QString("Scripts for cell(%1,%2)").arg(curX).arg(curY));
+                dlg.exec();
             }
 
         }

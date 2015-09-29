@@ -65,6 +65,7 @@ public:
         virtual void doOperation()=0;
         virtual MapOperation* generateReversal()=0;//Call before doOperation
         virtual ~MapOperation();
+        QString toolTip;
     };
     class MoEditCell:public MapOperation{
     private:
@@ -106,6 +107,14 @@ public:
         KfMap::RipeItem itemToInsert;
     public:
         MoNewItem(u8 _itemId,const KfMap::RipeItem& item);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
+    class MoEditMetaData:public MapOperation{
+    private:
+        KfMap::MetaData_Struct metaDataToBe;
+    public:
+        MoEditMetaData(const KfMap::MetaData_Struct& metaData);
         void doOperation();
         MapOperation* generateReversal();
     };
@@ -183,6 +192,10 @@ private slots:
 
     void on_buttonItemNew_clicked();
 
+    void on_itemTable_clicked(const QModelIndex &index);
+
+    void on_actionDiscard_Changes_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTimer mapUpdateTimer;
@@ -190,6 +203,7 @@ private:
     QString currentFileName;
     Kf_mapdata mapdata;
     void saveCurrentRoom();
+    void loadRoom(int roomId);
 
 
 };

@@ -75,6 +75,16 @@ MainWindow::MapOperation* MainWindow::MoNewItem::generateReversal(){
     return new MoDeleteItem(itemId);
 }
 
+MainWindow::MoEditMetaData::MoEditMetaData(const KfMap::MetaData_Struct &metaData)
+    :metaDataToBe(metaData){
+
+}
+void MainWindow::MoEditMetaData::doOperation(){
+    pMap->metaData=metaDataToBe;
+}
+MainWindow::MapOperation* MainWindow::MoEditMetaData::generateReversal(){
+    return new MoEditMetaData(pMap->metaData);
+}
 
 
 void MainWindow::clearOperationStack(){
@@ -84,29 +94,49 @@ void MainWindow::clearOperationStack(){
     ui->actionRedo->setEnabled(false);
 }
 void MainWindow::doOperation(MapOperation *op){
-    undoStack.emplace(op->generateReversal());
+    MapOperation *opRev=op->generateReversal();
+    opRev->toolTip=op->toolTip;
+    undoStack.emplace(opRev);
     op->doOperation();
     ui->actionUndo->setEnabled(true);
     while(!redoStack.empty())redoStack.pop();
     ui->actionRedo->setEnabled(false);
+    ui->actionUndo->setToolTip("Undo "+op->toolTip);
+    ui->actionRedo->setToolTip("Redo");
     ui->mapPlane0->update();
 }
 void MainWindow::undo(){
     assert(!undoStack.empty());
-    redoStack.emplace(undoStack.top().get()->generateReversal());
+    MapOperation *opRev=undoStack.top().get()->generateReversal();
+    opRev->toolTip=undoStack.top().get()->toolTip;
+    redoStack.emplace(opRev);
     undoStack.top().get()->doOperation();
     undoStack.pop();
     ui->actionRedo->setEnabled(true);
     ui->actionUndo->setEnabled(!undoStack.empty());
+    if(undoStack.empty()){
+        ui->actionUndo->setToolTip("Undo");
+    }else{
+        ui->actionUndo->setToolTip("Undo "+undoStack.top().get()->toolTip);
+    }
+    ui->actionRedo->setToolTip("Redo "+redoStack.top().get()->toolTip);
     ui->mapPlane0->update();
 }
 void MainWindow::redo(){
     assert(!redoStack.empty());
-    undoStack.emplace(redoStack.top().get()->generateReversal());
+    MapOperation *opRev=redoStack.top().get()->generateReversal();
+    opRev->toolTip=redoStack.top().get()->toolTip;
+    undoStack.emplace(opRev);
     redoStack.top().get()->doOperation();
     redoStack.pop();
     ui->actionUndo->setEnabled(true);
     ui->actionRedo->setEnabled(!redoStack.empty());
+    if(redoStack.empty()){
+        ui->actionRedo->setToolTip("Redo");
+    }else{
+        ui->actionRedo->setToolTip("Redo "+redoStack.top().get()->toolTip);
+    }
+    ui->actionUndo->setToolTip("Undo "+undoStack.top().get()->toolTip);
     ui->mapPlane0->update();
 
 }

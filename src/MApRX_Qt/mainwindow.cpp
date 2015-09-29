@@ -24,10 +24,12 @@
 #include <QKeyEvent>
 #include <QTextStream>
 #include <QTranslator>
+#include <QScrollBar>
 #include <time.h>
 #include "dialogaboutme.h"
 #include "dialogmakerom.h"
 #include "dialogproperties.h"
+#include "dialogscripts.h"
 #include <assert.h>
 #include <set>
 #include <QDebug>
@@ -66,7 +68,7 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     if(!pMap->Loaded())return QVariant();
     u8 itemId=index.row();
     if(itemId>=pMap->metaData.itemCount)return QVariant();
-    if(role==Qt::DisplayRole){
+    if(role==Qt::DisplayRole||role==Qt::EditRole){
         switch(index.column()){
         case 0:
             return QString::number(pMap->Items(itemId).basic.species);
@@ -81,7 +83,9 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
             int x,y;
             x=pMap->Items(itemId).basic.x;
             y=pMap->Items(itemId).basic.y;
-            return QString("(%1.%2,%3.%4)").arg(x/24).arg(x%24).arg(y/24).arg(y%24);
+            QString str;
+            str.sprintf("%d(%02d),%d(%02d)",x/24,x%24,y/24,y%24);
+            return str;
         }
         }
     }else if(role==Qt::CheckStateRole){
@@ -103,6 +107,7 @@ Qt::ItemFlags ItemTableModal::flags(const QModelIndex &index) const
     case 0:
     case 1:
     case 4:
+    case 6:
         return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
     case 2:
     case 3:
@@ -160,6 +165,15 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
             toIntBuf=value.toString().toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>255)return false;
             itemBasic.param=toIntBuf;
+        }else if(index.column()==6){
+            QString str=value.toString();
+            int x1,x2,y1,y2;
+            if(swscanf(str.toStdWString().c_str(),L"%d(%d),%d(%d)",
+                       &x1,&x2,&y1,&y2)!=4)
+                return false;
+            itemBasic.x=x1*24+x2;
+            itemBasic.y=y1*24+y2;
+
         }
         else return false;
     }else if(role==Qt::CheckStateRole){
@@ -172,6 +186,7 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
         else return false;
     }else return false;
     MainWindow::MoEditItemBasic op(index.row(),itemBasic);
+    op.toolTip=QString("Edit Item#%1").arg(index.row());
     pMainWindow->doOperation(&op);
     return true;
 }
@@ -193,6 +208,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->itemTable->setModel(&itemTableModal);
     ui->itemTable->resizeRowsToContents();
     ui->itemTable->resizeColumnsToContents();
+
+    ui->splitterMain->setStretchFactor(1,1);
+    ui->splitterRight->setStretchFactor(0,1);
 
     MapOperation::pMap=&map;
     MapOperation::pMainWindow=this;
@@ -242,20 +260,28 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionMake_Rom->setEnabled(true);
 
     //check maps
-    //FILE* report=fopen("D:\\Github\\MApRX\\temp\\itemcatagory.txt","w");
+    FILE* report=fopen("D:\\Github\\MApRX\\temp\\script5.txt","w");
     for(u32 i=0;i<MAP_COUNT;i++){
         map.readFile(mapdata.rawMaps(i));
-        /*for(u8 j=0;j<map.metaData.itemCount;j++){
-            if(ctg[map.Items(j).basic.species]==0xFF){
-                ctg[map.Items(j).basic.species]=map.Items(j).basic.catagory;
-            }else{
-                assert(ctg[map.Items(j).basic.species]==map.Items(j).basic.catagory);
+        auto f=[report](KfMap::Script &script){
+            if(script[0]==5){
+                for(u8 v:script){
+                    fprintf(report,"%02X ",v);
+                }
+                fprintf(report,"\n");
             }
-        }*/
+        };
+        fprintf(report,"Map#%d\n",i);
+        for(int y=0;y<map.metaData.height;y++)for(int x=0;x<map.metaData.width;x++){
+            for(KfMap::Script &s:map.at(x,y).scripts)f(s);
+        }
+        for(int i=0;i<map.metaData.itemCount;i++){
+            for(KfMap::Script &s:map.Items(i).scripts)f(s);
+        }
         map.unload();
     }
 
-   // fclose(report);
+    fclose(report);
 #endif
 
 }
@@ -273,12 +299,8 @@ void MainWindow::saveCurrentRoom(){
     mapdata.writeMap(curRoomId,p,len);
     delete[] p;
 }
-
-void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
-{
-    if(currentFileName==QString::null)return;
+void MainWindow::loadRoom(int roomId){
     mapUpdateTimer.stop();
-    int roomId=item->data(Qt::UserRole).toInt();
     RoomInfo &pMapInfo=mapdata.roomInfos[roomId];
 
     if(pMapInfo.subFileIdSlots.rawFrtPltId==RoomInfo::invalidId){
@@ -297,9 +319,7 @@ void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
         blocks.readFile(mapdata.rawFrtBlockSets(pMapInfo.subFileIdSlots.rawFrtBlockSetId));
     }
 
-    if(map.Loaded()){
-        saveCurrentRoom();
-    }
+
 
     map.readFile(mapdata.rawMaps(pMapInfo.subFileIdSlots.rawMapId));
 
@@ -323,10 +343,23 @@ void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
 
     emit itemTableModal.layoutChanged();
     ui->itemTable->clearSelection();
-    ui->itemTable->resizeRowsToContents();
     ui->itemTable->resizeColumnsToContents();
+    ui->itemTable->resizeRowsToContents();
+
 
     mapUpdateTimer.start(5);
+}
+
+void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
+{
+    if(currentFileName==QString::null)return;
+
+    int roomId=item->data(Qt::UserRole).toInt();
+    if(map.Loaded()){
+        saveCurrentRoom();
+    }
+    loadRoom(roomId);
+
 
 }
 
@@ -470,8 +503,11 @@ void MainWindow::on_actionMap_Properties_triggered()
         return;
     }
     DialogProperties dlg(map.metaData);
-    if(QDialog::Accepted==dlg.exec())
-        map.metaData=dlg.metaData;
+    if(QDialog::Accepted==dlg.exec()){
+        MoEditMetaData mo(dlg.metaData);
+        mo.toolTip="Change Properties";
+        doOperation(&mo);
+    }
 }
 
 extern QTranslator translator;
@@ -539,6 +575,7 @@ void MainWindow::on_buttonItemUp_clicked()
     u8 selItem=selection.row();
     if(selItem==0)return;
     MoSwapItem mo(selItem-1);
+    mo.toolTip=QString("Move up Item#%1").arg(selItem);
     doOperation(&mo);
 
     ui->itemTable->setCurrentIndex(itemTableModal.getIndex(selItem-1,selection.column()));
@@ -552,6 +589,7 @@ void MainWindow::on_buttonItemDown_clicked()
     u8 selItem=selection.row();
     if(selItem==map.metaData.itemCount-1)return;
     MoSwapItem mo(selItem);
+    mo.toolTip=QString("Move down Item#%1").arg(selItem);
     doOperation(&mo);
 
     ui->itemTable->setCurrentIndex(itemTableModal.getIndex(selItem+1,selection.column()));
@@ -564,14 +602,50 @@ void MainWindow::on_buttonItemDelete_clicked()
     if(!selection.isValid())return;
     u8 selItem=selection.row();
     MoDeleteItem mo(selItem);
+    mo.toolTip=QString("Remove Item#%1").arg(selItem);
     doOperation(&mo);
 }
 
 void MainWindow::on_buttonItemNew_clicked()
 {
     if(!map.Loaded())return;
-    MoNewItem mo(map.metaData.itemCount,KfMap::RipeItem());
+    KfMap::RipeItem item;
+    QSize size=ui->mapPlane0ScrollArea->size();
+    item.basic.x=ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2;
+    item.basic.y=ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2;
+    if(item.basic.x<0)item.basic.x=0;
+    if(item.basic.x>map.metaData.width*24)item.basic.x=map.metaData.width*24;
+    if(item.basic.y<0)item.basic.y=0;
+    if(item.basic.y>map.metaData.height*24)item.basic.y=map.metaData.height*24;
+    MoNewItem mo(map.metaData.itemCount,item);
+    mo.toolTip="Add Item";
     doOperation(&mo);
     ui->itemTable->setCurrentIndex(itemTableModal.getIndex(
                                        map.metaData.itemCount-1,0));
+}
+
+void MainWindow::on_itemTable_clicked(const QModelIndex &index)
+{
+    if(!map.Loaded())return;
+    KfMap::Item& item=map.Items(index.row()).basic;
+    QSize size=ui->mapPlane0ScrollArea->size();
+    ui->mapPlane0ScrollArea->horizontalScrollBar()->setValue(
+                item.x-size.width()/2);
+    ui->mapPlane0ScrollArea->verticalScrollBar()->setValue(
+                item.y-size.height()/2);
+
+    if(index.column()==5){
+        DialogScripts dlg(map.Items(index.row()).scripts,this);
+        dlg.setWindowTitle(QString("Scripts for item#%1").arg(index.row()));
+        dlg.exec();
+    }
+
+}
+void MainWindow::on_actionDiscard_Changes_triggered(){
+    if(!map.Loaded())return;
+    QMessageBox msgBox;
+    msgBox.setText("Do you really want to discard your changes on this room?");
+    msgBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
+    if(msgBox.exec()!=QMessageBox::Yes)return;
+    loadRoom(curRoomId);
 }

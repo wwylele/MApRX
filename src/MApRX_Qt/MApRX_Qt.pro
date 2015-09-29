@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     dialogproperties.cpp \
     ../Nitro.cpp \
     mainwindow_mapoperation.cpp \
-    ../itemcatagory.cpp
+    ../itemcatagory.cpp \
+    dialogscripts.cpp
 
 TRANSLATIONS = maprx_zh.ts
 
@@ -35,12 +36,14 @@ HEADERS  += mainwindow.h \
     blockstore.h \
     dialogaboutme.h \
     dialogmakerom.h \
-    dialogproperties.h
+    dialogproperties.h \
+    dialogscripts.h
 
 FORMS    += mainwindow.ui \
     dialogaboutme.ui \
     dialogmakerom.ui \
-    dialogproperties.ui
+    dialogproperties.ui \
+    dialogscripts.ui
 
 RESOURCES += \
     resource.qrc
