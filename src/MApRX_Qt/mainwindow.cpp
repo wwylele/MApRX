@@ -211,6 +211,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitterMain->setStretchFactor(1,1);
     ui->splitterRight->setStretchFactor(0,1);
 
+
+
     QToolButton* scrollAreaCornerResize=new QToolButton(this);
     scrollAreaCornerResize->setDefaultAction(ui->action_Resize_Map);
     ui->mapPlane0ScrollArea->setCornerWidget(scrollAreaCornerResize);
@@ -349,6 +351,7 @@ void MainWindow::loadRoom(int roomId){
     ui->itemTable->resizeColumnsToContents();
     ui->itemTable->resizeRowsToContents();
 
+    ui->menu_Map->setEnabled(true);
 
     mapUpdateTimer.start(5);
 }
@@ -421,6 +424,7 @@ void MainWindow::openMapdata(QString fileName){
 
     mapUpdateTimer.stop();
     map.unload();
+    ui->menu_Map->setEnabled(true);
 
     ui->action_Save->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
@@ -659,4 +663,18 @@ void MainWindow::on_action_Resize_Map_triggered(){
     map.resizeMap(dlg.mapWidth,dlg.mapHeight,dlg.hAlign,dlg.vAlign);
     ui->mapPlane0->reset();
     emit itemTableModal.layoutChanged();
+}
+void MainWindow::on_actionSave_to_Image_triggered(){
+    if(!map.Loaded())return;
+    QString fileName=QFileDialog::getSaveFileName(this, "Save image to...",
+        "",
+        "PNG(*.png);;BMP(*.bmp)");
+    if(fileName==QString::null)return;
+    QImage image(map.metaData.width*24,map.metaData.height*24,QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+    map.draw([&image](int x,int y,const Color15& c){
+        image.setPixel(x,y,c.toARGB32());
+    },plt,0,0,blocks,tiles);
+    image.save(fileName);
+
 }

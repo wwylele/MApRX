@@ -198,6 +198,8 @@ private slots:
 
     void on_action_Resize_Map_triggered();
 
+    void on_actionSave_to_Image_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTimer mapUpdateTimer;

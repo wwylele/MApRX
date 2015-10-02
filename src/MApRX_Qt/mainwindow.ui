@@ -252,6 +252,9 @@
     <addaction name="actionAbout_MApRX"/>
    </widget>
    <widget class="QMenu" name="menu_Map">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>&amp;Map</string>
     </property>
@@ -272,8 +275,8 @@
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
    <addaction name="menu_Map"/>
-   <addaction name="menu_Help"/>
    <addaction name="menu_Language"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="minimumSize">
@@ -540,6 +543,9 @@
    </property>
   </action>
   <action name="actionDiscard_Changes">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Discard &amp;Changes</string>
    </property>
