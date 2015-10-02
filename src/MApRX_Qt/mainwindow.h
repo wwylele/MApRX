@@ -118,6 +118,23 @@ public:
         void doOperation();
         MapOperation* generateReversal();
     };
+    class MoResizeMap:public MapOperation{
+    private:
+        u8 widthToBe,heightToBe;
+        KfMap::Align hAlign,vAlign;
+    public:
+        MoResizeMap(u8 width, u8 height, KfMap::Align hA, KfMap::Align vA);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
+    class MoPasteMap:public MapOperation{
+    private:
+        KfMap mapToBe;
+    public:
+        MoPasteMap(const KfMap& map);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
 
     std::stack<std::unique_ptr<MapOperation>> undoStack;//store the reversal of history operation
     std::stack<std::unique_ptr<MapOperation>> redoStack;//store the reversal of operation pop from undoStack
@@ -199,6 +216,8 @@ private slots:
     void on_action_Resize_Map_triggered();
 
     void on_actionSave_to_Image_triggered();
+
+    void resetMap();
 
 private:
     Ui::MainWindow *ui;

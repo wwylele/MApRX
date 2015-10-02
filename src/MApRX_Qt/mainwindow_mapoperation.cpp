@@ -87,6 +87,39 @@ MainWindow::MapOperation* MainWindow::MoEditMetaData::generateReversal(){
 }
 
 
+
+MainWindow::MoResizeMap::MoResizeMap(u8 width,u8 height,KfMap::Align hA,KfMap::Align vA)
+    :widthToBe(width),heightToBe(height),hAlign(hA),vAlign(vA){
+
+}
+
+void MainWindow::MoResizeMap::doOperation(){
+    pMap->resizeMap(widthToBe,heightToBe,hAlign,vAlign);
+    emit pMainWindow->itemTableModal.layoutChanged();
+    pMainWindow->resetMap();
+}
+
+MainWindow::MapOperation* MainWindow::MoResizeMap::generateReversal(){
+    return new MoPasteMap(*pMap);
+}
+
+
+MainWindow::MoPasteMap::MoPasteMap(const KfMap& map)
+    :mapToBe(map){
+
+}
+
+void MainWindow::MoPasteMap::doOperation(){
+    *pMap=mapToBe;
+    emit pMainWindow->itemTableModal.layoutChanged();
+    pMainWindow->resetMap();
+}
+
+MainWindow::MapOperation* MainWindow::MoPasteMap::generateReversal(){
+    return new MoPasteMap(*pMap);
+}
+
+
 void MainWindow::clearOperationStack(){
     while(!undoStack.empty())undoStack.pop();
     while(!redoStack.empty())redoStack.pop();

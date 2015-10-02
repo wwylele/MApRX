@@ -337,7 +337,7 @@ void MainWindow::loadRoom(int roomId){
         bckScr.readFile(mapdata.rawBckScrs(pMapInfo.subFileIdSlots.rawBckScrId));
     }
 
-    ui->mapPlane0->reset();
+    resetMap();
     ui->blockStore->reset();
 
 
@@ -660,9 +660,9 @@ void MainWindow::on_action_Resize_Map_triggered(){
     if(!map.Loaded())return;
     DialogResizeMap dlg(map.metaData.width,map.metaData.height);
     if(dlg.exec()!=QDialog::Accepted)return;
-    map.resizeMap(dlg.mapWidth,dlg.mapHeight,dlg.hAlign,dlg.vAlign);
-    ui->mapPlane0->reset();
-    emit itemTableModal.layoutChanged();
+    MoResizeMap mo(dlg.mapWidth,dlg.mapHeight,dlg.hAlign,dlg.vAlign);
+    mo.toolTip="Resize Map";
+    doOperation(&mo);
 }
 void MainWindow::on_actionSave_to_Image_triggered(){
     if(!map.Loaded())return;
@@ -677,4 +677,10 @@ void MainWindow::on_actionSave_to_Image_triggered(){
     },plt,0,0,blocks,tiles);
     image.save(fileName);
 
+}
+
+void MainWindow::resetMap(){
+    ui->mapPlane0->reset();
+    ui->mapPlane0ScrollArea->horizontalScrollBar()->setValue(0);
+    ui->mapPlane0ScrollArea->verticalScrollBar()->setValue(0);
 }
