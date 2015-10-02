@@ -16,5 +16,6 @@
         <file>image/script.png</file>
         <file>image/essenceicon.png</file>
         <file>image/Item.png</file>
+        <file>image/Resize.png</file>
     </qresource>
 </RCC>

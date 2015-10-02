@@ -21,18 +21,17 @@
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QKeyEvent>
-#include <QTextStream>
 #include <QTranslator>
 #include <QScrollBar>
+#include <QTextStream>
+#include <QToolButton>
 #include <time.h>
 #include "dialogaboutme.h"
 #include "dialogmakerom.h"
 #include "dialogproperties.h"
 #include "dialogscripts.h"
+#include "dialogresizemap.h"
 #include <assert.h>
-#include <set>
-#include <QDebug>
 
 QBrush itemBackground[13]{
                     QColor(255,255,255),
@@ -211,6 +210,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->splitterMain->setStretchFactor(1,1);
     ui->splitterRight->setStretchFactor(0,1);
+
+    QToolButton* scrollAreaCornerResize=new QToolButton(this);
+    scrollAreaCornerResize->setDefaultAction(ui->action_Resize_Map);
+    ui->mapPlane0ScrollArea->setCornerWidget(scrollAreaCornerResize);
 
     MapOperation::pMap=&map;
     MapOperation::pMainWindow=this;
@@ -398,7 +401,7 @@ void MainWindow::on_action_Open_triggered()
 {
     QString fileName=QFileDialog::getOpenFileName(this, "Open File",
         "",
-        "mapdata File(*.*)");
+        "mapdata File(*.bin)");
     if(fileName==QString::null)return;
     openMapdata(fileName);
 }
@@ -443,7 +446,7 @@ void MainWindow::on_action_Save_triggered()
 void MainWindow::on_actionSave_As_triggered(){
     QString fileName=QFileDialog::getSaveFileName(this, "Save As ...",
         "",
-        "mapdata File(*.*)");
+        "mapdata File(*.bin)");
     if(fileName==QString::null)return;
     FILE* file=_wfopen(fileName.toStdWString().c_str(),L"wb");
     if(file==nullptr){
@@ -648,4 +651,12 @@ void MainWindow::on_actionDiscard_Changes_triggered(){
     msgBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
     if(msgBox.exec()!=QMessageBox::Yes)return;
     loadRoom(curRoomId);
+}
+void MainWindow::on_action_Resize_Map_triggered(){
+    if(!map.Loaded())return;
+    DialogResizeMap dlg(map.metaData.width,map.metaData.height);
+    if(dlg.exec()!=QDialog::Accepted)return;
+    map.resizeMap(dlg.mapWidth,dlg.mapHeight,dlg.hAlign,dlg.vAlign);
+    ui->mapPlane0->reset();
+    emit itemTableModal.layoutChanged();
 }

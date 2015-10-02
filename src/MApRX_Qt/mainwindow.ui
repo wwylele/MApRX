@@ -295,7 +295,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionShow_Essence"/>
    <addaction name="actionShow_Script"/>
@@ -492,6 +492,10 @@
    </property>
   </action>
   <action name="action_Resize_Map">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/image/Resize.png</normaloff>:/image/Resize.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Resize Map...</string>
    </property>

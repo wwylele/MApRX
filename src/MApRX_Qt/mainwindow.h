@@ -196,6 +196,8 @@ private slots:
 
     void on_actionDiscard_Changes_triggered();
 
+    void on_action_Resize_Map_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTimer mapUpdateTimer;

@@ -158,9 +158,7 @@ public:
     struct RipeCell{
         u16 blockId;
         std::vector<Script> scripts;
-        bool operator==(const RipeCell& c)const{
-            return blockId==c.blockId && scripts==c.scripts;
-        }
+        inline RipeCell():blockId(0),scripts(){}
     };
     struct Item{
         u8 species:8;
@@ -176,9 +174,6 @@ public:
     struct RipeItem{
         Item basic;
         std::vector<Script> scripts;
-        bool operator==(const RipeItem& c)const{
-            return memcmp(this,&c,8)==0 && scripts==c.scripts;
-        }
         RipeItem():scripts(){
             basic=Item{1,0,0,0,0,2,0,24,24};
         }
@@ -248,13 +243,14 @@ public:
                 if(script[0]==4){
                     doWhat(script[3]);
                 }
-                else if(script[0]==6){
+                //no I think this is my fault
+                /*else if(script[0]==6){
                     u8 size;
                     size=script[3];
                     for(int i=0;i<size;i++){
                         doWhat(script[4+i*2]);
                     }
-                }
+                }*/
 
             }
         };
@@ -269,6 +265,17 @@ public:
     void swapItem(u8 firstItemId);
     void deleteItem(u8 itemId);
     void newItem(u8 before_itemId,const RipeItem& item);
+
+    void resizeMap(u8 width,u8 height,
+                   int x0,int y0//Where to put old cell(0,0) on new map
+                   );
+    enum Align{
+        BEGIN=-1,
+        CENTER=0,
+        END=1
+    };
+
+    void resizeMap(u8 width,u8 height,Align hAlign,Align vAlign);
 
 };
 

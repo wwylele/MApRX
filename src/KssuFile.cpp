@@ -492,6 +492,52 @@ void KfMap::newItem(u8 before_itemId,const RipeItem& item){
     metaData.itemCount++;
 }
 
+void KfMap::resizeMap(u8 width,u8 height,
+               int x0,int y0//Where to put old cell(0,0) on new map
+               ){
+    assert(loaded);
+    assert(width && height);
+    assert(width*height<32768);
+    std::vector<RipeCell> newCells(width*height);
+    for(int x=0;x<metaData.width;x++)for(int y=0;y<metaData.height;y++){
+        int nx,ny;
+        nx=x+x0;ny=y+y0;
+        if(nx>=0 && nx<width && ny>=0 && ny<height){
+            newCells[nx+ny*width]=cells[x+y*metaData.width];
+        }
+    }
+    metaData.width=width;
+    metaData.height=height;
+    cells.swap(newCells);
+    for(RipeItem& item:items){
+        item.basic.x+=x0*24;
+        item.basic.y+=y0*24;
+    }
+
+}
+
+void KfMap::resizeMap(u8 width,u8 height,Align hAlign,Align vAlign){
+    assert(loaded);
+    int x0,y0;
+    switch(hAlign){
+    case BEGIN:
+        x0=0;break;
+    case CENTER:
+        x0=(width-metaData.width)/2;break;
+    case END:
+        x0=width-metaData.width;break;
+    }
+    switch(vAlign){
+    case BEGIN:
+        y0=0;break;
+    case CENTER:
+        y0=(height-metaData.height)/2;break;
+    case END:
+        y0=height-metaData.height;break;
+    }
+    resizeMap(width,height,x0,y0);
+}
+
 void KfBckScr::readFile(const u8 *src){
     src+=2;
     memcpy(&width,src,2);src+=2;
