@@ -266,13 +266,13 @@ public:
     }metaData;
 
     
-    struct Script_{
+    /*struct Script_{
         u32 code:8;
         u32 hostId:15;
         u32 hostIsAItem:1;
         u32 data0:8;
         u8 data[1];
-    };
+    };*/
 
     static u32 getScripteLength(u8 *pScript);
 
