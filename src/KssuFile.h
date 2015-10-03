@@ -153,10 +153,12 @@ public:
 class KfMap{
 public:
     typedef std::vector<u8> Script;
-    struct Cell{
-        u16 blockId:15;
-        u16 hasScript:1;
+    typedef u16 Cell;
+    enum CellFlags{
+        BLOCK_ID_MASK=0x7FFF,
+        CELL_HAS_SCRIPT=0x8000
     };
+
     struct RipeCell{
         u16 blockId;
         std::vector<Script> scripts;

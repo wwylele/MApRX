@@ -333,7 +333,7 @@ void KfMap::readFile(const u8* src){
     uncompressLZ(src,buf.get());
     for(u16 i=0;i<metaData.width*metaData.height;i++){
         std::memcpy(&cells[i].blockId,p,2);p+=2;
-        cells[i].blockId&=0x7FFF;//Erase the field hasScript
+        cells[i].blockId&=BLOCK_ID_MASK;//Erase the field hasScript
     }
     length-=metaData.width*metaData.height*2;
 
@@ -404,8 +404,7 @@ u8* KfMap::generateFile(u32 *length){
 
     for(u16 i=0;i<metaData.width*metaData.height;i++){
         Cell rawCell;
-        rawCell.blockId=cells[i].blockId;
-        rawCell.hasScript=cells[i].scripts.empty()?0:1;
+        rawCell=cells[i].blockId | (cells[i].scripts.empty()?CELL_HAS_SCRIPT:0);
         std::memcpy(p,&rawCell,2);p+=2;
         for(u32 j=0;j<cells[i].scripts.size();j++){
             slen=getScripteLength(cells[i].scripts[j].data());
