@@ -164,22 +164,75 @@ public:
         std::vector<Script> scripts;
         inline RipeCell():blockId(0),scripts(){}
     };
+
     struct Item{
-        u8 species:8;
-        u8 behavior:6;
-        u8 flagA:1;
-        u8 flagB:1;
-        u8 param:8;
-        u8 catagory:7;
-        u8 hasScript:1;//Not sure
+        u16 param0;
+        u16 param1;
         u16 x;
         u16 y;
+        enum Param0Flags{
+            SPECIES_MASK=0x00FF,
+            BEHAVIOR_MASK=0x3F00,
+            FLAG_A=0x4000,
+            FLAG_B=0x8000
+        };
+        enum Param1Flags{
+            PARAM_MASK=0x00FF,
+            CATAGORY_MASK=0x7F00,
+            HAS_SCRIPT=0x8000
+        };
+        Item():param0(1),param1(0x20),x(24),y(24){}
+
+        u8 species(){
+            return param0&SPECIES_MASK;
+        }
+        void setSpecies(u8 v){
+            param0&=~SPECIES_MASK;
+            param0|=v;
+        }
+        u8 param(){
+            return param1&PARAM_MASK;
+        }
+        void setParam(u8 v){
+            param1&=~PARAM_MASK;
+            param1|=v;
+        }
+
+        u8 behavior(){
+            return (param0&BEHAVIOR_MASK)>>8;
+        }
+        void setBehavior(u8 v){
+            param0&=~BEHAVIOR_MASK;
+            param0|=v<<8;
+        }
+        u8 catagory(){
+            return (param1&CATAGORY_MASK)>>8;
+        }
+        void setCatagory(u8 v){
+            param1&=~CATAGORY_MASK;
+            param1|=v<<8;
+        }
+
+        bool flagA(){
+            return (param0&FLAG_A) !=0;
+        }
+        void setFlagA(bool v){
+            if(v)param0|=FLAG_A;
+            else param0&=~FLAG_A;
+        }
+        bool flagB(){
+            return (param0&FLAG_B) !=0;
+        }
+        void setFlagB(bool v){
+            if(v)param0|=FLAG_B;
+            else param0&=~FLAG_B;
+        }
     };
+
     struct RipeItem{
         Item basic;
         std::vector<Script> scripts;
-        RipeItem():scripts(){
-            basic=Item{1,0,0,0,0,2,0,24,24};
+        RipeItem():basic(),scripts(){
         }
     };
 

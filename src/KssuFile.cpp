@@ -372,11 +372,7 @@ void KfMap::readFile(const u8* src){
     assert(p-rawScripts.get()==rawScriptsLength-1);
     loaded=true;
 
-#ifdef _DEBUG
-    for(u8 i=0;i<metaData.itemCount;i++){
-        assert(!(Items(i).basic.behavior&0x30));
-    }
-#endif
+
 
 }
 
@@ -414,7 +410,11 @@ u8* KfMap::generateFile(u32 *length){
         }
     }
     for(u8 i=0;i<items.size();i++){
-        items[i].basic.hasScript=items[i].scripts.empty()?0:1;//Not sure
+        if(items[i].scripts.empty()){
+            items[i].basic.param1|=Item::HAS_SCRIPT;
+        }else{
+            items[i].basic.param1&=~Item::HAS_SCRIPT;
+        }//Not sure
         std::memcpy(p,&items[i].basic,8);p+=8;
         for(u32 j=0;j<items[i].scripts.size();j++){
             slen=getScripteLength(items[i].scripts[j].data());
