@@ -27,8 +27,7 @@
 #include "../Nitro.h"
 #include <cassert>
 #include <memory>
-
-std::FILE *fopenW(const wchar_t* name,const wchar_t* mode);
+#include "main.h"
 
 DialogMakeRom::DialogMakeRom(QString mapdataFileName,QWidget *parent) :
     QDialog(parent),
@@ -83,7 +82,7 @@ void DialogMakeRom::on_buttonRun_clicked()
 void DialogMakeRom::on_buttonMake_clicked()
 {
     std::FILE *rom,*mapdata;
-    rom=fopenW(ui->editRom->text().toStdWString().c_str(),L"rb+");
+    rom=fopenQ(ui->editRom->text(),"rb+");
     if(rom==0){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the ROM.");
@@ -91,7 +90,7 @@ void DialogMakeRom::on_buttonMake_clicked()
         msgBox.exec();
         return;
     }
-    mapdata=fopenW(ui->editSrcFile->text().toStdWString().c_str(),L"rb");
+    mapdata=fopenQ(ui->editSrcFile->text(),"rb");
     if(mapdata==0){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the mapdata file.");

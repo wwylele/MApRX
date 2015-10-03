@@ -39,7 +39,8 @@ HEADERS  += mainwindow.h \
     dialogmakerom.h \
     dialogproperties.h \
     dialogscripts.h \
-    dialogresizemap.h
+    dialogresizemap.h \
+    main.h
 
 FORMS    += mainwindow.ui \
     dialogaboutme.ui \

@@ -23,7 +23,7 @@
 #include "NitroLz.h"
 #include <cassert>
 #include <tuple>
-//#include <cstring>
+#include <cstring>
 const int MetaDataLength[7]={
     1,
     6,

@@ -31,17 +31,17 @@ static void strLower(char* p){
 
 u16 nitroGetSubFileId(std::FILE *file,const char* pathname)
 {
-    std::fseek(file,0,SEEK_SET);//file.Seek(0,CFile::begin);
+    std::fseek(file,0,SEEK_SET);
     ROM_HEADER rom_header;
-    std::fread(&rom_header,sizeof(rom_header),1,file);//file.Read(&rom_header,sizeof(rom_header));
+    std::fread(&rom_header,sizeof(rom_header),1,file);
 
     u32 fntdir_offset=0;
     ROM_FNTDir fntdir;
     while(1)
     {
-        std::fseek(file,rom_header.fnt_offset+fntdir_offset,SEEK_SET);//file.Seek(rom_header.fnt_offset+fntdir_offset,CFile::begin);
-        std::fread(&fntdir,sizeof(fntdir),1,file);//file.Read(&fntdir,sizeof(fntdir));
-        std::fseek(file,fntdir.entry_start+rom_header.fnt_offset,SEEK_SET);//file.Seek(fntdir.entry_start+rom_header.fnt_offset,CFile::begin);
+        std::fseek(file,rom_header.fnt_offset+fntdir_offset,SEEK_SET);
+        std::fread(&fntdir,sizeof(fntdir),1,file);
+        std::fseek(file,fntdir.entry_start+rom_header.fnt_offset,SEEK_SET);
 
         u8 fnamelen=0;
         bool isdir;
@@ -71,13 +71,13 @@ u16 nitroGetSubFileId(std::FILE *file,const char* pathname)
         index_d=0;
         while(1)
         {
-            std::fread(&fh,sizeof(fh),1,file);//file.Read(&fh,sizeof(fh));
+            std::fread(&fh,sizeof(fh),1,file);
             name_length=fh&0x7F;
             is_dir=fh&0x80?true:false;
             if(!name_length){delete[]namebuf;return 0xFFFF;}
             char* name_buf;
             name_buf=new char[name_length+1];
-            std::fread(name_buf,name_length,1,file);//file.Read(name_buf,name_length);
+            std::fread(name_buf,name_length,1,file);
             name_buf[name_length]=0;
             if(is_dir==isdir && name_length==fnamelen)
             {
@@ -94,7 +94,7 @@ u16 nitroGetSubFileId(std::FILE *file,const char* pathname)
             delete[] name_buf;
             if(is_dir)
             {
-                std::fseek(file,2,SEEK_CUR);//file.Seek(2,CFile::current);
+                std::fseek(file,2,SEEK_CUR);
             }
             else
             {
@@ -104,7 +104,7 @@ u16 nitroGetSubFileId(std::FILE *file,const char* pathname)
         if(isdir)
         {
             u16 child_dir_id;
-            std::fread(&child_dir_id,sizeof(child_dir_id),1,file);//file.Read(&child_dir_id,sizeof(child_dir_id));
+            std::fread(&child_dir_id,sizeof(child_dir_id),1,file);
             fntdir_offset=(child_dir_id-0xF000)*sizeof(ROM_FNTDir);
         }
         else
@@ -124,14 +124,14 @@ u16 nitroGetSubFileId(std::FILE *file,const char* pathname)
 u32 nitroGetSubFileOffset(std::FILE* file,u16 id,u32* getlen)
 {
 
-    std::fseek(file,0,SEEK_SET);//file.Seek(0,CFile::begin);
+    std::fseek(file,0,SEEK_SET);
     ROM_HEADER rom_header;
-    std::fread(&rom_header,sizeof(rom_header),1,file);//file.Read(&rom_header,sizeof(rom_header));
+    std::fread(&rom_header,sizeof(rom_header),1,file);
     if(id>=rom_header.fat_size/sizeof(ROM_FAT))return 0;
 
-    std::fseek(file,rom_header.fat_offset+sizeof(ROM_FAT)*id,SEEK_SET);//file.Seek(rom_header.fat_offset+sizeof(ROM_FAT)*id,CFile::begin);
+    std::fseek(file,rom_header.fat_offset+sizeof(ROM_FAT)*id,SEEK_SET);
     ROM_FAT fat;
-    std::fread(&fat,sizeof(fat),1,file);//file.Read(&fat,sizeof(fat));
+    std::fread(&fat,sizeof(fat),1,file);
     if(getlen)*getlen=fat.bottom-fat.top;
     return fat.top;
 

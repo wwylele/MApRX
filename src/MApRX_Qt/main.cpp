@@ -19,8 +19,7 @@
 **************************************************************************/
 
 #include "mainwindow.h"
-#include <QApplication>
-#include <QTranslator>
+#include "main.h"
 
 QTranslator translator;
 QApplication* pApp;
@@ -41,6 +40,8 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
-std::FILE *fopenW(const wchar_t* name,const wchar_t* mode){
-    return _wfopen(name,mode);
+//a helper function for opening a file from QString name
+std::FILE *fopenQ(const QString& name,const QString& mode){
+    //and is it ok to use _wfopen?
+    return _wfopen(name.toStdWString().c_str(),mode.toStdWString().c_str());
 }
