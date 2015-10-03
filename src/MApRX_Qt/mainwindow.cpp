@@ -308,7 +308,7 @@ void MainWindow::loadRoom(int roomId){
     mapUpdateTimer.stop();
     RoomInfo &pMapInfo=mapdata.roomInfos[roomId];
 
-    if(pMapInfo.subFileIdSlots.rawFrtPltId==RoomInfo::invalidId){
+    if(pMapInfo.subFileIdData.subFileIdSlots.rawFrtPltId==RoomInfo::invalidId){
         QMessageBox msgBox;
         msgBox.setText("Failed to load block set data.\nDefault block set data will be used.");
         msgBox.setIcon(QMessageBox::Icon::Warning);
@@ -319,22 +319,22 @@ void MainWindow::loadRoom(int roomId){
         blocks.readFile(mapdata.rawFrtBlockSets(0));
     }
     else{
-        plt.readFile(mapdata.rawFrtPlts(pMapInfo.subFileIdSlots.rawFrtPltId));
-        tiles.readFile(mapdata.rawFrtTileSets(pMapInfo.subFileIdSlots.rawFrtTileSetId));
-        blocks.readFile(mapdata.rawFrtBlockSets(pMapInfo.subFileIdSlots.rawFrtBlockSetId));
+        plt.readFile(mapdata.rawFrtPlts(pMapInfo.subFileIdData.subFileIdSlots.rawFrtPltId));
+        tiles.readFile(mapdata.rawFrtTileSets(pMapInfo.subFileIdData.subFileIdSlots.rawFrtTileSetId));
+        blocks.readFile(mapdata.rawFrtBlockSets(pMapInfo.subFileIdData.subFileIdSlots.rawFrtBlockSetId));
     }
 
 
 
-    map.readFile(mapdata.rawMaps(pMapInfo.subFileIdSlots.rawMapId));
+    map.readFile(mapdata.rawMaps(pMapInfo.subFileIdData.subFileIdSlots.rawMapId));
 
-    if(pMapInfo.subFileIdSlots.rawBckScrId==RoomInfo::invalidId){
+    if(pMapInfo.subFileIdData.subFileIdSlots.rawBckScrId==RoomInfo::invalidId){
         bckScr.unload();
     }
     else{
-        bckPlt.readFile(mapdata.rawBckPlts(pMapInfo.subFileIdSlots.rawBckPltId));
-        bckTiles.readFile(mapdata.rawBckTileSets(pMapInfo.subFileIdSlots.rawBckTileSetId));
-        bckScr.readFile(mapdata.rawBckScrs(pMapInfo.subFileIdSlots.rawBckScrId));
+        bckPlt.readFile(mapdata.rawBckPlts(pMapInfo.subFileIdData.subFileIdSlots.rawBckPltId));
+        bckTiles.readFile(mapdata.rawBckTileSets(pMapInfo.subFileIdData.subFileIdSlots.rawBckTileSetId));
+        bckScr.readFile(mapdata.rawBckScrs(pMapInfo.subFileIdData.subFileIdSlots.rawBckScrId));
     }
 
     resetMap();
