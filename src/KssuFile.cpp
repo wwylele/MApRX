@@ -21,9 +21,9 @@
 
 #include "KssuFile.h"
 #include "NitroLz.h"
-#include <assert.h>
+#include <cassert>
 #include <tuple>
-#include <cstring>
+//#include <cstring>
 const int MetaDataLength[7]={
     1,
     6,
@@ -39,8 +39,8 @@ const int MetaDataLength[7]={
 void KfPlt::readFile(const u8* src){
     src+=2;//skip field DataLength
     u8 threadCount=*(src++);
-    memcpy(colors,src,512);src+=512;
-    memcpy(finalColors,colors,512);
+    std::memcpy(colors,src,512);src+=512;
+    std::memcpy(finalColors,colors,512);
 
     threads.clear();
     threads.resize(threadCount);
@@ -54,7 +54,7 @@ void KfPlt::readFile(const u8* src){
         commandLength=*(src++);
         threads[thri].command.resize(commandLength);
         src+=2;//skip field totalColorCount
-        memcpy(threads[thri].command.data(),src,commandLength);src+=commandLength;
+        std::memcpy(threads[thri].command.data(),src,commandLength);src+=commandLength;
         for(u8 frai=0;frai<frameCount;frai++){
             u8 colorCount;
             colorCount=*(src++);
@@ -64,7 +64,7 @@ void KfPlt::readFile(const u8* src){
             threads[thri].frames[frai].colorId=*(src++);
         }
         for(u8 frai=0;frai<frameCount;frai++){
-            memcpy(threads[thri].frames[frai].aniColors.data(),src,threads[thri].frames[frai].aniColors.size()*2);
+            std::memcpy(threads[thri].frames[frai].aniColors.data(),src,threads[thri].frames[frai].aniColors.size()*2);
             src+=threads[thri].frames[frai].aniColors.size()*2;
         }
         threads[thri].nextCommand=0;
@@ -95,7 +95,7 @@ void KfPlt::tick(){
                 break;
             case 4:
                 frameId=threads[thri].command[threads[thri].nextCommand++];
-                memcpy(finalColors+threads[thri].frames[frameId].colorId,
+                std::memcpy(finalColors+threads[thri].frames[frameId].colorId,
                        threads[thri].frames[frameId].aniColors.data(),
                        threads[thri].frames[frameId].aniColors.size()*2);
                 threads[thri].shiftState=Thread::NONE;
@@ -103,10 +103,10 @@ void KfPlt::tick(){
             case 5:
                 threads[thri].mixFrameId=frameId=threads[thri].command[threads[thri].nextCommand++];
                 threads[thri].beforeMixColor.resize(threads[thri].frames[frameId].aniColors.size());
-                memcpy(threads[thri].beforeMixColor.data(),
+                std::memcpy(threads[thri].beforeMixColor.data(),
                        finalColors+threads[thri].frames[frameId].colorId,
                        threads[thri].frames[frameId].aniColors.size()*2);
-                /*memcpy(finalColors+threads[thri].frames[frameId].colorId,
+                /*std::memcpy(finalColors+threads[thri].frames[frameId].colorId,
                        threads[thri].frames[frameId].aniColors.data(),
                        threads[thri].frames[frameId].aniColors.size()*2);*/
                 threads[thri].mixId=threads[thri].frames[frameId].colorId;
@@ -146,7 +146,7 @@ void KfPlt::tick(){
                 if(threads[thri].shiftState==Thread::LEFT){
                     Color15 temp;
                     temp=finalColors[threads[thri].shiftId];
-                    memmove(finalColors+threads[thri].shiftId,
+                    std::memmove(finalColors+threads[thri].shiftId,
                             finalColors+threads[thri].shiftId+1,
                             (threads[thri].shiftCount-1)*2);
                     finalColors[threads[thri].shiftId+threads[thri].shiftCount-1]=temp;
@@ -154,7 +154,7 @@ void KfPlt::tick(){
                 else{
                     Color15 temp;
                     temp=finalColors[threads[thri].shiftId+threads[thri].shiftCount-1];
-                    memmove(finalColors+threads[thri].shiftId+1,
+                    std::memmove(finalColors+threads[thri].shiftId+1,
                             finalColors+threads[thri].shiftId,
                             (threads[thri].shiftCount-1)*2);
                     finalColors[threads[thri].shiftId]=temp;
@@ -165,17 +165,17 @@ void KfPlt::tick(){
 }
 void KfPlt::loadDefault(){
     threads.clear();
-    memset(colors,0,512);//ZeroMemory(colors,512);
+    std::memset(colors,0,512);//ZeroMemory(colors,512);
     colors[1]=Color15(0,0,0);
     colors[2]=Color15(32,32,32);
-    memcpy(finalColors,colors,512);
+    std::memcpy(finalColors,colors,512);
 }
 
 void KfTileSet::readFile(const u8* src){
     u32 compressedDataLength;
-    memcpy(&compressedDataLength,src,4);src+=4;
+    std::memcpy(&compressedDataLength,src,4);src+=4;
     u16 tileCount;
-    memcpy(&tileCount,src,2);src+=2;
+    std::memcpy(&tileCount,src,2);src+=2;
     u8 compressed=*(src++);
     u8 threadCount=*(src++);
     tiles.resize(tileCount);
@@ -184,7 +184,7 @@ void KfTileSet::readFile(const u8* src){
         src+=compressedDataLength;
     }
     else{
-        memcpy(tiles.data(),src,tileCount*64);src+=tileCount*64;
+        std::memcpy(tiles.data(),src,tileCount*64);src+=tileCount*64;
     }
     threads.clear();
     aniTiles.clear();
@@ -194,7 +194,7 @@ void KfTileSet::readFile(const u8* src){
     const u8 *p=src;
     threads.resize(threadCount);
     u32 aniTilesDataLength;
-    memcpy(&aniTilesDataLength,p,4);p+=4;
+    std::memcpy(&aniTilesDataLength,p,4);p+=4;
     aniTiles.resize(aniTilesDataLength/64);
     u16 idInAniTiles=0;
     for(u32 thri=0;thri<threads.size();thri++){
@@ -204,13 +204,13 @@ void KfTileSet::readFile(const u8* src){
         commandLength=*(p++);
         threads[thri].frames.resize(frameCount);
         threads[thri].command.resize(commandLength);
-        memcpy(threads[thri].command.data(),p,commandLength);p+=commandLength;
+        std::memcpy(threads[thri].command.data(),p,commandLength);p+=commandLength;
         for(int frai=0;frai<frameCount;frai++){
-            memcpy(&threads[thri].frames[frai].tileCount,p,2);p+=2;
+            std::memcpy(&threads[thri].frames[frai].tileCount,p,2);p+=2;
 
         }
         for(int frai=0;frai<frameCount;frai++){
-            memcpy(&threads[thri].frames[frai].tileIdInTiles,p,2);p+=2;
+            std::memcpy(&threads[thri].frames[frai].tileIdInTiles,p,2);p+=2;
             threads[thri].frames[frai].tileIdInAniTiles=idInAniTiles;
             idInAniTiles+=threads[thri].frames[frai].tileCount;
         }
@@ -221,7 +221,7 @@ void KfTileSet::readFile(const u8* src){
     u32 total=0,t;
     u8* q=(u8*)aniTiles.data();
     while(1){
-        memcpy(&partitionLength,p,2);p+=2;
+        std::memcpy(&partitionLength,p,2);p+=2;
         if(!partitionLength)break;
         t=getLengthLZ(p);
         uncompressLZ(p,q);
@@ -259,7 +259,7 @@ void KfTileSet::tick(){
             case 4:{
                 u8 frameId;
                 frameId=threads[thri].command[threads[thri].nextCommand++];
-                memcpy(finalTiles.data()+threads[thri].frames[frameId].tileIdInTiles,
+                std::memcpy(finalTiles.data()+threads[thri].frames[frameId].tileIdInTiles,
                        aniTiles.data()+threads[thri].frames[frameId].tileIdInAniTiles,
                        threads[thri].frames[frameId].tileCount*64);
                 break;
@@ -276,7 +276,7 @@ void KfBlockSet::loadDefault(){
     blocks.resize(count);
     essences.resize(count,0);
     for(u16 i=0;i<count;i++){
-        memset(blocks[i].data,0,18);//ZeroMemory(blocks[i].data,18);
+        std::memset(blocks[i].data,0,18);//ZeroMemory(blocks[i].data,18);
         blocks[i].data[4].tileId=(i>>12)|0x10;
         blocks[i].data[5].tileId=((i>>8)&0xF)|0x10;
         blocks[i].data[7].tileId=((i>>4)&0xF)|0x10;
@@ -288,13 +288,13 @@ void KfBlockSet::loadDefault(){
 void KfBlockSet::readFile(const u8* src){
     src+=2;//field DataLength
     u16 blockCount;
-    memcpy(&blockCount,src,2);src+=2;
+    std::memcpy(&blockCount,src,2);src+=2;
     blocks.resize(blockCount);
     essences.resize(blockCount);
     std::unique_ptr<u8[]> buf(new u8[getLengthLZ(src)]);
     uncompressLZ(src,buf.get());
-    memcpy(blocks.data(),buf.get(),blocks.size()*sizeof(Block));
-    memcpy(essences.data(),buf.get()+blocks.size()*sizeof(Block),blocks.size());
+    std::memcpy(blocks.data(),buf.get(),blocks.size()*sizeof(Block));
+    std::memcpy(essences.data(),buf.get()+blocks.size()*sizeof(Block),blocks.size());
     loaded=true;
 }
 
@@ -310,7 +310,7 @@ u32 KfMap::getScripteLength(u8 *pScript){
     case 4:
         return 4;break;
     case 5:
-        memcpy(&temp,pScript+3,2);
+        std::memcpy(&temp,pScript+3,2);
         return temp>=0?7:5;
         break;
     case 0:return 1;//eod
@@ -320,7 +320,7 @@ u32 KfMap::getScripteLength(u8 *pScript){
 void KfMap::readFile(const u8* src){
     src+=2;//field DataLength
     
-    memcpy(&metaData,src,28);
+    std::memcpy(&metaData,src,28);
     cells.clear();
     items.clear();
     cells.resize(metaData.width*metaData.height);
@@ -332,20 +332,20 @@ void KfMap::readFile(const u8* src){
     std::unique_ptr<u8[]> buf(p=new u8[length]);
     uncompressLZ(src,buf.get());
     for(u16 i=0;i<metaData.width*metaData.height;i++){
-        memcpy(&cells[i].blockId,p,2);p+=2;
+        std::memcpy(&cells[i].blockId,p,2);p+=2;
         cells[i].blockId&=0x7FFF;//Erase the field hasScript
     }
     length-=metaData.width*metaData.height*2;
 
     for(u8 i=0;i<metaData.itemCount;i++){
-        memcpy(&items[i].basic,p,8);p+=8;
+        std::memcpy(&items[i].basic,p,8);p+=8;
     }
     length-=metaData.itemCount*8;
 
     std::unique_ptr<u8[]> rawScripts;
     u32 rawScriptsLength;
     rawScripts.reset(new u8[rawScriptsLength=length]);
-    memcpy(rawScripts.get(),p,rawScriptsLength);
+    std::memcpy(rawScripts.get(),p,rawScriptsLength);
 
     p=rawScripts.get();
     u16 tid=0,ntid;
@@ -354,7 +354,7 @@ void KfMap::readFile(const u8* src){
     u16 CCCC=0xCCCC;
     while(*p){
         assert(p<rawScripts.get()+rawScriptsLength);
-        memcpy(&ntid,p+1,2);
+        std::memcpy(&ntid,p+1,2);
         assert(ntid>=tid);
         if(ntid<0x8000){
             pScriptList=&cells[ntid].scripts;
@@ -362,11 +362,11 @@ void KfMap::readFile(const u8* src){
         else{
             pScriptList=&items[ntid&0x7FFF].scripts;
         }
-        memcpy(p+1,&CCCC,2);//Erase field hostID
+        std::memcpy(p+1,&CCCC,2);//Erase field hostID
         tid=ntid;
         len=getScripteLength(p);
         pScriptList->emplace_back(len);
-        memcpy(pScriptList->back().data(),p,len);
+        std::memcpy(pScriptList->back().data(),p,len);
         p+=len;
     }
     assert(p-rawScripts.get()==rawScriptsLength-1);
@@ -406,17 +406,17 @@ u8* KfMap::generateFile(u32 *length){
         Cell rawCell;
         rawCell.blockId=cells[i].blockId;
         rawCell.hasScript=cells[i].scripts.empty()?0:1;
-        memcpy(p,&rawCell,2);p+=2;
+        std::memcpy(p,&rawCell,2);p+=2;
         for(u32 j=0;j<cells[i].scripts.size();j++){
             slen=getScripteLength(cells[i].scripts[j].data());
             scripts.emplace_back(slen);
-            memcpy(scripts.back().data(),cells[i].scripts[j].data(),slen);
-            memcpy(scripts.back().data()+1,&i,2);//fill hostID
+            std::memcpy(scripts.back().data(),cells[i].scripts[j].data(),slen);
+            std::memcpy(scripts.back().data()+1,&i,2);//fill hostID
         }
     }
     for(u8 i=0;i<items.size();i++){
         items[i].basic.hasScript=items[i].scripts.empty()?0:1;//Not sure
-        memcpy(p,&items[i].basic,8);p+=8;
+        std::memcpy(p,&items[i].basic,8);p+=8;
         for(u32 j=0;j<items[i].scripts.size();j++){
             slen=getScripteLength(items[i].scripts[j].data());
             scripts.emplace_back(slen);
@@ -430,13 +430,13 @@ u8* KfMap::generateFile(u32 *length){
     for(u32 i=0;i<scripts.size();i++){
         
         slen=getScripteLength(scripts[i].data());
-        memcpy(p,scripts[i].data(),slen);
+        std::memcpy(p,scripts[i].data(),slen);
         p+=slen;
     }
     *p=0;
 
     u8* pAlloc=new u8[(2+MetaDataLength[3]+dataLen)*2];
-    memcpy(pAlloc+2,&metaData,MetaDataLength[3]);
+    std::memcpy(pAlloc+2,&metaData,MetaDataLength[3]);
     dataLen=compressLZ(buf.get(),dataLen,pAlloc+2+MetaDataLength[3]);
     if(!dataLen){
         fprintf(stderr,"CompressLZ-FAILED\n");
@@ -545,8 +545,8 @@ void KfMap::resizeMap(u16 width, u16 height, Align hAlign, Align vAlign){
 
 void KfBckScr::readFile(const u8 *src){
     src+=2;
-    memcpy(&width,src,2);src+=2;
-    memcpy(&height,src,2);src+=2;
+    std::memcpy(&width,src,2);src+=2;
+    std::memcpy(&height,src,2);src+=2;
     chars.resize(width*height);
     uncompressLZ(src,(u8*)chars.data());
     loaded=true;
@@ -561,13 +561,13 @@ template<typename T> u32 GetIdInVector(std::vector<T>& vector,const T& item_to_f
 }
 
 const u32 RoomInfo::invalidId=0xFFFFFFFFUL;
-void Kf_mapdata::fromFile(FILE* file){
+void Kf_mapdata::fromFile(std::FILE* file){
     std::vector<u16> subFileShortAddr[7];
     u16 shortAddr;
-    fseek(file,0,SEEK_SET);
+    std::fseek(file,0,SEEK_SET);
     for(int i=0;i<MAP_COUNT;i++){
         for(int j=0;j<7;j++){
-            fread(&shortAddr,2,1,file);
+            std::fread(&shortAddr,2,1,file);
             if(shortAddr){
                 roomInfos[i].subFileIdData.subFileId[j]=GetIdInVector(subFileShortAddr[j],shortAddr);
             }
@@ -581,27 +581,27 @@ void Kf_mapdata::fromFile(FILE* file){
     for(int j=0;j<7;j++){
         rawSubFiles[j]=std::vector<rawFile>(subFileShortAddr[j].size());
         for(size_t i=0;i<subFileShortAddr[j].size();i++){
-            fseek(file,subFileShortAddr[j][i],SEEK_SET);
-            fread(&longAddr,4,1,file);
-            fseek(file,longAddr,SEEK_SET);
+            std::fseek(file,subFileShortAddr[j][i],SEEK_SET);
+            std::fread(&longAddr,4,1,file);
+            std::fseek(file,longAddr,SEEK_SET);
             length=0;
-            fread(&length,2,1,file);
+            std::fread(&length,2,1,file);
             if(length==0)length=0x10000;//for some non-compressed bcktileset file
             length+=MetaDataLength[j]+2;
 
             //Special treatment for palette
             if(j==0 || j==4){
                 u8 AnimationThreadCount;
-                fread(&AnimationThreadCount,1,1,file);
-                fseek(file,0x200,SEEK_CUR);
+                std::fread(&AnimationThreadCount,1,1,file);
+                std::fseek(file,0x200,SEEK_CUR);
                 for(int t=0;t<AnimationThreadCount;t++){
                     u8 FrameCount;
                     u8 CommandLength;
                     u16 ColorCount;
-                    fread(&FrameCount,1,1,file);FrameCount&=0x7F;length+=1;
-                    fread(&CommandLength,1,1,file);length+=1;
-                    fread(&ColorCount,2,1,file);length+=2;
-                    fseek(file,CommandLength+FrameCount*2+ColorCount*2,SEEK_CUR);
+                    std::fread(&FrameCount,1,1,file);FrameCount&=0x7F;length+=1;
+                    std::fread(&CommandLength,1,1,file);length+=1;
+                    std::fread(&ColorCount,2,1,file);length+=2;
+                    std::fseek(file,CommandLength+FrameCount*2+ColorCount*2,SEEK_CUR);
                     length+=CommandLength+FrameCount*2+ColorCount*2;
                 }
             }
@@ -609,36 +609,36 @@ void Kf_mapdata::fromFile(FILE* file){
             //Special treatment for tileset
             if(j==1 || j==5){
                 u8 AnimationThreadCount;
-                fseek(file,5,SEEK_CUR);
-                fread(&AnimationThreadCount,1,1,file);
+                std::fseek(file,5,SEEK_CUR);
+                std::fread(&AnimationThreadCount,1,1,file);
                 if(AnimationThreadCount){
-                    fseek(file,length-8,SEEK_CUR);
-                    fseek(file,4,SEEK_CUR);length+=4;
+                    std::fseek(file,length-8,SEEK_CUR);
+                    std::fseek(file,4,SEEK_CUR);length+=4;
                     for(int t=0;t<AnimationThreadCount;t++){
                         u8 FrameCount;
                         u8 CommandLength;
-                        fread(&FrameCount,1,1,file);length+=1;
-                        fread(&CommandLength,1,1,file);length+=1;
-                        fseek(file,CommandLength,SEEK_CUR);length+=CommandLength;
-                        fseek(file,FrameCount*4,SEEK_CUR);length+=FrameCount*4;
+                        std::fread(&FrameCount,1,1,file);length+=1;
+                        std::fread(&CommandLength,1,1,file);length+=1;
+                        std::fseek(file,CommandLength,SEEK_CUR);length+=CommandLength;
+                        std::fseek(file,FrameCount*4,SEEK_CUR);length+=FrameCount*4;
                     }
                     while(1){
                         u16 partitionLength;
-                        fread(&partitionLength,2,1,file);length+=2;
+                        std::fread(&partitionLength,2,1,file);length+=2;
                         if(!partitionLength)break;
-                        fseek(file,partitionLength,SEEK_CUR);length+=partitionLength;
+                        std::fseek(file,partitionLength,SEEK_CUR);length+=partitionLength;
                     }
                 }
             }
             rawSubFiles[j][i].length=length;
             rawSubFiles[j][i].ptr.reset(new u8[length]);
-            fseek(file,longAddr,SEEK_SET);
-            fread(rawSubFiles[j][i].ptr.get(),length,1,file);
+            std::fseek(file,longAddr,SEEK_SET);
+            std::fread(rawSubFiles[j][i].ptr.get(),length,1,file);
         }
     }
 
 }
-void Kf_mapdata::toFile(FILE* file){
+void Kf_mapdata::toFile(std::FILE* file){
     u16 subFileAddrSlots[MAP_COUNT][7];
     using idPair=std::tuple<u32/*0~6*/,u32/*id*/>;
     std::vector<idPair> idList;
@@ -655,20 +655,20 @@ void Kf_mapdata::toFile(FILE* file){
         }
     }
 
-    fseek(file,0,SEEK_SET);
-    fwrite(subFileAddrSlots,2,MAP_COUNT*7,file);
+    std::fseek(file,0,SEEK_SET);
+    std::fwrite(subFileAddrSlots,2,MAP_COUNT*7,file);
 
-    long tableP=ftell(file);
+    long tableP=std::ftell(file);
     long allocP=tableP+idList.size()*4;
     long len;
     u8* p;
     for(u32 i=0;i<idList.size();i++){
-        fseek(file,tableP,SEEK_SET);
-        fwrite(&allocP,4,1,file);tableP+=4;
-        fseek(file,allocP,SEEK_SET);
+        std::fseek(file,tableP,SEEK_SET);
+        std::fwrite(&allocP,4,1,file);tableP+=4;
+        std::fseek(file,allocP,SEEK_SET);
         auto rawf=&rawSubFiles[std::get<0>(idList[i])][std::get<1>(idList[i])];
         p=rawf->ptr.get();
         len=rawf->length;
-        fwrite(p,1,len,file);allocP+=len;
+        std::fwrite(p,1,len,file);allocP+=len;
     }
 }

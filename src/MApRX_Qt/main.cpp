@@ -40,3 +40,7 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+
+std::FILE *fopenW(const wchar_t* name,const wchar_t* mode){
+    return _wfopen(name,mode);
+}

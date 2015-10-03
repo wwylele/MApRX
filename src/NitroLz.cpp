@@ -6,7 +6,7 @@
  */
 
 #include "NitroLz.h"
-#include <string.h>
+#include <cstring>
 
 #define LZ_COMPRESS_WORK_SIZE   10000
 
@@ -176,7 +176,7 @@ static inline void LZSlide(LZCompressInfo * info,const u8 *srcp,u32 n)
 u32 compressLZ(const u8 *srcp,u32 size,u8 *dstp)
 {
     void* work=lz77_work;
-    memset(work,0,LZ_COMPRESS_WORK_SIZE);
+    std::memset(work,0,LZ_COMPRESS_WORK_SIZE);
 
     u32     LZDstCount;
     u8      LZCompFlags;
