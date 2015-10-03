@@ -86,7 +86,8 @@ void MapPlane0::paintEvent(QPaintEvent *){
         for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
             QString str;
             str.sprintf("%d",i);
-            u8 catagory=pMainWindow->map.Items(i).basic.catagory;
+            u8 catagory=(pMainWindow->map.Items(i).basic.param1
+                         &KfMap::Item::CATAGORY_MASK)>>8;
             if(catagory>=13)catagory=0;
             painter.setBrush(itemBackground[catagory]);
             painter.drawEllipse(pMainWindow->map.Items(i).basic.x-8,

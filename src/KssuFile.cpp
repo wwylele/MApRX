@@ -277,10 +277,10 @@ void KfBlockSet::loadDefault(){
     essences.resize(count,0);
     for(u16 i=0;i<count;i++){
         std::memset(blocks[i].data,0,18);//ZeroMemory(blocks[i].data,18);
-        blocks[i].data[4].tileId=(i>>12)|0x10;
-        blocks[i].data[5].tileId=((i>>8)&0xF)|0x10;
-        blocks[i].data[7].tileId=((i>>4)&0xF)|0x10;
-        blocks[i].data[8].tileId=(i&0xF)|0x10;
+        blocks[i].data[4]=(i>>12)|0x10;
+        blocks[i].data[5]=((i>>8)&0xF)|0x10;
+        blocks[i].data[7]=((i>>4)&0xF)|0x10;
+        blocks[i].data[8]=(i&0xF)|0x10;
     }
     loaded=true;
 }
@@ -333,7 +333,7 @@ void KfMap::readFile(const u8* src){
     uncompressLZ(src,buf.get());
     for(u16 i=0;i<metaData.width*metaData.height;i++){
         std::memcpy(&cells[i].blockId,p,2);p+=2;
-        cells[i].blockId&=0x7FFF;//Erase the field hasScript
+        cells[i].blockId&=BLOCK_ID_MASK;//Erase the field hasScript
     }
     length-=metaData.width*metaData.height*2;
 
@@ -372,11 +372,7 @@ void KfMap::readFile(const u8* src){
     assert(p-rawScripts.get()==rawScriptsLength-1);
     loaded=true;
 
-#ifdef _DEBUG
-    for(u8 i=0;i<metaData.itemCount;i++){
-        assert(!(Items(i).basic.behavior&0x30));
-    }
-#endif
+
 
 }
 
@@ -404,8 +400,7 @@ u8* KfMap::generateFile(u32 *length){
 
     for(u16 i=0;i<metaData.width*metaData.height;i++){
         Cell rawCell;
-        rawCell.blockId=cells[i].blockId;
-        rawCell.hasScript=cells[i].scripts.empty()?0:1;
+        rawCell=cells[i].blockId | (cells[i].scripts.empty()?CELL_HAS_SCRIPT:0);
         std::memcpy(p,&rawCell,2);p+=2;
         for(u32 j=0;j<cells[i].scripts.size();j++){
             slen=getScripteLength(cells[i].scripts[j].data());
@@ -415,7 +410,11 @@ u8* KfMap::generateFile(u32 *length){
         }
     }
     for(u8 i=0;i<items.size();i++){
-        items[i].basic.hasScript=items[i].scripts.empty()?0:1;//Not sure
+        if(items[i].scripts.empty()){
+            items[i].basic.param1|=Item::HAS_SCRIPT;
+        }else{
+            items[i].basic.param1&=~Item::HAS_SCRIPT;
+        }//Not sure
         std::memcpy(p,&items[i].basic,8);p+=8;
         for(u32 j=0;j<items[i].scripts.size();j++){
             slen=getScripteLength(items[i].scripts[j].data());

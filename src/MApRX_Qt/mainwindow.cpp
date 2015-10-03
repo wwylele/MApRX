@@ -71,12 +71,12 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     if(role==Qt::DisplayRole||role==Qt::EditRole){
         switch(index.column()){
         case 0:
-            return QString::number(pMap->Items(itemId).basic.species);
+            return QString::number(pMap->Items(itemId).basic.species());
         case 1:
-            return QString::number(pMap->Items(itemId).basic.behavior);
+            return QString::number(pMap->Items(itemId).basic.behavior());
 
         case 4:
-            return QString::number(pMap->Items(itemId).basic.param);
+            return QString::number(pMap->Items(itemId).basic.param());
         case 5:
             return QString::number(pMap->Items(itemId).scripts.size());
         case 6:{
@@ -91,13 +91,13 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     }else if(role==Qt::CheckStateRole){
         switch(index.column()){
         case 2:
-            return pMap->Items(itemId).basic.flagA?Qt::Checked:Qt::Unchecked;
+            return pMap->Items(itemId).basic.flagA()?Qt::Checked:Qt::Unchecked;
         case 3:
-            return pMap->Items(itemId).basic.flagB?Qt::Checked:Qt::Unchecked;
+            return pMap->Items(itemId).basic.flagB()?Qt::Checked:Qt::Unchecked;
         }
     }else if(role==Qt::BackgroundRole){
-        if(pMap->Items(itemId).basic.catagory>=13)return itemBackground[0];
-        return itemBackground[pMap->Items(itemId).basic.catagory];
+        if(pMap->Items(itemId).basic.catagory()>=13)return itemBackground[0];
+        return itemBackground[pMap->Items(itemId).basic.catagory()];
     }
     return QVariant();
 }
@@ -153,18 +153,18 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
         if(index.column()==0){
             toIntBuf=value.toString().toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>255)return false;
-            itemBasic.species=toIntBuf;
-            itemBasic.catagory=itemCatagory[itemBasic.species];
+            itemBasic.setSpecies(toIntBuf);
+            itemBasic.setCatagory(itemCatagory[toIntBuf]);
         }
         else if(index.column()==1){
             toIntBuf=value.toString().toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>15)return false;
-            itemBasic.behavior=toIntBuf;
+            itemBasic.setBehavior(toIntBuf);
         }
         else if(index.column()==4){
             toIntBuf=value.toString().toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>255)return false;
-            itemBasic.param=toIntBuf;
+            itemBasic.setParam(toIntBuf);
         }else if(index.column()==6){
             QString str=value.toString();
             int x1,x2,y1,y2;
@@ -178,10 +178,10 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
         else return false;
     }else if(role==Qt::CheckStateRole){
         if(index.column()==2){
-            itemBasic.flagA=value.toBool()?1:0;
+            itemBasic.setFlagA(value.toBool());
         }
         else if(index.column()==3){
-            itemBasic.flagB=value.toBool()?1:0;
+            itemBasic.setFlagB(value.toBool());
         }
         else return false;
     }else return false;
