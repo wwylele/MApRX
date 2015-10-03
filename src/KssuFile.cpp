@@ -492,8 +492,8 @@ void KfMap::newItem(u8 before_itemId,const RipeItem& item){
     metaData.itemCount++;
 }
 
-void KfMap::resizeMap(u8 width,u8 height,
-               int x0,int y0//Where to put old cell(0,0) on new map
+void KfMap::resizeMap(u16 width, u16 height,
+               int x0, int y0//Where to put old cell(0,0) on new map
                ){
     assert(loaded);
     assert(width && height);
@@ -513,10 +513,14 @@ void KfMap::resizeMap(u8 width,u8 height,
         item.basic.x+=x0*24;
         item.basic.y+=y0*24;
     }
+    forEachCellReferenceInScripts([x0,y0](u16& x,u16 &y){
+        x+=x0;
+        y+=y0;
+    });
 
 }
 
-void KfMap::resizeMap(u8 width,u8 height,Align hAlign,Align vAlign){
+void KfMap::resizeMap(u16 width, u16 height, Align hAlign, Align vAlign){
     assert(loaded);
     int x0,y0;
     switch(hAlign){

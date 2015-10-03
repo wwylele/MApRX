@@ -3,7 +3,7 @@
 #include <QMessageBox>
 #include <map>
 
-DialogResizeMap::DialogResizeMap(u8 mapWidth, u8 mapHeight, QWidget *parent) :
+DialogResizeMap::DialogResizeMap(u16 mapWidth, u16 mapHeight, QWidget *parent) :
     mapWidth(mapWidth),
     mapHeight(mapHeight),
     QDialog(parent),
@@ -13,7 +13,7 @@ DialogResizeMap::DialogResizeMap(u8 mapWidth, u8 mapHeight, QWidget *parent) :
     ui->editWidth->setText(QString::number(mapWidth));
     ui->editHeight->setText(QString::number(mapHeight));
     for(auto p:{ui->editWidth,ui->editHeight}){
-        p->setValidator(new QIntValidator(0,255));
+        p->setValidator(new QIntValidator(0,32767));
     }
     ui->buttonAlign00->setChecked(true);
 }

@@ -13,9 +13,9 @@ class DialogResizeMap : public QDialog
     Q_OBJECT
 
 public:
-    u8 mapWidth,mapHeight;
+    u16 mapWidth,mapHeight;
     KfMap::Align hAlign,vAlign;
-    explicit DialogResizeMap(u8 width,u8 height,QWidget *parent = 0);
+    explicit DialogResizeMap(u16 width, u16 height, QWidget *parent = 0);
     ~DialogResizeMap();
 
 private slots:
