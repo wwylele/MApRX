@@ -262,11 +262,33 @@ public:
         }
     }
 
+    template <class T/* void (*)(u16& cellXReference,u16& cellYReference) */>
+    void forEachCellReferenceInScripts(T doWhat){
+        auto f=[&doWhat](std::vector<Script> &scripts){
+            for(Script& script:scripts){
+                if(script[0]==2){
+                    u16 x,y;
+                    memcpy(&x,script.data()+2,2);
+                    memcpy(&y,script.data()+4,2);
+                    doWhat(x,y);
+                    memcpy(script.data()+2,&x,2);
+                    memcpy(script.data()+4,&y,2);
+                }
+            }
+        };
+        for(RipeCell & cell:cells){
+            f(cell.scripts);
+        }
+        for(RipeItem & item:items){
+            f(item.scripts);
+        }
+    }
+
     void swapItem(u8 firstItemId);
     void deleteItem(u8 itemId);
     void newItem(u8 before_itemId,const RipeItem& item);
 
-    void resizeMap(u8 width,u8 height,
+    void resizeMap(u16 width,u16 height,
                    int x0,int y0//Where to put old cell(0,0) on new map
                    );
     enum Align{
@@ -275,7 +297,7 @@ public:
         END=1
     };
 
-    void resizeMap(u8 width,u8 height,Align hAlign,Align vAlign);
+    void resizeMap(u16 width,u16 height,Align hAlign,Align vAlign);
 
 };
 
@@ -308,19 +330,17 @@ public:
 
 #define MAP_COUNT 548
 
-struct RoomInfo{
-    union{
-        u32 subFileId[7];
-        struct SUB_FILE_ID_SLOTS{
-            u32 rawFrtPltId;
-            u32 rawFrtTileSetId;
-            u32 rawFrtBlockSetId;
-            u32 rawMapId;//should be always equal to map index
-            u32 rawBckPltId;
-            u32 rawBckTileSetId;
-            u32 rawBckScrId;
-        }subFileIdSlots;
-    }subFileIdData;
+union RoomInfo{
+    u32 subFileId[7];
+    struct SUB_FILE_ID_SLOTS{
+        u32 rawFrtPltId;
+        u32 rawFrtTileSetId;
+        u32 rawFrtBlockSetId;
+        u32 rawMapId;//should be always equal to map index
+        u32 rawBckPltId;
+        u32 rawBckTileSetId;
+        u32 rawBckScrId;
+    }subFileIdSlots;
     static const u32 invalidId;
 };
 class Kf_mapdata{
