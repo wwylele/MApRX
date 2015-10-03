@@ -277,10 +277,10 @@ void KfBlockSet::loadDefault(){
     essences.resize(count,0);
     for(u16 i=0;i<count;i++){
         std::memset(blocks[i].data,0,18);//ZeroMemory(blocks[i].data,18);
-        blocks[i].data[4].tileId=(i>>12)|0x10;
-        blocks[i].data[5].tileId=((i>>8)&0xF)|0x10;
-        blocks[i].data[7].tileId=((i>>4)&0xF)|0x10;
-        blocks[i].data[8].tileId=(i&0xF)|0x10;
+        blocks[i].data[4]=(i>>12)|0x10;
+        blocks[i].data[5]=((i>>8)&0xF)|0x10;
+        blocks[i].data[7]=((i>>4)&0xF)|0x10;
+        blocks[i].data[8]=(i&0xF)|0x10;
     }
     loaded=true;
 }

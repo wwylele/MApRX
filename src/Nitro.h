@@ -65,12 +65,12 @@ struct Color15
     }
     
 };
-struct CharData
-{
-    u16 tileId:10;
-    u16 flipX:1;
-    u16 flipY:1;
-    u16 dummy:4;
+
+typedef u16 CharData;
+enum CharDataFlags{
+    TILE_ID_MASK=1023,
+    FLIP_X=1024,
+    FLIP_Y=2048,
 };
 
 struct Tile8bpp
