@@ -257,6 +257,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Open a file
     QString fileName="D:/KSSU_MAP/mapdata";
     FILE* file=_wfopen(fileName.toStdWString().data(),L"rb");
+    if(!file)return;
     mapdata.fromFile(file);
     fclose(file);
     currentFileName=fileName;
@@ -264,29 +265,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionSave_As->setEnabled(true);
     ui->actionMake_Rom->setEnabled(true);
 
-    //check maps
-    FILE* report=fopen("D:\\Github\\MApRX\\temp\\script5.txt","w");
-    for(u32 i=0;i<MAP_COUNT;i++){
-        map.readFile(mapdata.rawMaps(i));
-        auto f=[report](KfMap::Script &script){
-            if(script[0]==5){
-                for(u8 v:script){
-                    fprintf(report,"%02X ",v);
-                }
-                fprintf(report,"\n");
-            }
-        };
-        fprintf(report,"Map#%d\n",i);
-        for(int y=0;y<map.metaData.height;y++)for(int x=0;x<map.metaData.width;x++){
-            for(KfMap::Script &s:map.at(x,y).scripts)f(s);
-        }
-        for(int i=0;i<map.metaData.itemCount;i++){
-            for(KfMap::Script &s:map.Items(i).scripts)f(s);
-        }
-        map.unload();
-    }
 
-    fclose(report);
 #endif
 
 }
