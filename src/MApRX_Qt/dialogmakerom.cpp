@@ -25,8 +25,9 @@
 #include <QMessageBox>
 #include <QProcess>
 #include "../Nitro.h"
-#include <assert.h>
+#include <cassert>
 #include <memory>
+#include "main.h"
 
 DialogMakeRom::DialogMakeRom(QString mapdataFileName,QWidget *parent) :
     QDialog(parent),
@@ -80,8 +81,8 @@ void DialogMakeRom::on_buttonRun_clicked()
 
 void DialogMakeRom::on_buttonMake_clicked()
 {
-    FILE *rom,*mapdata;
-    rom=_wfopen(ui->editRom->text().toStdWString().c_str(),L"rb+");
+    std::FILE *rom,*mapdata;
+    rom=fopenQ(ui->editRom->text(),"rb+");
     if(rom==0){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the ROM.");
@@ -89,7 +90,7 @@ void DialogMakeRom::on_buttonMake_clicked()
         msgBox.exec();
         return;
     }
-    mapdata=_wfopen(ui->editSrcFile->text().toStdWString().c_str(),L"rb");
+    mapdata=fopenQ(ui->editSrcFile->text(),"rb");
     if(mapdata==0){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the mapdata file.");
@@ -98,11 +99,11 @@ void DialogMakeRom::on_buttonMake_clicked()
         return;
     }
     u32 len;
-    fseek(mapdata,0,SEEK_END);
-    len=ftell(mapdata);
-    fseek(mapdata,0,SEEK_SET);
+    std::fseek(mapdata,0,SEEK_END);
+    len=std::ftell(mapdata);
+    std::fseek(mapdata,0,SEEK_SET);
     std::unique_ptr<u8[]> buf(new u8[len]);
-    fread(buf.get(),len,1,mapdata);
+    std::fread(buf.get(),len,1,mapdata);
     fclose(mapdata);
 
     u16 fileId=nitroGetSubFileId(rom,"rom/map01/mapdata");
@@ -110,20 +111,20 @@ void DialogMakeRom::on_buttonMake_clicked()
     u32 dp,dl;
     dp=nitroGetSubFileOffset(rom,fileId,&dl);
     if(dl>=len){
-        fseek(rom,dp,SEEK_SET);
-        fwrite(buf.get(),len,1,rom);
+        std::fseek(rom,dp,SEEK_SET);
+        std::fwrite(buf.get(),len,1,rom);
     }else{
         ROM_HEADER rom_header;
-        fseek(rom,0,SEEK_SET);
-        fread(&rom_header,sizeof(rom_header),1,rom);
+        std::fseek(rom,0,SEEK_SET);
+        std::fread(&rom_header,sizeof(rom_header),1,rom);
         dp=rom_header.ROMSize;
         rom_header.ROMSize+=len;
         rom_header.CRC16=nitroCrc16(&rom_header,offsetof(ROM_HEADER,headerCRC16));
-        fseek(rom,0,SEEK_SET);
-        fwrite(&rom_header,sizeof(rom_header),1,rom);
+        std::fseek(rom,0,SEEK_SET);
+        std::fwrite(&rom_header,sizeof(rom_header),1,rom);
         nitroSetSubFileOffset(rom,fileId,dp,len);
-        fseek(rom,dp,SEEK_SET);
-        fwrite(buf.get(),len,1,rom);
+        std::fseek(rom,dp,SEEK_SET);
+        std::fwrite(buf.get(),len,1,rom);
     }
 
 

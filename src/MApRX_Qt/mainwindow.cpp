@@ -21,17 +21,18 @@
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QTranslator>
 #include <QScrollBar>
 #include <QTextStream>
 #include <QToolButton>
-#include <time.h>
+#include <ctime>
 #include "dialogaboutme.h"
 #include "dialogmakerom.h"
 #include "dialogproperties.h"
 #include "dialogscripts.h"
 #include "dialogresizemap.h"
-#include <assert.h>
+#include "main.h"
+#include <cassert>
+
 
 QBrush itemBackground[13]{
                     QColor(255,255,255),
@@ -256,7 +257,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef _DEBUG
     //Open a file
     QString fileName="D:/KSSU_MAP/mapdata";
-    FILE* file=_wfopen(fileName.toStdWString().data(),L"rb");
+    std::FILE* file=fopenQ(fileName,"rb");
     if(!file)return;
     mapdata.fromFile(file);
     fclose(file);
@@ -389,7 +390,7 @@ void MainWindow::on_action_Open_triggered()
 }
 
 void MainWindow::openMapdata(QString fileName){
-    FILE* file=_wfopen(fileName.toStdWString().data(),L"rb");
+    std::FILE* file=fopenQ(fileName,"rb");
     if(file==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the file.");
@@ -414,7 +415,7 @@ void MainWindow::openMapdata(QString fileName){
 void MainWindow::on_action_Save_triggered()
 {
     if(currentFileName==QString::null)return;
-    FILE* file=_wfopen(currentFileName.toStdWString().c_str(),L"wb");
+    std::FILE* file=fopenQ(currentFileName,"wb");
     if(file==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the file.");
@@ -431,7 +432,7 @@ void MainWindow::on_actionSave_As_triggered(){
         "",
         "mapdata File(*.bin)");
     if(fileName==QString::null)return;
-    FILE* file=_wfopen(fileName.toStdWString().c_str(),L"wb");
+    std::FILE* file=fopenQ(fileName,"wb");
     if(file==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the file.");
@@ -496,8 +497,7 @@ void MainWindow::on_actionMap_Properties_triggered()
     }
 }
 
-extern QTranslator translator;
-extern QApplication* pApp;
+
 void MainWindow::on_actionEnglish_triggered(){
     pApp->removeTranslator(&translator);
     ui->retranslateUi(this);
@@ -513,7 +513,7 @@ void MainWindow::on_actionExtract_triggered(){
         "",
         "ROM File(*.nds *.bin);;Any files(*.*)");
     if(fileName==QString::null)return;
-    FILE* rom=_wfopen(fileName.toStdWString().data(),L"rb");
+    std::FILE* rom=fopenQ(fileName,"rb");
     if(rom==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the ROM.");
@@ -526,7 +526,7 @@ void MainWindow::on_actionExtract_triggered(){
         "",
         "mapdata File(*.bin)");
     if(fileName==QString::null)return;
-    FILE* mapdataFile=_wfopen(fileName.toStdWString().c_str(),L"wb");
+    std::FILE* mapdataFile=fopenQ(fileName,"wb");
     if(mapdataFile==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open mapdata file.");
@@ -540,9 +540,9 @@ void MainWindow::on_actionExtract_triggered(){
     u32 off,len;
     off=nitroGetSubFileOffset(rom,id,&len);
     std::unique_ptr<u8[]> buf(new u8[len]);
-    fseek(rom,off,SEEK_SET);
-    fread(buf.get(),len,1,rom);
-    fwrite(buf.get(),len,1,mapdataFile);
+    std::fseek(rom,off,SEEK_SET);
+    std::fread(buf.get(),len,1,rom);
+    std::fwrite(buf.get(),len,1,mapdataFile);
     fclose(rom);
     fclose(mapdataFile);
 

@@ -20,7 +20,7 @@
 
 #ifndef _NITRO_H_
 #define _NITRO_H_
-#include <stdio.h>
+#include <cstdio>
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
@@ -154,10 +154,10 @@ struct ROM_FAT
 };
 
 
-u16 nitroGetSubFileId(FILE *file, const char* subfilename);
+u16 nitroGetSubFileId(std::FILE *file, const char* subfilename);
 
-u32 nitroGetSubFileOffset(FILE *file, u16 Id, u32* getlen=0);
-void nitroSetSubFileOffset(FILE *file, u16 Id, u32 from, u32 len);
+u32 nitroGetSubFileOffset(std::FILE *file, u16 Id, u32* getlen=0);
+void nitroSetSubFileOffset(std::FILE *file, u16 Id, u32 from, u32 len);
 
 u16 nitroCrc16(void *buf,u32 length);
 
