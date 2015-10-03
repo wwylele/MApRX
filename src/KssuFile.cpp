@@ -23,6 +23,7 @@
 #include "NitroLz.h"
 #include <assert.h>
 #include <tuple>
+#include <cstring>
 const int MetaDataLength[7]={
     1,
     6,
@@ -568,10 +569,10 @@ void Kf_mapdata::fromFile(FILE* file){
         for(int j=0;j<7;j++){
             fread(&shortAddr,2,1,file);
             if(shortAddr){
-                roomInfos[i].subFileId[j]=GetIdInVector(subFileShortAddr[j],shortAddr);
+                roomInfos[i].subFileIdData.subFileId[j]=GetIdInVector(subFileShortAddr[j],shortAddr);
             }
             else{
-                roomInfos[i].subFileId[j]=RoomInfo::invalidId;
+                roomInfos[i].subFileIdData.subFileId[j]=RoomInfo::invalidId;
             }
         }
     }
@@ -643,12 +644,12 @@ void Kf_mapdata::toFile(FILE* file){
     std::vector<idPair> idList;
     for(u32 i=0;i<MAP_COUNT;i++){
         for(u32 j=0;j<7;j++){
-            if(roomInfos[i].subFileId[j]==RoomInfo::invalidId){
+            if(roomInfos[i].subFileIdData.subFileId[j]==RoomInfo::invalidId){
                 subFileAddrSlots[i][j]=0;
             }
             else{
                 u32 index;
-                index=GetIdInVector(idList,idPair(j,roomInfos[i].subFileId[j]));
+                index=GetIdInVector(idList,idPair(j,roomInfos[i].subFileIdData.subFileId[j]));
                 subFileAddrSlots[i][j]=(u16)(index*4+MAP_COUNT*7*2);
             }
         }

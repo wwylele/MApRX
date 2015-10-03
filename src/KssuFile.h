@@ -330,17 +330,19 @@ public:
 
 #define MAP_COUNT 548
 
-union RoomInfo{
-    u32 subFileId[7];
-    struct SUB_FILE_ID_SLOTS{
-        u32 rawFrtPltId;
-        u32 rawFrtTileSetId;
-        u32 rawFrtBlockSetId;
-        u32 rawMapId;//should be always equal to map index
-        u32 rawBckPltId;
-        u32 rawBckTileSetId;
-        u32 rawBckScrId;
-    }subFileIdSlots;
+struct RoomInfo{
+    union{
+        u32 subFileId[7];
+        struct SUB_FILE_ID_SLOTS{
+            u32 rawFrtPltId;
+            u32 rawFrtTileSetId;
+            u32 rawFrtBlockSetId;
+            u32 rawMapId;//should be always equal to map index
+            u32 rawBckPltId;
+            u32 rawBckTileSetId;
+            u32 rawBckScrId;
+        }subFileIdSlots;
+    }subFileIdData;
     static const u32 invalidId;
 };
 class Kf_mapdata{
