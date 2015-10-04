@@ -369,7 +369,7 @@ void KfMap::readFile(const u8* src){
         std::memcpy(pScriptList->back().data(),p,len);
         p+=len;
     }
-    assert(p-rawScripts.get()==rawScriptsLength-1);
+    assert((u32)(p-rawScripts.get())==(rawScriptsLength-1));
     loaded=true;
 
 

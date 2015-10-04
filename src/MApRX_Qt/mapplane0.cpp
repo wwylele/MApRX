@@ -85,7 +85,7 @@ void MapPlane0::paintEvent(QPaintEvent *){
 
         for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
             QString str;
-            str.sprintf("%d",i);
+            str.sprintf("%lu",i);
             u8 catagory=(pMainWindow->map.Items(i).basic.param1
                          &KfMap::Item::CATAGORY_MASK)>>8;
             if(catagory>=13)catagory=0;

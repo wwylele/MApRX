@@ -22,8 +22,8 @@
 #include "ui_dialogproperties.h"
 #include <QMessageBox>
 DialogProperties::DialogProperties(const KfMap::MetaData_Struct &c,QWidget *parent) :
-    metaData(c),
     QDialog(parent),
+    metaData(c),
     ui(new Ui::DialogProperties)
 {
     ui->setupUi(this);

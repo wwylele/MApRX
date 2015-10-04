@@ -52,8 +52,7 @@ QBrush itemBackground[13]{
 
 ItemTableModal::ItemTableModal
     (MainWindow *_pMainWindow, QObject *parent):
-    pMainWindow(_pMainWindow),
-    QAbstractTableModel(parent){
+    QAbstractTableModel(parent),pMainWindow(_pMainWindow){
     pMap=&pMainWindow->map;
 }
 int ItemTableModal::columnCount(const QModelIndex &) const{
@@ -194,9 +193,9 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    itemTableModal(this),
     ui(new Ui::MainWindow),
-    mapUpdateTimer(this),
-    itemTableModal(this)
+    mapUpdateTimer(this)
 {
     ui->setupUi(this);
     ui->actionShow_Animation->setChecked(true);
@@ -597,11 +596,13 @@ void MainWindow::on_buttonItemNew_clicked()
     if(!map.Loaded())return;
     KfMap::RipeItem item;
     QSize size=ui->mapPlane0ScrollArea->size();
+    if((ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2)>=0)
     item.basic.x=ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2;
+    else item.basic.x=0;
+    if((ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2)>=0)
     item.basic.y=ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2;
-    if(item.basic.x<0)item.basic.x=0;
+    else item.basic.y=0;
     if(item.basic.x>map.metaData.width*24)item.basic.x=map.metaData.width*24;
-    if(item.basic.y<0)item.basic.y=0;
     if(item.basic.y>map.metaData.height*24)item.basic.y=map.metaData.height*24;
     MoNewItem mo(map.metaData.itemCount,item);
     mo.toolTip="Add Item";

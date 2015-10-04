@@ -325,11 +325,11 @@ public:
             for(Script& script:scripts){
                 if(script[0]==2){
                     u16 x,y;
-                    std::memcpy(&x,script.data()+2,2);
-                    std::memcpy(&y,script.data()+4,2);
+                    memcpy(&x,script.data()+2,2);
+                    memcpy(&y,script.data()+4,2);
                     doWhat(x,y);
-                    std::memcpy(script.data()+2,&x,2);
-                    std::memcpy(script.data()+4,&y,2);
+                    memcpy(script.data()+2,&x,2);
+                    memcpy(script.data()+4,&y,2);
                 }
             }
         };
@@ -447,7 +447,7 @@ public:
     inline void writeMap(u32 i,const u8* p,u32 len){
         rawSubFiles[3][i].ptr.reset(new u8[len]);
         rawSubFiles[3][i].length=len;
-        std::memcpy(rawSubFiles[3][i].ptr.get(),p,len);
+        memcpy(rawSubFiles[3][i].ptr.get(),p,len);
     }
 };
 

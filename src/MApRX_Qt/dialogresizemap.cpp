@@ -4,9 +4,9 @@
 #include <map>
 
 DialogResizeMap::DialogResizeMap(u16 mapWidth, u16 mapHeight, QWidget *parent) :
+    QDialog(parent),
     mapWidth(mapWidth),
     mapHeight(mapHeight),
-    QDialog(parent),
     ui(new Ui::DialogResizeMap)
 {
     ui->setupUi(this);

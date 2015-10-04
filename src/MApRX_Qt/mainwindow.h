@@ -38,8 +38,8 @@ namespace Ui {
 class MainWindow;
 class ItemTableModal:public QAbstractTableModel{
     Q_OBJECT
-    KfMap* pMap;
     MainWindow* pMainWindow;
+    KfMap* pMap;
 public:
     ItemTableModal(MainWindow* _pMainWindow,QObject *parent=0);
     void itemChanged(u8 id);
