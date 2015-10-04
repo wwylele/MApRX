@@ -52,7 +52,8 @@ QBrush itemBackground[13]{
 
 ItemTableModal::ItemTableModal
     (MainWindow *_pMainWindow, QObject *parent):
-    QAbstractTableModel(parent),pMainWindow(_pMainWindow){
+    QAbstractTableModel(parent),
+    pMainWindow(_pMainWindow){
     pMap=&pMainWindow->map;
 }
 int ItemTableModal::columnCount(const QModelIndex &) const{
