@@ -114,7 +114,9 @@ struct Block{
         for(int x=0;x<3;x++)for(int y=0;y<3;y++){
             const CharData *pchar;
             pchar=&tileAt(x,y);
-            tileSet[pchar->tileId].draw(fSetPixel,plt,dx+x*8,dy+y*8,pchar->flipX,pchar->flipY);
+            tileSet[(*pchar)&TILE_ID_MASK].draw(fSetPixel,plt,dx+x*8,dy+y*8,
+                                                ((*pchar)&FLIP_X)!=0,
+                                                ((*pchar)&FLIP_Y)!=0);
         }
     }
 };
@@ -151,31 +153,86 @@ public:
 class KfMap{
 public:
     typedef std::vector<u8> Script;
-    struct Cell{
-        u16 blockId:15;
-        u16 hasScript:1;
+    typedef u16 Cell;
+    enum CellFlags{
+        BLOCK_ID_MASK=0x7FFF,
+        CELL_HAS_SCRIPT=0x8000
     };
+
     struct RipeCell{
         u16 blockId;
         std::vector<Script> scripts;
         inline RipeCell():blockId(0),scripts(){}
     };
+
     struct Item{
-        u8 species:8;
-        u8 behavior:6;
-        u8 flagA:1;
-        u8 flagB:1;
-        u8 param:8;
-        u8 catagory:7;
-        u8 hasScript:1;//Not sure
+        u16 param0;
+        u16 param1;
         u16 x;
         u16 y;
+        enum Param0Flags{
+            SPECIES_MASK=0x00FF,
+            BEHAVIOR_MASK=0x3F00,
+            FLAG_A=0x4000,
+            FLAG_B=0x8000
+        };
+        enum Param1Flags{
+            PARAM_MASK=0x00FF,
+            CATAGORY_MASK=0x7F00,
+            HAS_SCRIPT=0x8000
+        };
+        Item():param0(1),param1(0x20),x(24),y(24){}
+
+        u8 species(){
+            return param0&SPECIES_MASK;
+        }
+        void setSpecies(u8 v){
+            param0&=~SPECIES_MASK;
+            param0|=v;
+        }
+        u8 param(){
+            return param1&PARAM_MASK;
+        }
+        void setParam(u8 v){
+            param1&=~PARAM_MASK;
+            param1|=v;
+        }
+
+        u8 behavior(){
+            return (param0&BEHAVIOR_MASK)>>8;
+        }
+        void setBehavior(u8 v){
+            param0&=~BEHAVIOR_MASK;
+            param0|=v<<8;
+        }
+        u8 catagory(){
+            return (param1&CATAGORY_MASK)>>8;
+        }
+        void setCatagory(u8 v){
+            param1&=~CATAGORY_MASK;
+            param1|=v<<8;
+        }
+
+        bool flagA(){
+            return (param0&FLAG_A) !=0;
+        }
+        void setFlagA(bool v){
+            if(v)param0|=FLAG_A;
+            else param0&=~FLAG_A;
+        }
+        bool flagB(){
+            return (param0&FLAG_B) !=0;
+        }
+        void setFlagB(bool v){
+            if(v)param0|=FLAG_B;
+            else param0&=~FLAG_B;
+        }
     };
+
     struct RipeItem{
         Item basic;
         std::vector<Script> scripts;
-        RipeItem():scripts(){
-            basic=Item{1,0,0,0,0,2,0,24,24};
+        RipeItem():basic(),scripts(){
         }
     };
 
@@ -209,13 +266,13 @@ public:
     }metaData;
 
     
-    struct Script_{
+    /*struct Script_{
         u32 code:8;
         u32 hostId:15;
         u32 hostIsAItem:1;
         u32 data0:8;
         u8 data[1];
-    };
+    };*/
 
     static u32 getScripteLength(u8 *pScript);
 
@@ -268,11 +325,11 @@ public:
             for(Script& script:scripts){
                 if(script[0]==2){
                     u16 x,y;
-                    memcpy(&x,script.data()+2,2);
-                    memcpy(&y,script.data()+4,2);
+                    std::memcpy(&x,script.data()+2,2);
+                    std::memcpy(&y,script.data()+4,2);
                     doWhat(x,y);
-                    memcpy(script.data()+2,&x,2);
-                    memcpy(script.data()+4,&y,2);
+                    std::memcpy(script.data()+2,&x,2);
+                    std::memcpy(script.data()+4,&y,2);
                 }
             }
         };
@@ -321,7 +378,9 @@ public:
         for(u16 x=0;x<width;x++)for(u16 y=0;y<height;y++){
             const CharData *pchar;
             pchar=&chars[x+y*width];
-            tileSet[pchar->tileId].draw(fSetPixel,plt,dx+x*8,dy+y*8,pchar->flipX,pchar->flipY);
+            tileSet[(*pchar)&TILE_ID_MASK].draw(fSetPixel,plt,dx+x*8,dy+y*8,
+                                                ((*pchar)&FLIP_X)!=0,
+                                                ((*pchar)&FLIP_Y)!=0);
         }
     }
     inline u16 getWidth(){ return width; }
@@ -360,8 +419,8 @@ public:
 public:
     RoomInfo roomInfos[MAP_COUNT];
     
-    void fromFile(FILE* file);
-    void toFile(FILE* file);
+    void fromFile(std::FILE* file);
+    void toFile(std::FILE* file);
 
     inline u8* rawFrtPlts(u32 i){
         return rawSubFiles[0][i].ptr.get();
@@ -388,7 +447,7 @@ public:
     inline void writeMap(u32 i,const u8* p,u32 len){
         rawSubFiles[3][i].ptr.reset(new u8[len]);
         rawSubFiles[3][i].length=len;
-        memcpy(rawSubFiles[3][i].ptr.get(),p,len);
+        std::memcpy(rawSubFiles[3][i].ptr.get(),p,len);
     }
 };
 

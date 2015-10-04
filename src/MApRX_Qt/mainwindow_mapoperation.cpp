@@ -1,6 +1,6 @@
 #include <mainwindow.h>
 #include "ui_mainwindow.h"
-#include <assert.h>
+#include <cassert>
 KfMap* MainWindow::MapOperation::pMap=0;
 MainWindow* MainWindow::MapOperation::pMainWindow=0;
 MainWindow::MapOperation::~MapOperation(){

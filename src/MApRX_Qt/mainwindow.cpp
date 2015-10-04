@@ -21,17 +21,18 @@
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QTranslator>
 #include <QScrollBar>
 #include <QTextStream>
 #include <QToolButton>
-#include <time.h>
+#include <ctime>
 #include "dialogaboutme.h"
 #include "dialogmakerom.h"
 #include "dialogproperties.h"
 #include "dialogscripts.h"
 #include "dialogresizemap.h"
-#include <assert.h>
+#include "main.h"
+#include <cassert>
+
 
 QBrush itemBackground[13]{
                     QColor(255,255,255),
@@ -70,12 +71,12 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     if(role==Qt::DisplayRole||role==Qt::EditRole){
         switch(index.column()){
         case 0:
-            return QString::number(pMap->Items(itemId).basic.species);
+            return QString::number(pMap->Items(itemId).basic.species());
         case 1:
-            return QString::number(pMap->Items(itemId).basic.behavior);
+            return QString::number(pMap->Items(itemId).basic.behavior());
 
         case 4:
-            return QString::number(pMap->Items(itemId).basic.param);
+            return QString::number(pMap->Items(itemId).basic.param());
         case 5:
             return QString::number(pMap->Items(itemId).scripts.size());
         case 6:{
@@ -90,13 +91,13 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     }else if(role==Qt::CheckStateRole){
         switch(index.column()){
         case 2:
-            return pMap->Items(itemId).basic.flagA?Qt::Checked:Qt::Unchecked;
+            return pMap->Items(itemId).basic.flagA()?Qt::Checked:Qt::Unchecked;
         case 3:
-            return pMap->Items(itemId).basic.flagB?Qt::Checked:Qt::Unchecked;
+            return pMap->Items(itemId).basic.flagB()?Qt::Checked:Qt::Unchecked;
         }
     }else if(role==Qt::BackgroundRole){
-        if(pMap->Items(itemId).basic.catagory>=13)return itemBackground[0];
-        return itemBackground[pMap->Items(itemId).basic.catagory];
+        if(pMap->Items(itemId).basic.catagory()>=13)return itemBackground[0];
+        return itemBackground[pMap->Items(itemId).basic.catagory()];
     }
     return QVariant();
 }
@@ -152,18 +153,18 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
         if(index.column()==0){
             toIntBuf=value.toString().toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>255)return false;
-            itemBasic.species=toIntBuf;
-            itemBasic.catagory=itemCatagory[itemBasic.species];
+            itemBasic.setSpecies(toIntBuf);
+            itemBasic.setCatagory(itemCatagory[toIntBuf]);
         }
         else if(index.column()==1){
             toIntBuf=value.toString().toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>15)return false;
-            itemBasic.behavior=toIntBuf;
+            itemBasic.setBehavior(toIntBuf);
         }
         else if(index.column()==4){
             toIntBuf=value.toString().toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>255)return false;
-            itemBasic.param=toIntBuf;
+            itemBasic.setParam(toIntBuf);
         }else if(index.column()==6){
             QString str=value.toString();
             int x1,x2,y1,y2;
@@ -177,10 +178,10 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
         else return false;
     }else if(role==Qt::CheckStateRole){
         if(index.column()==2){
-            itemBasic.flagA=value.toBool()?1:0;
+            itemBasic.setFlagA(value.toBool());
         }
         else if(index.column()==3){
-            itemBasic.flagB=value.toBool()?1:0;
+            itemBasic.setFlagB(value.toBool());
         }
         else return false;
     }else return false;
@@ -256,7 +257,8 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef _DEBUG
     //Open a file
     QString fileName="D:/KSSU_MAP/mapdata";
-    FILE* file=_wfopen(fileName.toStdWString().data(),L"rb");
+    std::FILE* file=fopenQ(fileName,"rb");
+    if(!file)return;
     mapdata.fromFile(file);
     fclose(file);
     currentFileName=fileName;
@@ -264,29 +266,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionSave_As->setEnabled(true);
     ui->actionMake_Rom->setEnabled(true);
 
-    //check maps
-    FILE* report=fopen("D:\\Github\\MApRX\\temp\\script5.txt","w");
-    for(u32 i=0;i<MAP_COUNT;i++){
-        map.readFile(mapdata.rawMaps(i));
-        auto f=[report](KfMap::Script &script){
-            if(script[0]==5){
-                for(u8 v:script){
-                    fprintf(report,"%02X ",v);
-                }
-                fprintf(report,"\n");
-            }
-        };
-        fprintf(report,"Map#%d\n",i);
-        for(int y=0;y<map.metaData.height;y++)for(int x=0;x<map.metaData.width;x++){
-            for(KfMap::Script &s:map.at(x,y).scripts)f(s);
-        }
-        for(int i=0;i<map.metaData.itemCount;i++){
-            for(KfMap::Script &s:map.Items(i).scripts)f(s);
-        }
-        map.unload();
-    }
 
-    fclose(report);
 #endif
 
 }
@@ -410,7 +390,7 @@ void MainWindow::on_action_Open_triggered()
 }
 
 void MainWindow::openMapdata(QString fileName){
-    FILE* file=_wfopen(fileName.toStdWString().data(),L"rb");
+    std::FILE* file=fopenQ(fileName,"rb");
     if(file==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the file.");
@@ -435,7 +415,7 @@ void MainWindow::openMapdata(QString fileName){
 void MainWindow::on_action_Save_triggered()
 {
     if(currentFileName==QString::null)return;
-    FILE* file=_wfopen(currentFileName.toStdWString().c_str(),L"wb");
+    std::FILE* file=fopenQ(currentFileName,"wb");
     if(file==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the file.");
@@ -452,7 +432,7 @@ void MainWindow::on_actionSave_As_triggered(){
         "",
         "mapdata File(*.bin)");
     if(fileName==QString::null)return;
-    FILE* file=_wfopen(fileName.toStdWString().c_str(),L"wb");
+    std::FILE* file=fopenQ(fileName,"wb");
     if(file==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the file.");
@@ -517,8 +497,7 @@ void MainWindow::on_actionMap_Properties_triggered()
     }
 }
 
-extern QTranslator translator;
-extern QApplication* pApp;
+
 void MainWindow::on_actionEnglish_triggered(){
     pApp->removeTranslator(&translator);
     ui->retranslateUi(this);
@@ -534,7 +513,7 @@ void MainWindow::on_actionExtract_triggered(){
         "",
         "ROM File(*.nds *.bin);;Any files(*.*)");
     if(fileName==QString::null)return;
-    FILE* rom=_wfopen(fileName.toStdWString().data(),L"rb");
+    std::FILE* rom=fopenQ(fileName,"rb");
     if(rom==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open the ROM.");
@@ -547,7 +526,7 @@ void MainWindow::on_actionExtract_triggered(){
         "",
         "mapdata File(*.bin)");
     if(fileName==QString::null)return;
-    FILE* mapdataFile=_wfopen(fileName.toStdWString().c_str(),L"wb");
+    std::FILE* mapdataFile=fopenQ(fileName,"wb");
     if(mapdataFile==nullptr){
         QMessageBox msgBox;
         msgBox.setText("Failed to open mapdata file.");
@@ -561,9 +540,9 @@ void MainWindow::on_actionExtract_triggered(){
     u32 off,len;
     off=nitroGetSubFileOffset(rom,id,&len);
     std::unique_ptr<u8[]> buf(new u8[len]);
-    fseek(rom,off,SEEK_SET);
-    fread(buf.get(),len,1,rom);
-    fwrite(buf.get(),len,1,mapdataFile);
+    std::fseek(rom,off,SEEK_SET);
+    std::fread(buf.get(),len,1,rom);
+    std::fwrite(buf.get(),len,1,mapdataFile);
     fclose(rom);
     fclose(mapdataFile);
 

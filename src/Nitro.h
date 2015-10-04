@@ -20,7 +20,7 @@
 
 #ifndef _NITRO_H_
 #define _NITRO_H_
-#include <stdio.h>
+#include <cstdio>
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
@@ -30,39 +30,47 @@ typedef signed long s32;
 
 struct Color15
 {
-    u16 r:5;
-    u16 g:5;
-    u16 b:5;
-    u16 dummy:1;
+    u16 data;
     inline Color15(){}
-    inline Color15(u16 tr,u16 tg,u16 tb):r(tr),g(tg),b(tb){}
+    inline Color15(u16 tr,u16 tg,u16 tb){
+        data=tr|(tg<<5)|(tb<<10);
+    }
+    inline u16 r()const{
+        return data&31;
+    }
+    inline u16 g()const{
+        return (data>>5)&31;
+    }
+    inline u16 b()const{
+        return (data>>10)&31;
+    }
 
     inline u32 toARGB32()const {
         u8 tr,tg,tb;
-        tr=(r*255+15)/31;
-        tg=(g*255+15)/31;
-        tb=(b*255+15)/31;
+        tr=(r()*255+15)/31;
+        tg=(g()*255+15)/31;
+        tb=(b()*255+15)/31;
         return 0xFF000000|(tr<<16)|(tg<<8)|tb;
     }
     inline u32 toGray32()const {
         u8 t;
-        t=((r+g+b)/3*255+15)/31;
+        t=((r()+g()+b())/3*255+15)/31;
         return 0xFF000000|(t<<16)|(t<<8)|t;
     }
     static inline Color15 lerp(Color15 Zero,Color15 One,float v){
-        return Color15((u16)(Zero.r*(1-v)+One.r*v),
-                       (u16)(Zero.g*(1-v)+One.g*v),
-                       (u16)(Zero.b*(1-v)+One.b*v)
+        return Color15((u16)(Zero.r()*(1-v)+One.r()*v),
+                       (u16)(Zero.g()*(1-v)+One.g()*v),
+                       (u16)(Zero.b()*(1-v)+One.b()*v)
                        );
     }
     
 };
-struct CharData
-{
-    u16 tileId:10;
-    u16 flipX:1;
-    u16 flipY:1;
-    u16 dummy:4;
+
+typedef u16 CharData;
+enum CharDataFlags{
+    TILE_ID_MASK=1023,
+    FLIP_X=1024,
+    FLIP_Y=2048,
 };
 
 struct Tile8bpp
@@ -154,10 +162,10 @@ struct ROM_FAT
 };
 
 
-u16 nitroGetSubFileId(FILE *file, const char* subfilename);
+u16 nitroGetSubFileId(std::FILE *file, const char* subfilename);
 
-u32 nitroGetSubFileOffset(FILE *file, u16 Id, u32* getlen=0);
-void nitroSetSubFileOffset(FILE *file, u16 Id, u32 from, u32 len);
+u32 nitroGetSubFileOffset(std::FILE *file, u16 Id, u32* getlen=0);
+void nitroSetSubFileOffset(std::FILE *file, u16 Id, u32 from, u32 len);
 
 u16 nitroCrc16(void *buf,u32 length);
 
