@@ -43,6 +43,7 @@ void MapPlane0::paintEvent(QPaintEvent *){
     }
     else{
         QImage image(width,height,QImage::Format_ARGB32);
+        image.fill(Qt::transparent);
         if(pMainWindow->showItems){
             pMainWindow->map.draw([this,&image](int x,int y,const Color15& c15){
                 u32 c=c15.toGray32();

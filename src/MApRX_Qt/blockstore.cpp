@@ -40,6 +40,7 @@ void BlockStore::paintEvent(QPaintEvent *){
     }
     else{
         QImage image(width,height,QImage::Format_ARGB32);
+        image.fill(Qt::transparent);
         for(u32 i=0;i<pMainWindow->blocks.blockCount();i++){
             pMainWindow->blocks[i].draw([this,&image](int x,int y,const Color15& c15){
                 u32 c=c15.toARGB32();
