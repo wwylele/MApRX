@@ -40,8 +40,9 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
-//a helper function for opening a file from QString name
-std::FILE *fopenQ(const QString& name,const QString& mode){
-    //and is it ok to use _wfopen?
-    return _wfopen(name.toStdWString().c_str(),mode.toStdWString().c_str());
+
+std::FILE *fopenQ(const QString& name, const char *mode){
+    QByteArray nameLocale=name.toLocal8Bit();
+    nameLocale.push_back('\0');
+    return std::fopen(nameLocale.data(),mode);
 }
