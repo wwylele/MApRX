@@ -274,7 +274,8 @@ void uncompressLZ(const  u8 *srcp,u8 *destp)
                 destCount-=length;
                 do
                 {
-                    *pDst++=pDst[-offset];
+                    *pDst=pDst[-offset];
+                    ++pDst;
                 } while(--length > 0);
             }
             if(destCount <= 0)

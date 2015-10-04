@@ -52,8 +52,8 @@ QBrush itemBackground[13]{
 
 ItemTableModal::ItemTableModal
     (MainWindow *_pMainWindow, QObject *parent):
-    pMainWindow(_pMainWindow),
-    QAbstractTableModel(parent){
+    QAbstractTableModel(parent),
+    pMainWindow(_pMainWindow){
     pMap=&pMainWindow->map;
 }
 int ItemTableModal::columnCount(const QModelIndex &) const{
@@ -194,9 +194,9 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    itemTableModal(this),
     ui(new Ui::MainWindow),
-    mapUpdateTimer(this),
-    itemTableModal(this)
+    mapUpdateTimer(this)
 {
     ui->setupUi(this);
     ui->actionShow_Animation->setChecked(true);
@@ -260,7 +260,7 @@ MainWindow::MainWindow(QWidget *parent) :
     std::FILE* file=fopenQ(fileName,"rb");
     if(!file)return;
     mapdata.fromFile(file);
-    fclose(file);
+    std::fclose(file);
     currentFileName=fileName;
     ui->action_Save->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
@@ -399,7 +399,7 @@ void MainWindow::openMapdata(QString fileName){
         return;
     }
     mapdata.fromFile(file);
-    fclose(file);
+    std::fclose(file);
     currentFileName=fileName;
 
     mapUpdateTimer.stop();
@@ -425,7 +425,7 @@ void MainWindow::on_action_Save_triggered()
     }
     if(map.Loaded())saveCurrentRoom();
     mapdata.toFile(file);
-    fclose(file);
+    std::fclose(file);
 }
 void MainWindow::on_actionSave_As_triggered(){
     QString fileName=QFileDialog::getSaveFileName(this, "Save As ...",
@@ -442,7 +442,7 @@ void MainWindow::on_actionSave_As_triggered(){
     }
     if(map.Loaded())saveCurrentRoom();
     mapdata.toFile(file);
-    fclose(file);
+    std::fclose(file);
     currentFileName=fileName;
 }
 
@@ -532,7 +532,7 @@ void MainWindow::on_actionExtract_triggered(){
         msgBox.setText("Failed to open mapdata file.");
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
-        fclose(rom);
+        std::fclose(rom);
         return;
     }
 
@@ -543,8 +543,8 @@ void MainWindow::on_actionExtract_triggered(){
     std::fseek(rom,off,SEEK_SET);
     std::fread(buf.get(),len,1,rom);
     std::fwrite(buf.get(),len,1,mapdataFile);
-    fclose(rom);
-    fclose(mapdataFile);
+    std::fclose(rom);
+    std::fclose(mapdataFile);
 
     QMessageBox msgBox;
     msgBox.setText("Succeeded to extract mapdata from ROM.");
@@ -597,11 +597,11 @@ void MainWindow::on_buttonItemNew_clicked()
     if(!map.Loaded())return;
     KfMap::RipeItem item;
     QSize size=ui->mapPlane0ScrollArea->size();
-    item.basic.x=ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2;
-    item.basic.y=ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2;
-    if(item.basic.x<0)item.basic.x=0;
+    int tx=(ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2);
+    item.basic.x=(tx>=0?tx:0);
+    int ty=(ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2);
+    item.basic.y=(ty>=0?ty:0);
     if(item.basic.x>map.metaData.width*24)item.basic.x=map.metaData.width*24;
-    if(item.basic.y<0)item.basic.y=0;
     if(item.basic.y>map.metaData.height*24)item.basic.y=map.metaData.height*24;
     MoNewItem mo(map.metaData.itemCount,item);
     mo.toolTip="Add Item";

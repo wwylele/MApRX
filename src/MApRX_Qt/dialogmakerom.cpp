@@ -104,7 +104,7 @@ void DialogMakeRom::on_buttonMake_clicked()
     std::fseek(mapdata,0,SEEK_SET);
     std::unique_ptr<u8[]> buf(new u8[len]);
     std::fread(buf.get(),len,1,mapdata);
-    fclose(mapdata);
+    std::fclose(mapdata);
 
     u16 fileId=nitroGetSubFileId(rom,"rom/map01/mapdata");
     assert(fileId!=0xFFFF);
@@ -129,7 +129,7 @@ void DialogMakeRom::on_buttonMake_clicked()
 
 
 
-    fclose(rom);
+    std::fclose(rom);
 
     QMessageBox msgBox;
     msgBox.setText("Success!");

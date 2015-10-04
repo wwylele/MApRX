@@ -23,6 +23,7 @@
 #include "Nitro.h"
 #include <vector>
 #include <memory>
+#include <cstring>
 
 extern const int MetaDataLength[7];
 

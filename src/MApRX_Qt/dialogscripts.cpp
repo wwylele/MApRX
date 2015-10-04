@@ -20,6 +20,7 @@
 #include "dialogscripts.h"
 #include "ui_dialogscripts.h"
 #include <cassert>
+#include <cstring>
 #include <QFontMetrics>
 #include <QImage>
 const QString scriptText[7]={
@@ -33,8 +34,8 @@ const QString scriptText[7]={
 };
 
 ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
-    pMainWindow(_pMainWindow),
-    QStyledItemDelegate(parent)
+    QStyledItemDelegate(parent),
+    pMainWindow(_pMainWindow)
 {
 
 }
@@ -165,10 +166,10 @@ QSize ScriptDelegate::sizeHint(const QStyleOptionViewItem &option,
     return QSize(width,30);
 }
 DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWindow *_pMainWindow, QWidget *parent) :
-    scripts(_scripts),
-    pMainWindow(_pMainWindow),
     QDialog(parent),
-    ui(new Ui::DialogScripts)
+    scripts(_scripts),
+    ui(new Ui::DialogScripts),
+    pMainWindow(_pMainWindow)
 {
     ui->setupUi(this);
 
