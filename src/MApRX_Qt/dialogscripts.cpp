@@ -20,6 +20,7 @@
 #include "dialogscripts.h"
 #include "ui_dialogscripts.h"
 #include <cassert>
+#include <cstring>
 #include <QFontMetrics>
 #include <QImage>
 const QString scriptText[7]={
@@ -59,7 +60,7 @@ void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
         painter->drawText(dx,dy,width,30,Qt::AlignCenter,scriptText[1]);
         for(int i=0;i<script[3];i++){
             u16 blockId;
-            memcpy(&blockId,script.data()+4+i*2,2);
+            std::memcpy(&blockId,script.data()+4+i*2,2);
             pMainWindow->blocks[blockId].draw([this,&image](int x,int y,const Color15& c15){
                 u32 c=c15.toARGB32();
                 image.setPixel(x,y,c);
@@ -69,17 +70,17 @@ void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
         break;}
     case 2:{
         u16 x,y;
-        memcpy(&x,script.data()+3,2);
-        memcpy(&y,script.data()+5,2);
+        std::memcpy(&x,script.data()+3,2);
+        std::memcpy(&y,script.data()+5,2);
         QString t=scriptText[2].arg(x).arg(y);
         width=option.fontMetrics.width(t);
         painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
         break;}
     case 3:{
         u16 r,x,y;
-        memcpy(&r,script.data()+3,2);
-        memcpy(&x,script.data()+5,2);
-        memcpy(&y,script.data()+7,2);
+        std::memcpy(&r,script.data()+3,2);
+        std::memcpy(&x,script.data()+5,2);
+        std::memcpy(&y,script.data()+7,2);
         QString t=scriptText[3].arg(r).arg(x).arg(y);
         width=option.fontMetrics.width(t);
         painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
@@ -92,7 +93,7 @@ void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     case 5:{
         QString arg1,arg2,t;
         s16 time;
-        memcpy(&time,script.data()+3,2);
+        std::memcpy(&time,script.data()+3,2);
         if(time<0){
             arg1=QString::number(-time);
             arg2="VOID";
@@ -125,15 +126,15 @@ QSize ScriptDelegate::sizeHint(const QStyleOptionViewItem &option,
         break;
     case 2:{
         u16 x,y;
-        memcpy(&x,script.data()+3,2);
-        memcpy(&y,script.data()+5,2);
+        std::memcpy(&x,script.data()+3,2);
+        std::memcpy(&y,script.data()+5,2);
         width=option.fontMetrics.width(scriptText[2].arg(x).arg(y));
         break;}
     case 3:{
         u16 r,x,y;
-        memcpy(&r,script.data()+3,2);
-        memcpy(&x,script.data()+5,2);
-        memcpy(&y,script.data()+7,2);
+        std::memcpy(&r,script.data()+3,2);
+        std::memcpy(&x,script.data()+5,2);
+        std::memcpy(&y,script.data()+7,2);
         width=option.fontMetrics.width(scriptText[3].arg(r).arg(x).arg(y));
         break;}
     case 4:
@@ -142,7 +143,7 @@ QSize ScriptDelegate::sizeHint(const QStyleOptionViewItem &option,
     case 5:{
         QString arg1,arg2,t;
         s16 time;
-        memcpy(&time,script.data()+3,2);
+        std::memcpy(&time,script.data()+3,2);
         if(time<0){
             arg1=QString::number(-time);
             arg2="VOID";

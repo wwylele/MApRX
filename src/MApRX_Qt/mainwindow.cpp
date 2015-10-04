@@ -259,7 +259,7 @@ MainWindow::MainWindow(QWidget *parent) :
     std::FILE* file=fopenQ(fileName,"rb");
     if(!file)return;
     mapdata.fromFile(file);
-    fclose(file);
+    std::fclose(file);
     currentFileName=fileName;
     ui->action_Save->setEnabled(true);
     ui->actionSave_As->setEnabled(true);
@@ -398,7 +398,7 @@ void MainWindow::openMapdata(QString fileName){
         return;
     }
     mapdata.fromFile(file);
-    fclose(file);
+    std::fclose(file);
     currentFileName=fileName;
 
     mapUpdateTimer.stop();
@@ -424,7 +424,7 @@ void MainWindow::on_action_Save_triggered()
     }
     if(map.Loaded())saveCurrentRoom();
     mapdata.toFile(file);
-    fclose(file);
+    std::fclose(file);
 }
 void MainWindow::on_actionSave_As_triggered(){
     QString fileName=QFileDialog::getSaveFileName(this, "Save As ...",
@@ -441,7 +441,7 @@ void MainWindow::on_actionSave_As_triggered(){
     }
     if(map.Loaded())saveCurrentRoom();
     mapdata.toFile(file);
-    fclose(file);
+    std::fclose(file);
     currentFileName=fileName;
 }
 
@@ -531,7 +531,7 @@ void MainWindow::on_actionExtract_triggered(){
         msgBox.setText("Failed to open mapdata file.");
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
-        fclose(rom);
+        std::fclose(rom);
         return;
     }
 
@@ -542,8 +542,8 @@ void MainWindow::on_actionExtract_triggered(){
     std::fseek(rom,off,SEEK_SET);
     std::fread(buf.get(),len,1,rom);
     std::fwrite(buf.get(),len,1,mapdataFile);
-    fclose(rom);
-    fclose(mapdataFile);
+    std::fclose(rom);
+    std::fclose(mapdataFile);
 
     QMessageBox msgBox;
     msgBox.setText("Succeeded to extract mapdata from ROM.");

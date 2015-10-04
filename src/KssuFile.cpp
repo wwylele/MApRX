@@ -530,6 +530,8 @@ void KfMap::resizeMap(u16 width, u16 height, Align hAlign, Align vAlign){
         x0=(width-metaData.width)/2;break;
     case END:
         x0=width-metaData.width;break;
+    default:
+        x0=0;break;
     }
     switch(vAlign){
     case BEGIN:
@@ -538,6 +540,8 @@ void KfMap::resizeMap(u16 width, u16 height, Align hAlign, Align vAlign){
         y0=(height-metaData.height)/2;break;
     case END:
         y0=height-metaData.height;break;
+    default:
+        y0=0;break;
     }
     resizeMap(width,height,x0,y0);
 }
