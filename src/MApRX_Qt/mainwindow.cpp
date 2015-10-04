@@ -597,12 +597,10 @@ void MainWindow::on_buttonItemNew_clicked()
     if(!map.Loaded())return;
     KfMap::RipeItem item;
     QSize size=ui->mapPlane0ScrollArea->size();
-    if((ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2)>=0)
-    item.basic.x=ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2;
-    else item.basic.x=0;
-    if((ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2)>=0)
-    item.basic.y=ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2;
-    else item.basic.y=0;
+    int tx=(ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2);
+    item.basic.x=(tx>=0?tx:0);
+    int ty=(ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2);
+    item.basic.y=(ty>=0?ty:0);
     if(item.basic.x>map.metaData.width*24)item.basic.x=map.metaData.width*24;
     if(item.basic.y>map.metaData.height*24)item.basic.y=map.metaData.height*24;
     MoNewItem mo(map.metaData.itemCount,item);
