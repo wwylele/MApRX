@@ -168,7 +168,7 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
         }else if(index.column()==6){
             QString str=value.toString();
             int x1,x2,y1,y2;
-            if(swscanf(str.toStdWString().c_str(),L"%d(%d),%d(%d)",
+            if(std::swscanf(str.toStdWString().c_str(),L"%d(%d),%d(%d)",
                        &x1,&x2,&y1,&y2)!=4)
                 return false;
             itemBasic.x=x1*24+x2;

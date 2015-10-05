@@ -23,6 +23,9 @@
 #include <cstring>
 #include <QFontMetrics>
 #include <QImage>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QLabel>
 const QString scriptText[7]={
     "",
     " - Change block to ",
@@ -38,6 +41,62 @@ ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
     pMainWindow(_pMainWindow)
 {
 
+}
+QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                      const QModelIndex &index) const{
+    KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
+    QWidget* editor=new QWidget(parent);
+    editor->setBackgroundRole(QPalette::Highlight);
+    editor->setAutoFillBackground(true);
+    switch(script[0]){
+    case 2:{
+
+        QHBoxLayout *layout=new QHBoxLayout(editor);
+        layout->addWidget(new QLabel("Bind with cell",editor));
+        layout->addWidget(new QLineEdit(editor));
+        break;
+    }
+
+    default:
+        break;
+    }
+    return editor;
+}
+void ScriptDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
+    KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
+    switch(script[0]){
+    case 2:{
+        u16 x,y;
+        std::memcpy(&x,script.data()+3,2);
+        std::memcpy(&y,script.data()+5,2);
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(QString("%1,%2").arg(x).arg(y));
+        break;
+    }
+    default:break;
+    }
+}
+void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+                  const QModelIndex &index) const{
+    KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
+    switch(script[0]){
+    case 2:{
+        u32 x,y;
+        QString str=(qobject_cast<QLineEdit*>(
+                editor->layout()->itemAt(1)->widget()))
+                ->text();
+        if(std::swscanf(str.toStdWString().c_str(),L"%u,%u",
+                   &x,&y)!=2)
+            return;
+        if(x>0xFFFF || y>0xFFFF)return;
+        std::memcpy(script.data()+3,&x,2);
+        std::memcpy(script.data()+5,&y,2);
+        break;
+    }
+    default:break;
+    }
+    model->setData(index,QVariant::fromValue(script));
 }
 void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
            const QModelIndex &index) const
@@ -180,6 +239,7 @@ DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWind
         QListWidgetItem *pItem=new QListWidgetItem();
         pItem->setData(Qt::DisplayRole,QVariant::fromValue
                        (scripts[i]));
+        pItem->setFlags(Qt::ItemIsEditable|pItem->flags());
         ui->scriptListWidget->addItem(pItem);
     }
 
