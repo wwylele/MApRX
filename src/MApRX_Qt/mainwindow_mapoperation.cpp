@@ -141,6 +141,36 @@ MainWindow::MapOperation* MainWindow::MoPasteMap::generateReversal(){
 }
 
 
+MainWindow::MoEditCellScript::MoEditCellScript(const std::vector<KfMap::Script>& scripts,u16 x,u16 y)
+    :scriptsToBe(scripts),x(x),y(y){
+
+}
+
+void MainWindow::MoEditCellScript::doOperation(){
+    pMap->at(x,y).scripts=scriptsToBe;
+}
+
+MainWindow::MapOperation* MainWindow::MoEditCellScript::generateReversal(){
+    return new MoEditCellScript(pMap->at(x,y).scripts,x,y);
+}
+
+
+MainWindow::MoEditItemScript::MoEditItemScript(const std::vector<KfMap::Script>& scripts,u8 itemId)
+    :scriptsToBe(scripts),itemId(itemId){
+
+}
+
+void MainWindow::MoEditItemScript::doOperation(){
+    pMap->Items(itemId).scripts=scriptsToBe;
+}
+
+MainWindow::MapOperation* MainWindow::MoEditItemScript::generateReversal(){
+    return new MoEditItemScript(pMap->Items(itemId).scripts,itemId);
+}
+
+
+//////////////////////////////////////////////////////////////////////
+
 void MainWindow::clearOperationStack(){
     while(!undoStack.empty())undoStack.pop();
     while(!redoStack.empty())redoStack.pop();

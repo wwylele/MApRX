@@ -249,3 +249,15 @@ DialogScripts::~DialogScripts()
 {
     delete ui;
 }
+
+void DialogScripts::on_buttonBox_accepted()
+{
+    scripts.clear();
+    for(int i=0;;i++){
+        QListWidgetItem* pItem=ui->scriptListWidget->item(i);
+        if(pItem==0)break;
+        scripts.push_back(qvariant_cast<KfMap::Script>
+                          (pItem->data(Qt::DisplayRole)));
+    }
+    accept();
+}

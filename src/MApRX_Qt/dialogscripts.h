@@ -58,6 +58,9 @@ public:
                            MainWindow* pMainWindow, QWidget *parent = 0);
     ~DialogScripts();
 
+private slots:
+    void on_buttonBox_accepted();
+
 private:
     Ui::DialogScripts *ui;
     MainWindow* pMainWindow;

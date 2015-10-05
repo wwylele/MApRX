@@ -613,7 +613,8 @@ void MainWindow::on_buttonItemNew_clicked()
 void MainWindow::on_itemTable_clicked(const QModelIndex &index)
 {
     if(!map.Loaded())return;
-    KfMap::Item& item=map.Items(index.row()).basic;
+    u8 itemId=index.row();
+    KfMap::Item& item=map.Items(itemId).basic;
     QSize size=ui->mapPlane0ScrollArea->size();
     ui->mapPlane0ScrollArea->horizontalScrollBar()->setValue(
                 item.x-size.width()/2);
@@ -621,9 +622,13 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
                 item.y-size.height()/2);
 
     if(index.column()==5){
-        DialogScripts dlg(map.Items(index.row()).scripts,this);
-        dlg.setWindowTitle(QString("Scripts for item#%1").arg(index.row()));
-        dlg.exec();
+        DialogScripts dlg(map.Items(itemId).scripts,this);
+        dlg.setWindowTitle(QString("Scripts for item#%1").arg(itemId));
+        if(dlg.exec()==QDialog::Accepted){
+            MoEditItemScript mo(dlg.scripts,itemId);
+            mo.toolTip=QString("Edit Scripts for item#%1").arg(itemId);
+            doOperation(&mo);
+        }
     }
 
 }
