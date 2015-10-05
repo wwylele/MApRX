@@ -1,5 +1,7 @@
 /*************************************************************************
     mainwindow.h
+    :Main Window
+
     Copyright (C) 2015 wwylele
 
     This file is part of MApRX.

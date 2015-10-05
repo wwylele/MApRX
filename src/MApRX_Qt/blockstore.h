@@ -1,5 +1,7 @@
 /*************************************************************************
     blockstore.h
+    :A widget contain blocks
+
     Copyright (C) 2015 wwylele
 
     This file is part of MApRX.

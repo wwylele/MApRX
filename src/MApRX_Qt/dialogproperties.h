@@ -1,5 +1,7 @@
 /*************************************************************************
     dialogproperties.h
+    :"Map Properties" dialog
+
     Copyright (C) 2015 wwylele
 
     This file is part of MApRX.

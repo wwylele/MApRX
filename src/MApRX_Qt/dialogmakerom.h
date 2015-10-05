@@ -1,5 +1,7 @@
 /*************************************************************************
     dialogmakerom.h
+    :"Make ROM" dialog
+
     Copyright (C) 2015 wwylele
 
     This file is part of MApRX.
