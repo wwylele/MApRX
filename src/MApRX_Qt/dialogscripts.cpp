@@ -26,6 +26,7 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QLabel>
+
 const QString scriptText[7]={
     "",
     " - Change block to ",
@@ -42,7 +43,7 @@ ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
 {
 
 }
-QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/,
                       const QModelIndex &index) const{
     KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
     QWidget* editor=new QWidget(parent);
@@ -402,6 +403,13 @@ DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWind
         ui->scriptListWidget->addItem(pItem);
     }
 
+    menu.addAction(ui->actionAddScript1);
+    menu.addAction(ui->actionAddScript2);
+    menu.addAction(ui->actionAddScript3);
+    menu.addAction(ui->actionAddScript4);
+    menu.addAction(ui->actionAddScript5);
+    menu.addAction(ui->actionAddScript6);
+
 }
 
 DialogScripts::~DialogScripts()
@@ -419,4 +427,55 @@ void DialogScripts::on_buttonBox_accepted()
                           (pItem->data(Qt::DisplayRole)));
     }
     accept();
+}
+
+void DialogScripts::on_buttonRemove_clicked()
+{
+
+    delete ui->scriptListWidget->takeItem(
+                ui->scriptListWidget->currentRow());
+}
+
+void DialogScripts::on_buttonAdd_clicked()
+{
+
+
+    menu.exec(ui->buttonAdd->mapToGlobal(ui->buttonAdd->rect().bottomLeft()));
+}
+void DialogScripts::addScript(const KfMap::Script& script){
+    QListWidgetItem *pItem=new QListWidgetItem();
+    pItem->setData(Qt::DisplayRole,QVariant::fromValue
+                   (script));
+    pItem->setFlags(Qt::ItemIsEditable|pItem->flags());
+    ui->scriptListWidget->addItem(pItem);
+}
+
+void DialogScripts::on_actionAddScript1_triggered()
+{
+    addScript(KfMap::Script{1,0xCC,0xCC,1,0,0});
+}
+
+void DialogScripts::on_actionAddScript2_triggered()
+{
+    addScript(KfMap::Script{2,0xCC,0xCC,0,0,0,0});
+}
+
+void DialogScripts::on_actionAddScript3_triggered()
+{
+    addScript(KfMap::Script{3,0xCC,0xCC,0,0,0,0,0,0});
+}
+
+void DialogScripts::on_actionAddScript4_triggered()
+{
+    addScript(KfMap::Script{4,0xCC,0xCC,0});
+}
+
+void DialogScripts::on_actionAddScript5_triggered()
+{
+    addScript(KfMap::Script{5,0xCC,0xCC,0xFF,0xFF});
+}
+
+void DialogScripts::on_actionAddScript6_triggered()
+{
+    addScript(KfMap::Script{6,0xCC,0xCC,1,0,0});
 }

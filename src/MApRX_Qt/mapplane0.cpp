@@ -156,10 +156,11 @@ void MapPlane0::mousePressEvent(QMouseEvent* event){
                 pBlockStore->repaint();
             }else if(event->button()==Qt::RightButton){
                 DialogScripts dlg(pMainWindow->map.at(curX,curY).scripts,pMainWindow);
-                dlg.setWindowTitle(QString("Scripts for cell(%1,%2)").arg(curX).arg(curY));
+                int x=curX,y=curY;
+                dlg.setWindowTitle(QString("Scripts for cell(%1,%2)").arg(x).arg(y));
                 if(dlg.exec()==QDialog::Accepted){
-                    MainWindow::MoEditCellScript mo(dlg.scripts,curX,curY);
-                    mo.toolTip=QString("Edit Scripts for cell(%1,%2)").arg(curX).arg(curY);
+                    MainWindow::MoEditCellScript mo(dlg.scripts,x,y);
+                    mo.toolTip=QString("Edit Scripts for cell(%1,%2)").arg(x).arg(y);
                     pMainWindow->doOperation(&mo);
                 }
             }

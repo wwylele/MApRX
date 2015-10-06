@@ -26,6 +26,7 @@
 #include "../KssuFile.h"
 #include <QStyledItemDelegate>
 #include <QPainter>
+#include <QMenu>
 #include "mainwindow.h"
 namespace Ui {
 class DialogScripts;
@@ -61,9 +62,27 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
+    void on_buttonRemove_clicked();
+
+    void on_buttonAdd_clicked();
+
+    void on_actionAddScript1_triggered();
+
+    void on_actionAddScript2_triggered();
+
+    void on_actionAddScript3_triggered();
+
+    void on_actionAddScript4_triggered();
+
+    void on_actionAddScript5_triggered();
+
+    void on_actionAddScript6_triggered();
+
 private:
     Ui::DialogScripts *ui;
     MainWindow* pMainWindow;
+    QMenu menu;
+    void addScript(const KfMap::Script& script);
 };
 
 #endif // DIALOGSCRIPTS_H
