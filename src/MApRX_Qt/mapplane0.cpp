@@ -52,11 +52,14 @@ void MapPlane0::paintEvent(QPaintEvent *){
         }
         else{
             if(pMainWindow->showBackground &&pMainWindow->bckScr.Loaded())
-                pMainWindow->bckScr.draw([this,&image](int x,int y,const Color15& c15){
-                u32 c=c15.toARGB32();
-                for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)for(;y<height;y+=pMainWindow->bckScr.getHeight()*8)
-                    image.setPixel(x,y,c);
-            },pMainWindow->bckPlt,0,0,pMainWindow->bckTiles);
+                pMainWindow->bckScr.draw(
+                    [this,&image](int x,int y,const Color15& c15){
+                        u32 c=c15.toARGB32();
+                        for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)for(;y<height;y+=pMainWindow->bckScr.getHeight()*8)
+                            image.setPixel(x,y,c);
+                    },
+                    pMainWindow->bckPlt,
+                    0,0,pMainWindow->bckTiles);
             pMainWindow->map.draw([this,&image](int x,int y,const Color15& c15){
                 u32 c=c15.toARGB32();
                 image.setPixel(x,y,c);

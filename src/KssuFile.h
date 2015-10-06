@@ -119,9 +119,14 @@ struct Block{
         for(int x=0;x<3;x++)for(int y=0;y<3;y++){
             const CharData *pchar;
             pchar=&tileAt(x,y);
-            tileSet[(*pchar)&TILE_ID_MASK].draw(fSetPixel,plt,dx+x*8,dy+y*8,
-                                                ((*pchar)&FLIP_X)!=0,
-                                                ((*pchar)&FLIP_Y)!=0);
+            tileSet[(*pchar)&TILE_ID_MASK].draw(
+                fSetPixel,
+                [&plt](u8 colorId)->Color15{ return plt.Colors(colorId); },
+                dx+x*8,
+                dy+y*8,
+                ((*pchar)&FLIP_X)!=0,
+                ((*pchar)&FLIP_Y)!=0
+                );
         }
     }
 };
@@ -385,9 +390,13 @@ public:
         for(u16 x=0;x<width;x++)for(u16 y=0;y<height;y++){
             const CharData *pchar;
             pchar=&chars[x+y*width];
-            tileSet[(*pchar)&TILE_ID_MASK].draw(fSetPixel,plt,dx+x*8,dy+y*8,
-                                                ((*pchar)&FLIP_X)!=0,
-                                                ((*pchar)&FLIP_Y)!=0);
+            tileSet[(*pchar)&TILE_ID_MASK].draw(
+                fSetPixel,
+                [&plt](u8 colorId)->Color15{return plt.Colors(colorId);},
+                dx+x*8,
+                dy+y*8,
+                ((*pchar)&FLIP_X)!=0,
+                ((*pchar)&FLIP_Y)!=0);
         }
     }
     inline u16 getWidth(){ return width; }
