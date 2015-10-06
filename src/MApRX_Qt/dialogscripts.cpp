@@ -81,6 +81,13 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
         editor->setLayout(layout);
         break;
     }
+    case 6:{
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Generate Meta Knights",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
     default:
         break;
     }
@@ -89,14 +96,14 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
 void ScriptDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
     KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
     switch(script[0]){
-    case 1:{
+    case 1:case 6:{
         u8 count=script[3];
         QString str;
         for(int i=0;i<count;i++){
-            u16 blockId;
-            memcpy(&blockId,script.data()+4+i*2,2);
+            u16 id;
+            memcpy(&id,script.data()+4+i*2,2);
             if(i!=0)str+=",";
-            str+=QString::number(blockId);
+            str+=QString::number(id);
         }
         (qobject_cast<QLineEdit*>(
              editor->layout()->itemAt(1)->widget()))
@@ -138,7 +145,7 @@ void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                   const QModelIndex &index) const{
     KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
     switch(script[0]){
-    case 1:{
+    case 1:case 6:{
         QString str=(qobject_cast<QLineEdit*>(
                 editor->layout()->itemAt(1)->widget()))
                 ->text();
@@ -147,11 +154,11 @@ void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
         script.resize(4+strL.size()*2);
         script[3]=strL.size();
         for(int i=0;i<strL.size();i++){
-            u16 blockId;
+            u16 id;
             bool ok;
-            blockId=strL[i].toUShort(&ok);
+            id=strL[i].toUShort(&ok);
             if(!ok)return;
-            memcpy(script.data()+4+i*2,&blockId,2);
+            memcpy(script.data()+4+i*2,&id,2);
         }
         break;
     }
