@@ -51,9 +51,19 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
     switch(script[0]){
     case 2:{
 
-        QHBoxLayout *layout=new QHBoxLayout(editor);
+        QHBoxLayout *layout=new QHBoxLayout();
         layout->addWidget(new QLabel("Bind with cell",editor));
         layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
+    case 3:{
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Transport to room",editor));
+        layout->addWidget(new QLineEdit(editor));
+        layout->addWidget(new QLabel(",cell",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
         break;
     }
 
@@ -71,6 +81,19 @@ void ScriptDelegate::setEditorData(QWidget *editor, const QModelIndex &index) co
         std::memcpy(&y,script.data()+5,2);
         (qobject_cast<QLineEdit*>(
              editor->layout()->itemAt(1)->widget()))
+             ->setText(QString("%1,%2").arg(x).arg(y));
+        break;
+    }
+    case 3:{
+        u16 r,x,y;
+        std::memcpy(&r,script.data()+3,2);
+        std::memcpy(&x,script.data()+5,2);
+        std::memcpy(&y,script.data()+7,2);
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(QString::number(r));
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(3)->widget()))
              ->setText(QString("%1,%2").arg(x).arg(y));
         break;
     }
@@ -92,6 +115,25 @@ void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
         if(x>0xFFFF || y>0xFFFF)return;
         std::memcpy(script.data()+3,&x,2);
         std::memcpy(script.data()+5,&y,2);
+        break;
+    }
+    case 3:{
+        u32 r,x,y;
+        QString str=(qobject_cast<QLineEdit*>(
+                editor->layout()->itemAt(3)->widget()))
+                ->text();
+        if(std::swscanf(str.toStdWString().c_str(),L"%u,%u",
+                   &x,&y)!=2)
+            return;
+        bool toUIntOk;
+        r=(qobject_cast<QLineEdit*>(
+               editor->layout()->itemAt(1)->widget()))
+               ->text().toULong(&toUIntOk);
+        if(!toUIntOk)return;
+        if(r>0xFFFF||x>0xFFFF || y>0xFFFF)return;
+        std::memcpy(script.data()+3,&r,2);
+        std::memcpy(script.data()+5,&x,2);
+        std::memcpy(script.data()+7,&y,2);
         break;
     }
     default:break;
