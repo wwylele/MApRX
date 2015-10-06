@@ -49,6 +49,13 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
     editor->setBackgroundRole(QPalette::Highlight);
     editor->setAutoFillBackground(true);
     switch(script[0]){
+    case 1:{
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Change block to",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
     case 2:{
 
         QHBoxLayout *layout=new QHBoxLayout();
@@ -82,6 +89,20 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
 void ScriptDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
     KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
     switch(script[0]){
+    case 1:{
+        u8 count=script[3];
+        QString str;
+        for(int i=0;i<count;i++){
+            u16 blockId;
+            memcpy(&blockId,script.data()+4+i*2,2);
+            if(i!=0)str+=",";
+            str+=QString::number(blockId);
+        }
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(str);
+        break;
+    }
     case 2:{
         u16 x,y;
         std::memcpy(&x,script.data()+3,2);
@@ -117,6 +138,23 @@ void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                   const QModelIndex &index) const{
     KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
     switch(script[0]){
+    case 1:{
+        QString str=(qobject_cast<QLineEdit*>(
+                editor->layout()->itemAt(1)->widget()))
+                ->text();
+        QStringList strL=str.split(',');
+        if(strL.size()==0||strL.size()>16)return;
+        script.resize(4+strL.size()*2);
+        script[3]=strL.size();
+        for(int i=0;i<strL.size();i++){
+            u16 blockId;
+            bool ok;
+            blockId=strL[i].toUShort(&ok);
+            if(!ok)return;
+            memcpy(script.data()+4+i*2,&blockId,2);
+        }
+        break;
+    }
     case 2:{
         u32 x,y;
         QString str=(qobject_cast<QLineEdit*>(
@@ -185,6 +223,7 @@ void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
         width=option.fontMetrics.width(scriptText[1]);
         painter->drawText(dx,dy,width,30,Qt::AlignCenter,scriptText[1]);
         for(int i=0;i<script[3];i++){
+            image.fill(Qt::transparent);
             u16 blockId;
             std::memcpy(&blockId,script.data()+4+i*2,2);
             pMainWindow->blocks[blockId].draw([this,&image](int x,int y,const Color15& c15){
