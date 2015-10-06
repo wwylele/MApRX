@@ -25,12 +25,30 @@
     <widget class="QListWidget" name="scriptListWidget"/>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QPushButton" name="buttonRemove">
+       <property name="text">
+        <string>Remove</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="buttonAdd">
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
+      <set>QDialogButtonBox::Close|QDialogButtonBox::Ok</set>
      </property>
      <property name="centerButtons">
       <bool>false</bool>
@@ -38,6 +56,36 @@
     </widget>
    </item>
   </layout>
+  <action name="actionAddScript1">
+   <property name="text">
+    <string>Add block change</string>
+   </property>
+  </action>
+  <action name="actionAddScript2">
+   <property name="text">
+    <string>Add cell binding</string>
+   </property>
+  </action>
+  <action name="actionAddScript3">
+   <property name="text">
+    <string>Add transport</string>
+   </property>
+  </action>
+  <action name="actionAddScript4">
+   <property name="text">
+    <string>Add item binding</string>
+   </property>
+  </action>
+  <action name="actionAddScript5">
+   <property name="text">
+    <string>Add timer</string>
+   </property>
+  </action>
+  <action name="actionAddScript6">
+   <property name="text">
+    <string>Add Meta Knights generator</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resource.qrc"/>

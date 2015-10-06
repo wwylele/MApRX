@@ -100,8 +100,10 @@ protected:
     std::vector<Thread> threads;
 
 public:
+    static Tile8bpp invalidTile;
     void readFile(const u8* src);
     inline const Tile8bpp& operator [](u16 tileId)const{
+        if(tileId>=finalTiles.size())return invalidTile;
         return finalTiles[tileId];
     }
     void tick();
@@ -133,9 +135,11 @@ protected:
     std::vector<BlockEssence> essences;
     bool loaded=false;
 public:
+    static Block invalidBlock;
     void readFile(const u8* src);
     void loadDefault();
     inline const Block& operator [](u16 blockId)const{
+        if(blockId>=blocks.size())return invalidBlock;
         return blocks[blockId];
     }
     inline BlockEssence Essences(u16 blockId)const{

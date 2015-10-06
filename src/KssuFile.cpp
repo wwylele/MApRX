@@ -271,6 +271,17 @@ void KfTileSet::tick(){
         threads[thri].time--;
     }
 }
+
+Tile8bpp KfTileSet::invalidTile={
+    1,1,1,1,1,1,1,1,
+    1,1,0,0,0,0,1,1,
+    1,0,1,0,0,1,0,1,
+    1,0,0,1,1,0,0,1,
+    1,0,0,1,1,0,0,1,
+    1,0,1,0,0,1,0,1,
+    1,1,0,0,0,0,1,1,
+    1,1,1,1,1,1,1,1
+};
 void KfBlockSet::loadDefault(){
     const u16 count=4096;
     blocks.resize(count);
@@ -297,6 +308,12 @@ void KfBlockSet::readFile(const u8* src){
     std::memcpy(essences.data(),buf.get()+blocks.size()*sizeof(Block),blocks.size());
     loaded=true;
 }
+
+Block KfBlockSet::invalidBlock={
+    0x03FF,0x03FF,0x03FF,
+    0x03FF,0x03FF,0x03FF,
+    0x03FF,0x03FF,0x03FF
+};
 
 u32 KfMap::getScripteLength(u8 *pScript){
     s16 temp;
@@ -400,7 +417,7 @@ u8* KfMap::generateFile(u32 *length){
 
     for(u16 i=0;i<metaData.width*metaData.height;i++){
         Cell rawCell;
-        rawCell=cells[i].blockId | (cells[i].scripts.empty()?CELL_HAS_SCRIPT:0);
+        rawCell=cells[i].blockId | (cells[i].scripts.empty()?0:CELL_HAS_SCRIPT);
         std::memcpy(p,&rawCell,2);p+=2;
         for(u32 j=0;j<cells[i].scripts.size();j++){
             slen=getScripteLength(cells[i].scripts[j].data());
@@ -410,7 +427,7 @@ u8* KfMap::generateFile(u32 *length){
         }
     }
     for(u8 i=0;i<items.size();i++){
-        if(items[i].scripts.empty()){
+        if(!items[i].scripts.empty()){
             items[i].basic.param1|=Item::HAS_SCRIPT;
         }else{
             items[i].basic.param1&=~Item::HAS_SCRIPT;

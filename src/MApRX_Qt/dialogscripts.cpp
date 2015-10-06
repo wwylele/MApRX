@@ -23,6 +23,10 @@
 #include <cstring>
 #include <QFontMetrics>
 #include <QImage>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QLabel>
+
 const QString scriptText[7]={
     "",
     " - Change block to ",
@@ -38,6 +42,220 @@ ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
     pMainWindow(_pMainWindow)
 {
 
+}
+QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/,
+                      const QModelIndex &index) const{
+    KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
+    QWidget* editor=new QWidget(parent);
+    editor->setBackgroundRole(QPalette::Highlight);
+    editor->setAutoFillBackground(true);
+    switch(script[0]){
+    case 1:{
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Change block to",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
+    case 2:{
+
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Bind with cell",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
+    case 3:{
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Transport to room",editor));
+        layout->addWidget(new QLineEdit(editor));
+        layout->addWidget(new QLabel(",cell",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
+    case 4:{
+
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Bind with item",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
+    case 5:{
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Timer",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
+    case 6:{
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Generate Meta Knights",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
+    default:
+        break;
+    }
+    return editor;
+}
+void ScriptDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
+    KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
+    switch(script[0]){
+    case 1:case 6:{
+        u8 count=script[3];
+        QString str;
+        for(int i=0;i<count;i++){
+            u16 id;
+            memcpy(&id,script.data()+4+i*2,2);
+            if(i!=0)str+=",";
+            str+=QString::number(id);
+        }
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(str);
+        break;
+    }
+    case 2:{
+        u16 x,y;
+        std::memcpy(&x,script.data()+3,2);
+        std::memcpy(&y,script.data()+5,2);
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(QString("%1,%2").arg(x).arg(y));
+        break;
+    }
+    case 3:{
+        u16 r,x,y;
+        std::memcpy(&r,script.data()+3,2);
+        std::memcpy(&x,script.data()+5,2);
+        std::memcpy(&y,script.data()+7,2);
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(QString::number(r));
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(3)->widget()))
+             ->setText(QString("%1,%2").arg(x).arg(y));
+        break;
+    }
+    case 4:{
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(QString::number(script[3]));
+        break;
+    }
+    case 5:{
+        QString str;
+        s16 time;
+        std::memcpy(&time,script.data()+3,2);
+        if(time<0){
+            str=QString::number(-time);
+        }else{
+            str=QString("%1,%2").arg(time).arg(script[6]);
+        }
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(str);
+        break;
+    }
+    default:break;
+    }
+}
+void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+                  const QModelIndex &index) const{
+    KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
+    switch(script[0]){
+    case 1:case 6:{
+        QString str=(qobject_cast<QLineEdit*>(
+                editor->layout()->itemAt(1)->widget()))
+                ->text();
+        QStringList strL=str.split(',');
+        if(strL.size()==0||strL.size()>16)return;
+        script.resize(4+strL.size()*2);
+        script[3]=strL.size();
+        for(int i=0;i<strL.size();i++){
+            u16 id;
+            bool ok;
+            id=strL[i].toUShort(&ok);
+            if(!ok)return;
+            memcpy(script.data()+4+i*2,&id,2);
+        }
+        break;
+    }
+    case 2:{
+        u32 x,y;
+        QString str=(qobject_cast<QLineEdit*>(
+                editor->layout()->itemAt(1)->widget()))
+                ->text();
+        if(std::swscanf(str.toStdWString().c_str(),L"%u,%u",
+                   &x,&y)!=2)
+            return;
+        if(x>0xFFFF || y>0xFFFF)return;
+        std::memcpy(script.data()+3,&x,2);
+        std::memcpy(script.data()+5,&y,2);
+        break;
+    }
+    case 3:{
+        u32 r,x,y;
+        QString str=(qobject_cast<QLineEdit*>(
+                editor->layout()->itemAt(3)->widget()))
+                ->text();
+        if(std::swscanf(str.toStdWString().c_str(),L"%u,%u",
+                   &x,&y)!=2)
+            return;
+        bool toUIntOk;
+        r=(qobject_cast<QLineEdit*>(
+               editor->layout()->itemAt(1)->widget()))
+               ->text().toULong(&toUIntOk);
+        if(!toUIntOk)return;
+        if(r>0xFFFF||x>0xFFFF || y>0xFFFF)return;
+        std::memcpy(script.data()+3,&r,2);
+        std::memcpy(script.data()+5,&x,2);
+        std::memcpy(script.data()+7,&y,2);
+        break;
+    }
+    case 4:{
+        u32 itemId;
+        bool ok;
+        itemId=(qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->text().toULong(&ok);
+        if(!ok || itemId>0xFF)return;
+        script[3]=itemId;
+        break;
+
+    }
+    case 5:{
+        QString str=(qobject_cast<QLineEdit*>(
+                editor->layout()->itemAt(1)->widget()))
+                ->text();
+        QStringList strL=str.split(',');
+        bool ok;
+        if(strL.size()>1){
+            u16 t=strL[0].toUShort(&ok);
+            if(!ok||t>0x7FFF)return;
+            script.resize(7);
+            memcpy(script.data()+3,&t,2);
+            script[5]=0;
+            t=strL[1].toUShort(&ok);
+            if(!ok||t>0xFF)return;
+            script[6]=t;
+        }else{
+            u16 t=strL[0].toUShort(&ok);
+            s16 time;
+            if(!ok||t>0x7FFF || t==0)return;
+            time=-t;
+            script.resize(5);
+            memcpy(script.data()+3,&time,2);
+        }
+        break;
+    }
+
+    default:break;
+    }
+    model->setData(index,QVariant::fromValue(script));
 }
 void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
            const QModelIndex &index) const
@@ -59,6 +277,7 @@ void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
         width=option.fontMetrics.width(scriptText[1]);
         painter->drawText(dx,dy,width,30,Qt::AlignCenter,scriptText[1]);
         for(int i=0;i<script[3];i++){
+            image.fill(Qt::transparent);
             u16 blockId;
             std::memcpy(&blockId,script.data()+4+i*2,2);
             pMainWindow->blocks[blockId].draw([this,&image](int x,int y,const Color15& c15){
@@ -180,12 +399,83 @@ DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWind
         QListWidgetItem *pItem=new QListWidgetItem();
         pItem->setData(Qt::DisplayRole,QVariant::fromValue
                        (scripts[i]));
+        pItem->setFlags(Qt::ItemIsEditable|pItem->flags());
         ui->scriptListWidget->addItem(pItem);
     }
+
+    menu.addAction(ui->actionAddScript1);
+    menu.addAction(ui->actionAddScript2);
+    menu.addAction(ui->actionAddScript3);
+    menu.addAction(ui->actionAddScript4);
+    menu.addAction(ui->actionAddScript5);
+    menu.addAction(ui->actionAddScript6);
 
 }
 
 DialogScripts::~DialogScripts()
 {
     delete ui;
+}
+
+void DialogScripts::on_buttonBox_accepted()
+{
+    scripts.clear();
+    for(int i=0;;i++){
+        QListWidgetItem* pItem=ui->scriptListWidget->item(i);
+        if(pItem==0)break;
+        scripts.push_back(qvariant_cast<KfMap::Script>
+                          (pItem->data(Qt::DisplayRole)));
+    }
+    accept();
+}
+
+void DialogScripts::on_buttonRemove_clicked()
+{
+
+    delete ui->scriptListWidget->takeItem(
+                ui->scriptListWidget->currentRow());
+}
+
+void DialogScripts::on_buttonAdd_clicked()
+{
+
+
+    menu.exec(ui->buttonAdd->mapToGlobal(ui->buttonAdd->rect().bottomLeft()));
+}
+void DialogScripts::addScript(const KfMap::Script& script){
+    QListWidgetItem *pItem=new QListWidgetItem();
+    pItem->setData(Qt::DisplayRole,QVariant::fromValue
+                   (script));
+    pItem->setFlags(Qt::ItemIsEditable|pItem->flags());
+    ui->scriptListWidget->addItem(pItem);
+}
+
+void DialogScripts::on_actionAddScript1_triggered()
+{
+    addScript(KfMap::Script{1,0xCC,0xCC,1,0,0});
+}
+
+void DialogScripts::on_actionAddScript2_triggered()
+{
+    addScript(KfMap::Script{2,0xCC,0xCC,0,0,0,0});
+}
+
+void DialogScripts::on_actionAddScript3_triggered()
+{
+    addScript(KfMap::Script{3,0xCC,0xCC,0,0,0,0,0,0});
+}
+
+void DialogScripts::on_actionAddScript4_triggered()
+{
+    addScript(KfMap::Script{4,0xCC,0xCC,0});
+}
+
+void DialogScripts::on_actionAddScript5_triggered()
+{
+    addScript(KfMap::Script{5,0xCC,0xCC,0xFF,0xFF});
+}
+
+void DialogScripts::on_actionAddScript6_triggered()
+{
+    addScript(KfMap::Script{6,0xCC,0xCC,1,0,0});
 }

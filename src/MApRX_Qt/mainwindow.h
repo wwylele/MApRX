@@ -137,6 +137,24 @@ public:
         void doOperation();
         MapOperation* generateReversal();
     };
+    class MoEditCellScript:public MapOperation{
+    private:
+        std::vector<KfMap::Script> scriptsToBe;
+        u16 x,y;
+    public:
+        MoEditCellScript(const std::vector<KfMap::Script>& scripts,u16 x,u16 y);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
+    class MoEditItemScript:public MapOperation{
+    private:
+        std::vector<KfMap::Script> scriptsToBe;
+        u8 itemId;
+    public:
+        MoEditItemScript(const std::vector<KfMap::Script>& scripts,u8 itemId);
+        void doOperation();
+        MapOperation* generateReversal();
+    };
 
     std::stack<std::unique_ptr<MapOperation>> undoStack;//store the reversal of history operation
     std::stack<std::unique_ptr<MapOperation>> redoStack;//store the reversal of operation pop from undoStack
