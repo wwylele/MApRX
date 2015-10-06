@@ -81,6 +81,13 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
         editor->setLayout(layout);
         break;
     }
+    case 5:{
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Timer",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
     case 6:{
         QHBoxLayout *layout=new QHBoxLayout();
         layout->addWidget(new QLabel("Generate Meta Knights",editor));
@@ -136,6 +143,20 @@ void ScriptDelegate::setEditorData(QWidget *editor, const QModelIndex &index) co
         (qobject_cast<QLineEdit*>(
              editor->layout()->itemAt(1)->widget()))
              ->setText(QString::number(script[3]));
+        break;
+    }
+    case 5:{
+        QString str;
+        s16 time;
+        std::memcpy(&time,script.data()+3,2);
+        if(time<0){
+            str=QString::number(-time);
+        }else{
+            str=QString("%1,%2").arg(time).arg(script[6]);
+        }
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(str);
         break;
     }
     default:break;
@@ -204,6 +225,31 @@ void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
         script[3]=itemId;
         break;
 
+    }
+    case 5:{
+        QString str=(qobject_cast<QLineEdit*>(
+                editor->layout()->itemAt(1)->widget()))
+                ->text();
+        QStringList strL=str.split(',');
+        bool ok;
+        if(strL.size()>1){
+            u16 t=strL[0].toUShort(&ok);
+            if(!ok||t>0x7FFF)return;
+            script.resize(7);
+            memcpy(script.data()+3,&t,2);
+            script[5]=0;
+            t=strL[1].toUShort(&ok);
+            if(!ok||t>0xFF)return;
+            script[6]=t;
+        }else{
+            u16 t=strL[0].toUShort(&ok);
+            s16 time;
+            if(!ok||t>0x7FFF || t==0)return;
+            time=-t;
+            script.resize(5);
+            memcpy(script.data()+3,&time,2);
+        }
+        break;
     }
 
     default:break;
