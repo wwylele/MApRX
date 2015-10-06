@@ -66,7 +66,14 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
         editor->setLayout(layout);
         break;
     }
+    case 4:{
 
+        QHBoxLayout *layout=new QHBoxLayout();
+        layout->addWidget(new QLabel("Bind with item",editor));
+        layout->addWidget(new QLineEdit(editor));
+        editor->setLayout(layout);
+        break;
+    }
     default:
         break;
     }
@@ -95,6 +102,12 @@ void ScriptDelegate::setEditorData(QWidget *editor, const QModelIndex &index) co
         (qobject_cast<QLineEdit*>(
              editor->layout()->itemAt(3)->widget()))
              ->setText(QString("%1,%2").arg(x).arg(y));
+        break;
+    }
+    case 4:{
+        (qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->setText(QString::number(script[3]));
         break;
     }
     default:break;
@@ -136,6 +149,18 @@ void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
         std::memcpy(script.data()+7,&y,2);
         break;
     }
+    case 4:{
+        u32 itemId;
+        bool ok;
+        itemId=(qobject_cast<QLineEdit*>(
+             editor->layout()->itemAt(1)->widget()))
+             ->text().toULong(&ok);
+        if(!ok || itemId>0xFF)return;
+        script[3]=itemId;
+        break;
+
+    }
+
     default:break;
     }
     model->setData(index,QVariant::fromValue(script));
