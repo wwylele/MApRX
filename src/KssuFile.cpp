@@ -271,6 +271,17 @@ void KfTileSet::tick(){
         threads[thri].time--;
     }
 }
+
+Tile8bpp KfTileSet::invalidTile={
+    1,1,1,1,1,1,1,1,
+    1,1,0,0,0,0,1,1,
+    1,0,1,0,0,1,0,1,
+    1,0,0,1,1,0,0,1,
+    1,0,0,1,1,0,0,1,
+    1,0,1,0,0,1,0,1,
+    1,1,0,0,0,0,1,1,
+    1,1,1,1,1,1,1,1
+};
 void KfBlockSet::loadDefault(){
     const u16 count=4096;
     blocks.resize(count);
@@ -297,6 +308,12 @@ void KfBlockSet::readFile(const u8* src){
     std::memcpy(essences.data(),buf.get()+blocks.size()*sizeof(Block),blocks.size());
     loaded=true;
 }
+
+Block KfBlockSet::invalidBlock={
+    0x03FF,0x03FF,0x03FF,
+    0x03FF,0x03FF,0x03FF,
+    0x03FF,0x03FF,0x03FF
+};
 
 u32 KfMap::getScripteLength(u8 *pScript){
     s16 temp;
