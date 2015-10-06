@@ -417,7 +417,7 @@ u8* KfMap::generateFile(u32 *length){
 
     for(u16 i=0;i<metaData.width*metaData.height;i++){
         Cell rawCell;
-        rawCell=cells[i].blockId | (cells[i].scripts.empty()?CELL_HAS_SCRIPT:0);
+        rawCell=cells[i].blockId | (cells[i].scripts.empty()?0:CELL_HAS_SCRIPT);
         std::memcpy(p,&rawCell,2);p+=2;
         for(u32 j=0;j<cells[i].scripts.size();j++){
             slen=getScripteLength(cells[i].scripts[j].data());
@@ -427,7 +427,7 @@ u8* KfMap::generateFile(u32 *length){
         }
     }
     for(u8 i=0;i<items.size();i++){
-        if(items[i].scripts.empty()){
+        if(!items[i].scripts.empty()){
             items[i].basic.param1|=Item::HAS_SCRIPT;
         }else{
             items[i].basic.param1&=~Item::HAS_SCRIPT;
