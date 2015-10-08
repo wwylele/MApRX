@@ -23,13 +23,14 @@
 
 QTranslator translator;
 QApplication* pApp;
+QString commandLineFile;
 int main(int argc, char *argv[])
 {
     /*
      * Are you ready?
      * ~~~~~~~~~~~~~~
      */
-
+    if(argc>1)commandLineFile=argv[1];
     QApplication a(argc, argv);
     pApp=&a;
     translator.load("maprx_zh",":/");

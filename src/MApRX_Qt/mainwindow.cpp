@@ -254,9 +254,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     clearOperationStack();
 
-#ifdef _DEBUG
+
     //Open a file
-    QString fileName="D:/KSSU_MAP/mapdata";
+    QString fileName=commandLineFile;
     std::FILE* file=fopenQ(fileName,"rb");
     if(!file)return;
     mapdata.fromFile(file);
@@ -267,7 +267,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionMake_Rom->setEnabled(true);
 
 
-#endif
+
 
 }
 

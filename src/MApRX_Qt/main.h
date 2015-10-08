@@ -29,6 +29,7 @@ std::FILE *fopenQ(const QString& name,const char* mode);
 
 extern QTranslator translator;
 extern QApplication* pApp;
+extern QString commandLineFile;
 
 #endif // MAIN_H
 
