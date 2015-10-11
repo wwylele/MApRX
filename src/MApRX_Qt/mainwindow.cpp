@@ -212,7 +212,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitterMain->setStretchFactor(1,1);
     ui->splitterRight->setStretchFactor(0,1);
 
-
+    connect(ui->mapPlane0,SIGNAL(showStatusTip(const QString&)),
+            ui->statusBar,SLOT(showMessage(const QString&)));
+    connect(ui->blockStore,SIGNAL(showStatusTip(const QString&)),
+            ui->statusBar,SLOT(showMessage(const QString&)));
 
     QToolButton* scrollAreaCornerResize=new QToolButton(this);
     scrollAreaCornerResize->setDefaultAction(ui->action_Resize_Map);
