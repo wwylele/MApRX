@@ -122,6 +122,13 @@ void MapPlane0::reset(){
     resize(width,height);
 
 }
+QString MapPlane0::generateStatusTip(u16 x,u16 y){
+    return QString("Left button: change block. Middle button: get block."
+                   " Right button: edit scripts. "
+                "Cell (%1,%2)=%3, %4 script(s)")
+            .arg(x).arg(y).arg(pMainWindow->map.at(x,y).blockId)
+            .arg(pMainWindow->map.at(x,y).scripts.size());
+}
 
 void MapPlane0::mouseMoveEvent(QMouseEvent * event){
     if(!pMainWindow->map.Loaded()){
@@ -133,11 +140,14 @@ void MapPlane0::mouseMoveEvent(QMouseEvent * event){
            event->y()>pMainWindow->map.metaData.height*24||
                 event->x()<0||event->y()<0){
             curX=curY=-1;
+            emit showStatusTip("");
         }
         else{
             curX=event->x()/24;
             curY=event->y()/24;
+            emit showStatusTip(generateStatusTip(curX,curY));
         }
+
     }
 
 
@@ -167,11 +177,13 @@ void MapPlane0::mousePressEvent(QMouseEvent* event){
                     pMainWindow->doOperation(&mo);
                 }
             }
-
+            emit showStatusTip(generateStatusTip(curX,curY));
         }
+
     }
 }
 void MapPlane0::leaveEvent(QEvent * ){
     curX=curY=-1;
     repaint();
+    emit showStatusTip("");
 }

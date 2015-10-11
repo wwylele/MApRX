@@ -44,7 +44,9 @@ protected:
     void mouseMoveEvent(QMouseEvent * event);
     void mousePressEvent(QMouseEvent * event);
     void leaveEvent(QEvent * event);
+    QString generateStatusTip(u16 x,u16 y);
 signals:
+    void showStatusTip(const QString& message);
 
 public slots:
 };

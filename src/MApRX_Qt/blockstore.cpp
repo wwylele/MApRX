@@ -78,19 +78,23 @@ void BlockStore::reset(){
 void BlockStore::mouseMoveEvent(QMouseEvent * event){
     if(!pMainWindow->blocks.Loaded()){
         curBlock=-1;
+        emit showStatusTip("");
         return;
     }
 
     if(event->x()>blockStoreColumnCount*24 || event->x()<0||event->y()<0){
         curBlock=-1;
+        emit showStatusTip("");
     }
     else{
         int i=event->x()/24 + event->y()/24*blockStoreColumnCount;
         if(i<0 || (u32)i>pMainWindow->blocks.blockCount()){
             curBlock=-1;
+            emit showStatusTip("");
         }
         else{
             curBlock=i;
+            emit showStatusTip(QString("Block %1").arg(i));
         }
     }
 
@@ -106,5 +110,6 @@ void BlockStore::mousePressEvent(QMouseEvent* ){
 }
 void BlockStore::leaveEvent(QEvent * ){
     curBlock=-1;
+    emit showStatusTip("");
     repaint();
 }

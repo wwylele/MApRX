@@ -37,6 +37,7 @@ public:
     MainWindow* pMainWindow;
 
 signals:
+    void showStatusTip(const QString& message);
 protected:
     int curBlock;
     int width;
