@@ -27,15 +27,7 @@
 #include <QLineEdit>
 #include <QLabel>
 
-const QString scriptText[7]={
-    "",
-    tr(" - Change block to "),
-    tr(" - Bind with cell(%1,%2)"),
-    tr(" - Transport to room#%1, cell(%2,%3)"),
-    tr(" - Bind with item#%1"),
-    tr(" - Timer: %1, %2"),
-    tr(" - Generate Meta Knights:")
-};
+
 
 ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
     QStyledItemDelegate(parent),

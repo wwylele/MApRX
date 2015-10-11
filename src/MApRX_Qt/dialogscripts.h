@@ -35,6 +35,15 @@ class ScriptDelegate:public QStyledItemDelegate{
     Q_OBJECT
 private:
     MainWindow* pMainWindow;
+    const QString scriptText[7]={
+        tr(""),
+        tr(" - Change block to "),
+        tr(" - Bind with cell(%1,%2)"),
+        tr(" - Transport to room#%1, cell(%2,%3)"),
+        tr(" - Bind with item#%1"),
+        tr(" - Timer: %1, %2"),
+        tr(" - Generate Meta Knights:")
+    };
 public:
     ScriptDelegate(MainWindow* pMainWindow,QWidget *parent = 0);
 

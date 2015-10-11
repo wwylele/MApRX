@@ -246,7 +246,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     for(int i=0;i<MAP_COUNT;i++){
         QString str;
-        str.sprintf(tr("Room#%d "),i);
+        str=QString("Room#%1 ").arg(i);
         str+=roomName[i];
         QListWidgetItem *newItem;
         newItem=new QListWidgetItem(str);

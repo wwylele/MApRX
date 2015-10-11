@@ -65,9 +65,7 @@ DialogProperties::DialogProperties(const KfMap::MetaData_Struct &c,QWidget *pare
     ui->spinWind->setValue(metaData.globalEffect&3);
 
     for(int i=0;i<256;i++){
-        QString str;
-        str.sprintf("%d:",i);
-        ui->comboBgm->addItem(str,i);
+        ui->comboBgm->addItem(QString("%1:").arg(i),i);
     }
     ui->comboBgm->setCurrentIndex(metaData.bgm);
 }

@@ -88,8 +88,6 @@ void MapPlane0::paintEvent(QPaintEvent *){
         extern QBrush itemBackground[13];
 
         for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
-            QString str;
-            str.sprintf("%lu",i);
             u8 catagory=(pMainWindow->map.Items(i).basic.param1
                          &KfMap::Item::CATAGORY_MASK)>>8;
             if(catagory>=13)catagory=0;
@@ -99,7 +97,7 @@ void MapPlane0::paintEvent(QPaintEvent *){
                                 16,16);
             painter.drawText(pMainWindow->map.Items(i).basic.x-8,
                              pMainWindow->map.Items(i).basic.y-8,
-                             16,16,Qt::AlignCenter,str);
+                             16,16,Qt::AlignCenter,QString::number(i));
         }
     }else{
         if(curX!=-1){
