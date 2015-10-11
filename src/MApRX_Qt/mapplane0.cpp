@@ -123,7 +123,9 @@ void MapPlane0::reset(){
 
 }
 QString MapPlane0::generateStatusTip(u16 x,u16 y){
-    return QString("Cell(%1,%2), Block ID=%3, with %4 script(s)")
+    return QString("Left button: change block. Middle button: get block."
+                   " Right button: edit scripts. "
+                "Cell (%1,%2)=%3, %4 script(s)")
             .arg(x).arg(y).arg(pMainWindow->map.at(x,y).blockId)
             .arg(pMainWindow->map.at(x,y).scripts.size());
 }
