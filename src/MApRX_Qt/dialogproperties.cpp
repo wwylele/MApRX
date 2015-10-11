@@ -57,10 +57,10 @@ DialogProperties::DialogProperties(const KfMap::MetaData_Struct &c,QWidget *pare
         ui->editPal4})p->setValidator(new QIntValidator(0,255));
 
     ui->checkEffect8->setChecked(metaData.globalEffect&0x80);
-    ui->comboWind->addItem("Up",0);
-    ui->comboWind->addItem("Right",1);
-    ui->comboWind->addItem("Down",2);
-    ui->comboWind->addItem("Left",3);
+    ui->comboWind->addItem(tr("Up"),0);
+    ui->comboWind->addItem(tr("Right"),1);
+    ui->comboWind->addItem(tr("Down"),2);
+    ui->comboWind->addItem(tr("Left"),3);
     ui->comboWind->setCurrentIndex((metaData.globalEffect&0x0C)>>2);
     ui->spinWind->setValue(metaData.globalEffect&3);
 

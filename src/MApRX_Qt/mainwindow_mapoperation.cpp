@@ -185,8 +185,8 @@ void MainWindow::doOperation(MapOperation *op){
     ui->actionUndo->setEnabled(true);
     while(!redoStack.empty())redoStack.pop();
     ui->actionRedo->setEnabled(false);
-    ui->actionUndo->setToolTip("Undo "+op->toolTip);
-    ui->actionRedo->setToolTip("Redo");
+    ui->actionUndo->setToolTip(tr("Undo")+" "+op->toolTip);
+    ui->actionRedo->setToolTip(tr("Redo"));
     ui->mapPlane0->update();
 }
 void MainWindow::undo(){
@@ -199,11 +199,11 @@ void MainWindow::undo(){
     ui->actionRedo->setEnabled(true);
     ui->actionUndo->setEnabled(!undoStack.empty());
     if(undoStack.empty()){
-        ui->actionUndo->setToolTip("Undo");
+        ui->actionUndo->setToolTip(tr("Undo"));
     }else{
-        ui->actionUndo->setToolTip("Undo "+undoStack.top().get()->toolTip);
+        ui->actionUndo->setToolTip(tr("Undo")+" "+undoStack.top().get()->toolTip);
     }
-    ui->actionRedo->setToolTip("Redo "+redoStack.top().get()->toolTip);
+    ui->actionRedo->setToolTip(tr("Redo")+" "+redoStack.top().get()->toolTip);
     ui->mapPlane0->update();
 }
 void MainWindow::redo(){
@@ -216,11 +216,11 @@ void MainWindow::redo(){
     ui->actionUndo->setEnabled(true);
     ui->actionRedo->setEnabled(!redoStack.empty());
     if(redoStack.empty()){
-        ui->actionRedo->setToolTip("Redo");
+        ui->actionRedo->setToolTip(tr("Redo"));
     }else{
-        ui->actionRedo->setToolTip("Redo "+redoStack.top().get()->toolTip);
+        ui->actionRedo->setToolTip(tr("Redo")+" "+redoStack.top().get()->toolTip);
     }
-    ui->actionUndo->setToolTip("Undo "+undoStack.top().get()->toolTip);
+    ui->actionUndo->setToolTip(tr("Undo")+" "+undoStack.top().get()->toolTip);
     ui->mapPlane0->update();
 
 }

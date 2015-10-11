@@ -49,7 +49,7 @@ DialogMakeRom::~DialogMakeRom()
 void DialogMakeRom::on_buttonOpenRom_clicked()
 {
     QSettings settings("maprx.ini",QSettings::IniFormat);
-    QString fileName=QFileDialog::getOpenFileName(this, "Open File",
+    QString fileName=QFileDialog::getOpenFileName(this, tr("Open ROM..."),
         "",
         "DS ROM(*.nds)");
     if(fileName==QString::null)return;
@@ -60,9 +60,9 @@ void DialogMakeRom::on_buttonOpenRom_clicked()
 void DialogMakeRom::on_buttonEmulator_clicked()
 {
     QSettings settings("maprx.ini",QSettings::IniFormat);
-    QString fileName=QFileDialog::getOpenFileName(this, "Open File",
+    QString fileName=QFileDialog::getOpenFileName(this, tr("Select Emulator..."),
         "",
-        "Executable file(*.exe)");
+        tr("Executable file(*.exe)"));
     if(fileName==QString::null)return;
     ui->editEmulator->setText(fileName);
     settings.setValue("MAKEROM/EMU_PATH",fileName);
@@ -73,7 +73,7 @@ void DialogMakeRom::on_buttonRun_clicked()
     if(!QProcess::startDetached(ui->editEmulator->text().replace("/","\\"),
                                 QStringList()<<ui->editRom->text().replace("/","\\"))){
         QMessageBox msgBox;
-        msgBox.setText("Failed to start the emulator.");
+        msgBox.setText(tr("Failed to start the emulator."));
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
     }
@@ -85,7 +85,7 @@ void DialogMakeRom::on_buttonMake_clicked()
     rom=fopenQ(ui->editRom->text(),"rb+");
     if(rom==0){
         QMessageBox msgBox;
-        msgBox.setText("Failed to open the ROM.");
+        msgBox.setText(tr("Failed to open the ROM."));
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
         return;
@@ -93,7 +93,7 @@ void DialogMakeRom::on_buttonMake_clicked()
     mapdata=fopenQ(ui->editSrcFile->text(),"rb");
     if(mapdata==0){
         QMessageBox msgBox;
-        msgBox.setText("Failed to open the mapdata file.");
+        msgBox.setText(tr("Failed to open the mapdata file."));
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
         return;
@@ -132,7 +132,7 @@ void DialogMakeRom::on_buttonMake_clicked()
     std::fclose(rom);
 
     QMessageBox msgBox;
-    msgBox.setText("Success!");
+    msgBox.setText(tr("Success!"));
     msgBox.exec();
     return;
 }

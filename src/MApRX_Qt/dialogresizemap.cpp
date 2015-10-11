@@ -49,7 +49,7 @@ void DialogResizeMap::on_buttonBox_accepted()
     if(mapWidth*mapHeight>32767){
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::Critical);
-        msgBox.setText("Cells count must be less than 32768!");
+        msgBox.setText(tr("Cells count must be less than 32768!"));
         msgBox.exec();
         return;
     }

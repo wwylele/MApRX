@@ -29,12 +29,12 @@
 
 const QString scriptText[7]={
     "",
-    " - Change block to ",
-    " - Bind with cell(%1,%2)",
-    " - Transport to room#%1, cell(%2,%3)",
-    " - Bind with item#%1",
-    " - Timer: %1, %2",
-    " - Generate Meta Knights:"
+    tr(" - Change block to "),
+    tr(" - Bind with cell(%1,%2)"),
+    tr(" - Transport to room#%1, cell(%2,%3)"),
+    tr(" - Bind with item#%1"),
+    tr(" - Timer: %1, %2"),
+    tr(" - Generate Meta Knights:")
 };
 
 ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
@@ -52,7 +52,7 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
     switch(script[0]){
     case 1:{
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel("Change block to",editor));
+        layout->addWidget(new QLabel(tr("Change block to"),editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
@@ -60,16 +60,16 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
     case 2:{
 
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel("Bind with cell",editor));
+        layout->addWidget(new QLabel(tr("Bind with cell"),editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
     }
     case 3:{
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel("Transport to room",editor));
+        layout->addWidget(new QLabel(tr("Transport to room"),editor));
         layout->addWidget(new QLineEdit(editor));
-        layout->addWidget(new QLabel(",cell",editor));
+        layout->addWidget(new QLabel(tr(",cell"),editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
@@ -77,21 +77,21 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
     case 4:{
 
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel("Bind with item",editor));
+        layout->addWidget(new QLabel(tr("Bind with item"),editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
     }
     case 5:{
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel("Timer",editor));
+        layout->addWidget(new QLabel(tr("Timer"),editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
     }
     case 6:{
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel("Generate Meta Knights",editor));
+        layout->addWidget(new QLabel(tr("Generate Meta Knights"),editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
