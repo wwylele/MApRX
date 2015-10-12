@@ -462,7 +462,7 @@
     <string>Show Item</string>
    </property>
    <property name="toolTip">
-    <string>Show Items</string>
+    <string>Show Item</string>
    </property>
    <property name="shortcut">
     <string>I</string>
