@@ -24,6 +24,7 @@
 #include <QScrollBar>
 #include <QTextStream>
 #include <QToolButton>
+#include <QSettings>
 #include <ctime>
 #include "dialogaboutme.h"
 #include "dialogmakerom.h"
@@ -503,14 +504,18 @@ void MainWindow::on_actionMap_Properties_triggered()
 
 
 void MainWindow::on_actionEnglish_triggered(){
+    QSettings settings("maprx.ini",QSettings::IniFormat);
     pApp->removeTranslator(&translator);
     ui->retranslateUi(this);
+    settings.setValue("UI/LANG","en");
 }
 
 void MainWindow::on_actionChinese_triggered()
 {
+    QSettings settings("maprx.ini",QSettings::IniFormat);
     pApp->installTranslator(&translator);
     ui->retranslateUi(this);
+    settings.setValue("UI/LANG","ch");
 }
 void MainWindow::on_actionExtract_triggered(){
     QString fileName=QFileDialog::getOpenFileName(this, tr("Select ROM"),
