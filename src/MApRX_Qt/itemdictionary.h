@@ -14,7 +14,7 @@ public:
         QString speciesName;
         QMap<int,QString> behaviorName;
     }entries[256];
-    void Load(QTextStream& stream);
+    void load(QTextStream& stream);
 };
 
 #endif // ITEMDICTIONARY_H

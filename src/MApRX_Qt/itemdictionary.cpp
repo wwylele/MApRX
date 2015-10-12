@@ -2,7 +2,7 @@
 
 
 
-void ItemDictionary::Load(QTextStream& stream){
+void ItemDictionary::load(QTextStream& stream){
     for(ItemEntry& entry:entries){
         entry.speciesName="";
         entry.behaviorName.clear();

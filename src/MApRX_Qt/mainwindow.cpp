@@ -72,9 +72,16 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     if(role==Qt::DisplayRole||role==Qt::EditRole){
         switch(index.column()){
         case 0:
-            return QString::number(pMap->Items(itemId).basic.species());
+            return QString::number(pMap->Items(itemId).basic.species())
+                    +(role==Qt::DisplayRole?QString("(%1)")
+                    .arg(pMainWindow->itemDictionary.entries
+                         [pMap->Items(itemId).basic.species()].speciesName):"");
         case 1:
-            return QString::number(pMap->Items(itemId).basic.behavior());
+            return QString::number(pMap->Items(itemId).basic.behavior())
+                    +(role==Qt::DisplayRole?QString("(%1)")
+                    .arg(pMainWindow->itemDictionary.entries
+                         [pMap->Items(itemId).basic.species()]
+                         .behaviorName[pMap->Items(itemId).basic.behavior()]):"");
 
         case 4:
             return QString::number(pMap->Items(itemId).basic.param());
@@ -243,6 +250,12 @@ MainWindow::MainWindow(QWidget *parent) :
         roomName[inl[0].toInt()]=inl[1];
     }
     roomNameResFile.close();
+
+    QFile itemDicResFile(":/text/itemdic.txt");
+    itemDicResFile.open(QIODevice::ReadOnly);
+    QTextStream itemDicRes(&itemDicResFile);
+    itemDictionary.load(itemDicRes);
+    itemDicResFile.close();
 
 
     for(int i=0;i<MAP_COUNT;i++){
