@@ -118,6 +118,7 @@ void MapPlane0::reset(){
     height=pMainWindow->map.metaData.height*24;
     setMinimumSize(width,height);
     resize(width,height);
+    curX=curY=-1;
 
 }
 QString MapPlane0::generateStatusTip(u16 x,u16 y){

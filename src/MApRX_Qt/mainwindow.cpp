@@ -358,7 +358,7 @@ void MainWindow::on_updateMap(){
     static long lTime=0,timeA=0;
     long cTime;
     if(!showAnimation)return;
-    cTime=clock();
+    cTime=std::clock();
     timeA+=cTime-lTime;
     if(timeA>1000)timeA=0;
     while(timeA>=16){
