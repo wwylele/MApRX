@@ -24,6 +24,7 @@
 #include <QScrollBar>
 #include <QTextStream>
 #include <QToolButton>
+#include <QSettings>
 #include <ctime>
 #include "dialogaboutme.h"
 #include "dialogmakerom.h"
@@ -122,13 +123,13 @@ QVariant ItemTableModal::headerData(int section, Qt::Orientation orientation, in
     if(role==Qt::DisplayRole){
         if(orientation==Qt::Horizontal){
             switch(section){
-            case 0:return "Species";
-            case 1:return "Behavior";
+            case 0:return tr("Species");
+            case 1:return tr("Behavior");
             case 2:return "A";
             case 3:return "B";
-            case 4:return "Parameter";
-            case 5:return "Script";
-            case 6:return "Position";
+            case 4:return tr("Parameter");
+            case 5:return tr("Script");
+            case 6:return tr("Position");
             }
         }
         else{
@@ -186,7 +187,7 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
         else return false;
     }else return false;
     MainWindow::MoEditItemBasic op(index.row(),itemBasic);
-    op.toolTip=QString("Edit Item#%1").arg(index.row());
+    op.toolTip=QString(tr("Edit Item#%1")).arg(index.row());
     pMainWindow->doOperation(&op);
     return true;
 }
@@ -246,7 +247,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     for(int i=0;i<MAP_COUNT;i++){
         QString str;
-        str.sprintf("Room#%d ",i);
+        str=QString("Room#%1 ").arg(i);
         str+=roomName[i];
         QListWidgetItem *newItem;
         newItem=new QListWidgetItem(str);
@@ -293,7 +294,8 @@ void MainWindow::loadRoom(int roomId){
 
     if(pMapInfo.subFileIdData.subFileIdSlots.rawFrtPltId==RoomInfo::invalidId){
         QMessageBox msgBox;
-        msgBox.setText("Failed to load block set data.\nDefault block set data will be used.");
+        msgBox.setText(tr("Failed to load block set data."
+                          "\nDefault block set data will be used."));
         msgBox.setIcon(QMessageBox::Icon::Warning);
         msgBox.exec();
         //return;
@@ -385,9 +387,9 @@ void MainWindow::on_actionAbout_MApRX_triggered()
 
 void MainWindow::on_action_Open_triggered()
 {
-    QString fileName=QFileDialog::getOpenFileName(this, "Open File",
+    QString fileName=QFileDialog::getOpenFileName(this, tr("Open File"),
         "",
-        "mapdata File(*.bin)");
+        tr("mapdata File(*.bin)"));
     if(fileName==QString::null)return;
     openMapdata(fileName);
 }
@@ -396,7 +398,7 @@ void MainWindow::openMapdata(QString fileName){
     std::FILE* file=fopenQ(fileName,"rb");
     if(file==nullptr){
         QMessageBox msgBox;
-        msgBox.setText("Failed to open the file.");
+        msgBox.setText(tr("Failed to open the file."));
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
         return;
@@ -421,7 +423,7 @@ void MainWindow::on_action_Save_triggered()
     std::FILE* file=fopenQ(currentFileName,"wb");
     if(file==nullptr){
         QMessageBox msgBox;
-        msgBox.setText("Failed to open the file.");
+        msgBox.setText(tr("Failed to open the file."));
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
         return;
@@ -431,14 +433,14 @@ void MainWindow::on_action_Save_triggered()
     std::fclose(file);
 }
 void MainWindow::on_actionSave_As_triggered(){
-    QString fileName=QFileDialog::getSaveFileName(this, "Save As ...",
+    QString fileName=QFileDialog::getSaveFileName(this, tr("Save As ..."),
         "",
-        "mapdata File(*.bin)");
+        tr("mapdata File(*.bin)"));
     if(fileName==QString::null)return;
     std::FILE* file=fopenQ(fileName,"wb");
     if(file==nullptr){
         QMessageBox msgBox;
-        msgBox.setText("Failed to open the file.");
+        msgBox.setText(tr("Failed to open the file."));
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
         return;
@@ -495,44 +497,48 @@ void MainWindow::on_actionMap_Properties_triggered()
     DialogProperties dlg(map.metaData);
     if(QDialog::Accepted==dlg.exec()){
         MoEditMetaData mo(dlg.metaData);
-        mo.toolTip="Change Properties";
+        mo.toolTip=tr("Change Properties");
         doOperation(&mo);
     }
 }
 
 
 void MainWindow::on_actionEnglish_triggered(){
+    QSettings settings("maprx.ini",QSettings::IniFormat);
     pApp->removeTranslator(&translator);
     ui->retranslateUi(this);
+    settings.setValue("UI/LANG","en");
 }
 
 void MainWindow::on_actionChinese_triggered()
 {
+    QSettings settings("maprx.ini",QSettings::IniFormat);
     pApp->installTranslator(&translator);
     ui->retranslateUi(this);
+    settings.setValue("UI/LANG","ch");
 }
 void MainWindow::on_actionExtract_triggered(){
-    QString fileName=QFileDialog::getOpenFileName(this, "Select ROM",
+    QString fileName=QFileDialog::getOpenFileName(this, tr("Select ROM"),
         "",
-        "ROM File(*.nds *.bin);;Any files(*.*)");
+        tr("ROM File(*.nds *.bin);;Any files(*.*)"));
     if(fileName==QString::null)return;
     std::FILE* rom=fopenQ(fileName,"rb");
     if(rom==nullptr){
         QMessageBox msgBox;
-        msgBox.setText("Failed to open the ROM.");
+        msgBox.setText(tr("Failed to open the ROM."));
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
         return;
     }
 
-    fileName=QFileDialog::getSaveFileName(this, "Save mapdata to...",
+    fileName=QFileDialog::getSaveFileName(this, tr("Save mapdata to..."),
         "",
-        "mapdata File(*.bin)");
+        tr("mapdata File(*.bin)"));
     if(fileName==QString::null)return;
     std::FILE* mapdataFile=fopenQ(fileName,"wb");
     if(mapdataFile==nullptr){
         QMessageBox msgBox;
-        msgBox.setText("Failed to open mapdata file.");
+        msgBox.setText(tr("Failed to open mapdata file."));
         msgBox.setIcon(QMessageBox::Icon::Critical);
         msgBox.exec();
         std::fclose(rom);
@@ -550,7 +556,7 @@ void MainWindow::on_actionExtract_triggered(){
     std::fclose(mapdataFile);
 
     QMessageBox msgBox;
-    msgBox.setText("Succeeded to extract mapdata from ROM.");
+    msgBox.setText(tr("Succeeded to extract mapdata from ROM."));
     msgBox.exec();
 
     openMapdata(fileName);
@@ -564,7 +570,7 @@ void MainWindow::on_buttonItemUp_clicked()
     u8 selItem=selection.row();
     if(selItem==0)return;
     MoSwapItem mo(selItem-1);
-    mo.toolTip=QString("Move up Item#%1").arg(selItem);
+    mo.toolTip=QString(tr("Move up Item#%1")).arg(selItem);
     doOperation(&mo);
 
     ui->itemTable->setCurrentIndex(itemTableModal.getIndex(selItem-1,selection.column()));
@@ -578,7 +584,7 @@ void MainWindow::on_buttonItemDown_clicked()
     u8 selItem=selection.row();
     if(selItem==map.metaData.itemCount-1)return;
     MoSwapItem mo(selItem);
-    mo.toolTip=QString("Move down Item#%1").arg(selItem);
+    mo.toolTip=QString(tr("Move down Item#%1")).arg(selItem);
     doOperation(&mo);
 
     ui->itemTable->setCurrentIndex(itemTableModal.getIndex(selItem+1,selection.column()));
@@ -591,7 +597,7 @@ void MainWindow::on_buttonItemDelete_clicked()
     if(!selection.isValid())return;
     u8 selItem=selection.row();
     MoDeleteItem mo(selItem);
-    mo.toolTip=QString("Remove Item#%1").arg(selItem);
+    mo.toolTip=QString(tr("Remove Item#%1")).arg(selItem);
     doOperation(&mo);
 }
 
@@ -607,7 +613,7 @@ void MainWindow::on_buttonItemNew_clicked()
     if(item.basic.x>map.metaData.width*24)item.basic.x=map.metaData.width*24;
     if(item.basic.y>map.metaData.height*24)item.basic.y=map.metaData.height*24;
     MoNewItem mo(map.metaData.itemCount,item);
-    mo.toolTip="Add Item";
+    mo.toolTip=tr("Add Item");
     doOperation(&mo);
     ui->itemTable->setCurrentIndex(itemTableModal.getIndex(
                                        map.metaData.itemCount-1,0));
@@ -626,10 +632,10 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
 
     if(index.column()==5){
         DialogScripts dlg(map.Items(itemId).scripts,this);
-        dlg.setWindowTitle(QString("Scripts for item#%1").arg(itemId));
+        dlg.setWindowTitle(QString(tr("Scripts for item#%1")).arg(itemId));
         if(dlg.exec()==QDialog::Accepted){
             MoEditItemScript mo(dlg.scripts,itemId);
-            mo.toolTip=QString("Edit Scripts for item#%1").arg(itemId);
+            mo.toolTip=QString(tr("Edit Scripts for item#%1")).arg(itemId);
             doOperation(&mo);
         }
     }
@@ -638,7 +644,7 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
 void MainWindow::on_actionDiscard_Changes_triggered(){
     if(!map.Loaded())return;
     QMessageBox msgBox;
-    msgBox.setText("Do you really want to discard your changes on this room?");
+    msgBox.setText(tr("Do you really want to discard your changes on this room?"));
     msgBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
     if(msgBox.exec()!=QMessageBox::Yes)return;
     loadRoom(curRoomId);
@@ -648,12 +654,12 @@ void MainWindow::on_action_Resize_Map_triggered(){
     DialogResizeMap dlg(map.metaData.width,map.metaData.height);
     if(dlg.exec()!=QDialog::Accepted)return;
     MoResizeMap mo(dlg.mapWidth,dlg.mapHeight,dlg.hAlign,dlg.vAlign);
-    mo.toolTip="Resize Map";
+    mo.toolTip=tr("Resize Map");
     doOperation(&mo);
 }
 void MainWindow::on_actionSave_to_Image_triggered(){
     if(!map.Loaded())return;
-    QString fileName=QFileDialog::getSaveFileName(this, "Save image to...",
+    QString fileName=QFileDialog::getSaveFileName(this, tr("Save image to..."),
         "",
         "PNG(*.png);;BMP(*.bmp)");
     if(fileName==QString::null)return;

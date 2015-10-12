@@ -88,8 +88,6 @@ void MapPlane0::paintEvent(QPaintEvent *){
         extern QBrush itemBackground[13];
 
         for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
-            QString str;
-            str.sprintf("%lu",i);
             u8 catagory=(pMainWindow->map.Items(i).basic.param1
                          &KfMap::Item::CATAGORY_MASK)>>8;
             if(catagory>=13)catagory=0;
@@ -99,7 +97,7 @@ void MapPlane0::paintEvent(QPaintEvent *){
                                 16,16);
             painter.drawText(pMainWindow->map.Items(i).basic.x-8,
                              pMainWindow->map.Items(i).basic.y-8,
-                             16,16,Qt::AlignCenter,str);
+                             16,16,Qt::AlignCenter,QString::number(i));
         }
     }else{
         if(curX!=-1){
@@ -123,9 +121,9 @@ void MapPlane0::reset(){
 
 }
 QString MapPlane0::generateStatusTip(u16 x,u16 y){
-    return QString("Left button: change block. Middle button: get block."
+    return QString(tr("Left button: change block. Middle button: get block."
                    " Right button: edit scripts. "
-                "Cell (%1,%2)=%3, %4 script(s)")
+                "Cell (%1,%2)=%3, %4 script(s)"))
             .arg(x).arg(y).arg(pMainWindow->map.at(x,y).blockId)
             .arg(pMainWindow->map.at(x,y).scripts.size());
 }
@@ -162,7 +160,7 @@ void MapPlane0::mousePressEvent(QMouseEvent* event){
         if(curX!=-1){
             if(event->button()==Qt::LeftButton){
                 MainWindow::MoEditCell editCell(curX,curY,pMainWindow->selBlock);
-                editCell.toolTip=QString("Edit cell(%1,%2)").arg(curX).arg(curY);
+                editCell.toolTip=QString(tr("Edit cell(%1,%2)")).arg(curX).arg(curY);
                 pMainWindow->doOperation(&editCell);
             }else if(event->button()==Qt::MidButton){
                 pMainWindow->selBlock=pMainWindow->map.at(curX,curY).blockId;
@@ -170,10 +168,10 @@ void MapPlane0::mousePressEvent(QMouseEvent* event){
             }else if(event->button()==Qt::RightButton){
                 DialogScripts dlg(pMainWindow->map.at(curX,curY).scripts,pMainWindow);
                 int x=curX,y=curY;
-                dlg.setWindowTitle(QString("Scripts for cell(%1,%2)").arg(x).arg(y));
+                dlg.setWindowTitle(QString(tr("Scripts for cell(%1,%2)")).arg(x).arg(y));
                 if(dlg.exec()==QDialog::Accepted){
                     MainWindow::MoEditCellScript mo(dlg.scripts,x,y);
-                    mo.toolTip=QString("Edit Scripts for cell(%1,%2)").arg(x).arg(y);
+                    mo.toolTip=QString(tr("Edit Scripts for cell(%1,%2)")).arg(x).arg(y);
                     pMainWindow->doOperation(&mo);
                 }
             }

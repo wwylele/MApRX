@@ -20,6 +20,7 @@
 
 #include "mainwindow.h"
 #include "main.h"
+#include <QSettings>
 
 QTranslator translator;
 QApplication* pApp;
@@ -34,7 +35,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     pApp=&a;
     translator.load("maprx_zh",":/");
-    //a.installTranslator(&translator);
+    QSettings settings("maprx.ini",QSettings::IniFormat);
+    if(settings.value("UI/LANG","en").toString()=="ch")
+        a.installTranslator(&translator);
     MainWindow w;
     w.show();
 

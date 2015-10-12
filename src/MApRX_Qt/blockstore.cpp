@@ -94,7 +94,7 @@ void BlockStore::mouseMoveEvent(QMouseEvent * event){
         }
         else{
             curBlock=i;
-            emit showStatusTip(QString("Block %1").arg(i));
+            emit showStatusTip(QString(tr("Block %1")).arg(i));
         }
     }
 
