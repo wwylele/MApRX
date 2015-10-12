@@ -184,7 +184,6 @@ u32 compressLZ(const u8 *srcp,u32 size,u8 *dstp)
     u16     lastOffset;
     u8      lastLength;
     u8      i;
-    u32     dstMax;
     LZCompressInfo info;
 
     if(size<=4)return 0;
@@ -192,7 +191,6 @@ u32 compressLZ(const u8 *srcp,u32 size,u8 *dstp)
     *(u32 *)dstp=size << 8 | 0x10;
     dstp+=4;
     LZDstCount=4;
-    dstMax=size;
     LZInitTable(&info,work);
 
     while(size > 0)
@@ -215,11 +213,6 @@ u32 compressLZ(const u8 *srcp,u32 size,u8 *dstp)
             {
 
                 LZCompFlags|=0x1;
-
-                if(LZDstCount + 2 >= dstMax)
-                {
-                    return 0;
-                }
 
                 *dstp++=(u8)((lastLength - 3) << 4 | (lastOffset - 1) >> 8);
                 *dstp++=(u8)((lastOffset - 1) & 0xff);
