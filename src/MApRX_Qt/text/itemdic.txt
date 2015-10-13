@@ -79,7 +79,7 @@
 0.Be0
 1.Be1
 2.Be2
-+21.Sp21
++21.Shotzo
 0.Be0
 2.Be2
 3.Be3
@@ -245,10 +245,10 @@
 0.Normal
 +81.Sp81
 0.Be0
-+82.Sp82
-0.Be0
-+83.Sp83
-0.Be0
++82.Kracko Jr
+0.Normal
++83.Kracko
+0.Normal
 +84.King Dedede
 0.Normal
 +85.Dyna Blade
@@ -296,8 +296,8 @@
 0.Normal
 +106.Marx Soul
 0.Normal
-+109.Sp109
-0.Be0
++109.King Dedede - Gourmet Race
+0.Normal
 +110.Sp110
 0.Be0
 +111.Sp111
@@ -317,12 +317,12 @@
 +120.Truck
 0.Beginning
 1.End
-+121.Cannon
++121.Transport Cannon
 0.Be0
 1.Be1
 4.Be4
 5.Be5
-+122.Sp122
++122.Cannon
 0.Be0
 1.Be1
 2.Be2
@@ -335,8 +335,8 @@
 +124.Sp124
 0.Be0
 1.Be1
-+125.Sp125
-0.Be0
++125.Spring
+0.Normal
 +126.Sp126
 0.Be0
 1.Be1
@@ -347,8 +347,8 @@
 0.Be0
 +129.Sp129
 0.Be0
-+130.Sp130
-0.Be0
++130.M Fruit
+0.Normal
 +131.Sp131
 0.Be0
 +132.Sp132
@@ -422,8 +422,8 @@
 0.Be0
 +157.Sp157
 0.Be0
-+160.Sp160
-0.Be0
++160.Dyna Blade Goal Game
+0.Normal
 +163.Stage 1 Title
 0.Normal
 +164.Stage 2 Title
@@ -445,25 +445,25 @@
 0.Be0
 +184.Treasure Box
 0.Normal
-+185.Sp185
-0.Be0
-+186.Sp186
-0.Be0
++185.Treasure Box?
+0.Normal
++186.Saving Point
+0.Normal
 +188.Sp188
 0.Be0
 1.Be1
 +189.Sp189
 0.Be0
 1.Be1
-+192.Sp192
-0.Be0
-1.Be1
-2.Be2
-+193.Sp193
-0.Be0
-1.Be1
-2.Be2
-3.Be3
++192.Gourmet Race
+0.Beginning
+1.End
+2.Final End
++193.Guidepost
+0.Up
+1.Right
+2.Down
+3.Left
 +194.Sp194
 0.Be0
 +195.Sp195
@@ -560,7 +560,7 @@
 0.Normal
 +241.Stone Door
 0.Normal
-+242.Sp242
++242.Candle
 0.Normal
 +243.Sp243
 0.Normal
