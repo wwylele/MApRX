@@ -24,6 +24,7 @@
 #define MAPPLANE0_H
 
 #include <QWidget>
+#include <QImage>
 #include "MainWindow.h"
 #include "blockstore.h"
 #include "../KssuFile.h"
@@ -40,6 +41,8 @@ protected:
     int curX,curY;
     int width;
     int height;
+#define TRAN_PAT_GRID_SIZE 6
+    QImage transparentPattern;
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent * event);
     void mousePressEvent(QMouseEvent * event);

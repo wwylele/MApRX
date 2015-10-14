@@ -23,8 +23,21 @@
 #include <QImage>
 #include <QMouseEvent>
 #include "dialogscripts.h"
-MapPlane0::MapPlane0(QWidget *parent) : QWidget(parent)
+MapPlane0::MapPlane0(QWidget *parent) :
+    QWidget(parent),
+    transparentPattern(TRAN_PAT_GRID_SIZE*2,
+                       TRAN_PAT_GRID_SIZE*2,
+                       QImage::Format_ARGB32)
 {
+    for(int x=0;x<TRAN_PAT_GRID_SIZE;x++)
+        for(int y=0;y<TRAN_PAT_GRID_SIZE;y++){
+            uint white=0xFFFFFFFFUL,gray=0xFFEEEEEEUL;
+            transparentPattern.setPixel(x,y,white);
+            transparentPattern.setPixel(x+TRAN_PAT_GRID_SIZE,y,gray);
+            transparentPattern.setPixel(x,y+TRAN_PAT_GRID_SIZE,gray);
+            transparentPattern.setPixel(x+TRAN_PAT_GRID_SIZE,
+                                        y+TRAN_PAT_GRID_SIZE,white);
+        }
 }
 
 
@@ -55,8 +68,9 @@ void MapPlane0::paintEvent(QPaintEvent *){
                 pMainWindow->bckScr.draw(
                     [this,&image](int x,int y,const Color15& c15){
                         u32 c=c15.toARGB32();
-                        for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)for(;y<height;y+=pMainWindow->bckScr.getHeight()*8)
-                            image.setPixel(x,y,c);
+                        for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)
+                            for(int ty=y;ty<height;ty+=pMainWindow->bckScr.getHeight()*8)
+                                image.setPixel(x,ty,c);
                     },
                     pMainWindow->bckPlt,
                     0,0,pMainWindow->bckTiles);
@@ -67,7 +81,7 @@ void MapPlane0::paintEvent(QPaintEvent *){
         }
 
 
-
+        painter.fillRect(0,0,width,height,QBrush(transparentPattern));
         painter.drawPixmap(0,0,QPixmap::fromImage(image));
 
 
