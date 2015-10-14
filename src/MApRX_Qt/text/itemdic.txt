@@ -1,4 +1,4 @@
-+0.Kirby
++0.Player
 0.Normal
 +1.Waddle Dee
 0.Be0
@@ -243,8 +243,8 @@
 0.Be0
 +80.Whispy Woods
 0.Normal
-+81.Sp81
-0.Be0
++81.Lololo&Lalala
+0.Normal
 +82.Kracko Jr
 0.Normal
 +83.Kracko
@@ -259,8 +259,8 @@
 0.Normal
 +88.Wham Bam Rock
 0.Normal
-+89.Sp89
-0.Be0
++89.Reactor
+0.Normal
 +90.Meta Knight
 0.Normal
 +91.Sp91
@@ -270,14 +270,14 @@
 +93.Computer Virus
 0.Be0
 1.Be1
-+94.Sp94
-0.Be0
-+95.Heavy Lobster 
++94.Main Cannon 2
 0.Normal
-+96.Sp96
-0.Be0
-+97.Sp97
-0.Be0
++95.Heavy Lobster
+0.Normal
++96.Nova
+0.Normal
++97.Marx
+0.Normal
 +98.Whispy's Revenge
 0.Normal
 +99.Lololo & Lalala's Revenge
@@ -343,8 +343,8 @@
 2.Be2
 +127.Sp127
 0.Be0
-+128.Sp128
-0.Be0
++128.1UP
+0.Normal
 +129.Sp129
 0.Be0
 +130.M Fruit
@@ -414,14 +414,14 @@
 10.Be10
 11.Be11
 12.Be12
-+153.Sp153
-0.Be0
++153.<Auto Fuse>
+0.Normal
 +154.Sp154
 0.Be0
 +155.Button
-0.Be0
-+157.Sp157
-0.Be0
+0.Normal
++157.1-use Button
+0.Normal
 +160.Dyna Blade Goal Game
 0.Normal
 +163.Stage 1 Title
@@ -496,7 +496,7 @@
 0.Normal
 +209.Sp209
 0.Normal
-+210.Sp210
++210.Gourmet Race Goal?
 0.Normal
 +213.Sp213
 0.Normal
@@ -562,11 +562,11 @@
 0.Normal
 +242.Candle
 0.Normal
-+243.Sp243
++243.Block Generator
 0.Normal
 +244.Mobile Stage
 0.Normal
-+245.Sp245
++245.<Hang Stage>
 0.Normal
 +246.Elevator
 0.Normal
