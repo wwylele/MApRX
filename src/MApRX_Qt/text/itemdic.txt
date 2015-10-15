@@ -148,99 +148,99 @@
 0.Be0
 1.Be1
 2.Be2
-+39.Sp39
++39.Plasma Wisp
 0.Be0
 1.Be1
 2.Be2
 3.Be3
-+40.Sp40
++40.Rocky
 0.Be0
 1.Be1
-+41.Sp41
++41.Chilly
 0.Be0
 1.Be1
-+42.Sp42
-0.Be0
-+43.Sp43
-0.Be0
-1.Be1
-2.Be2
-+44.Sp44
-0.Be0
-+45.Sp45
++42.Simirror
+0.Normal
++43.Walky
 0.Be0
 1.Be1
 2.Be2
-3.Be3
-4.Be4
-+46.Sp46
-0.Be0
-1.Be1
-+47.Sp47
-0.Be0
-1.Be1
-2.Be2
-3.Be3
-+48.Sp48
-0.Be0
-+49.Sp49
-0.Be0
-+50.Sp50
-0.Be0
-+51.Sp51
-0.Be0
-1.Be1
-+52.Sp52
-0.Be0
-1.Be1
-+53.Sp53
-0.Be0
-1.Be1
-+55.Sp55
-0.Be0
-1.Be1
-+56.Sp56
++44.TAC
+0.Normal
++45.Magical Sweeper
 0.Be0
 1.Be1
 2.Be2
 3.Be3
 4.Be4
-5.Be5
-+59.Sp59
++46.Moto Shotzo
+0.Be0
+1.Be1
++47.Laser Ball
 0.Be0
 1.Be1
 2.Be2
+3.Be3
++48.Gip
+0.Normal
++49.Swing Waddle Dee
+0.Normal
++50.Swint Waddle Doo
+0.Normal
++51.Parasol
+0.Be0
+1.Be1
++52.Parasol Waddle Dee
+0.Be0
+1.Be1
++53.Parasol Waddle Doo
+0.Be0
+1.Be1
++55.Coconut
+0.Be0
+1.Be1
++56.<Nova Enemy B>
+0.Be0
+1.Be1
+2.Be2
+3.Be3
 4.Be4
 5.Be5
-+60.Sp60
++59.<Nova Enemy C>
 0.Be0
-+61.Sp61
-0.Be0
+1.Be1
+2.Be2
+4.Be4
+5.Be5
++60.Iron Mom
+0.Normal
++61.Flotzo
+0.Normal
 +63.Sp63
 0.Be0
 1.Be1
-+64.Sp64
++64.<Mid Boss Controller?>
 0.Be0
 1.Be1
 2.Be2
-+67.Sp67
-0.Be0
-+70.Sp70
-0.Be0
-+73.Sp73
-0.Be0
-+74.Sp74
-0.Be0
-+75.Sp75
-0.Be0
-+76.Sp76
-0.Be0
-+77.Sp77
-0.Be0
-+78.Sp78
-0.Be0
-+79.Sp79
-0.Be0
++67.Poppy Bro Sr
+0.Normal
++70.Bonkers
+0.Normal
++73.Iron Mam
+0.Normal
++74.Jukid
+0.Normal
++75.Poppy Bro Sr
+0.Normal
++76.Chef Kawasaki
+0.Normal
++77.Mr Frosty
+0.Normal
++78.Bonkers
+0.Normal
++79.Bugzzy
+0.Normal
 +80.Whispy Woods
 0.Normal
 +81.Lololo&Lalala
@@ -263,8 +263,8 @@
 0.Normal
 +90.Meta Knight
 0.Normal
-+91.Sp91
-0.Be0
++91.Chasing Meta Knight
+0.Normal
 +92.Twin Woods
 0.Normal
 +93.Computer Virus
@@ -298,19 +298,19 @@
 0.Normal
 +109.King Dedede - Gourmet Race
 0.Normal
-+110.Sp110
-0.Be0
-+111.Sp111
-0.Be0
-+115.Sp115
-0.Be0
-+116.Sp116
-0.Be0
++110.Mid Bosses
+0.Normal
++111.True Mid Bosses
+0.Normal
++115.Goal Star
+0.Normal
++116.Warp Star
+0.Normal
 +117.Warp Star
 0.Normal
-+118.Sp118
-0.Be0
-+119.Sp119
++118.Warp Star
+0.Normal
++119.Warp Star
 0.Be0
 1.Be1
 4.Be4
@@ -332,7 +332,7 @@
 7.Be7
 +123.Fuse
 0.Normal
-+124.Sp124
++124.Catapult
 0.Be0
 1.Be1
 +125.Spring
@@ -341,37 +341,37 @@
 0.Be0
 1.Be1
 2.Be2
-+127.Sp127
-0.Be0
++127.Big Button
+0.Normal
 +128.1UP
 0.Normal
-+129.Sp129
-0.Be0
-+130.M Fruit
++129.Invincibility Candy
 0.Normal
-+131.Sp131
-0.Be0
-+132.Sp132
-0.Be0
-+133.Sp133
-0.Be0
-+134.Sp134
-0.Be0
-+136.Sp136
-0.Be0
-+137.Sp137
-0.Be0
-+138.Sp138
-0.Be0
-+139.Sp139
-0.Be0
-+140.Sp140
-0.Be0
-+141.Sp141
-0.Be0
-+143.Sp143
-0.Be0
-+144.Copy Ability 1
++130.Maxim Tomato
+0.Normal
++131.Food
+0.Normal
++132.Food
+0.Normal
++133.Food
+0.Normal
++134.Food
+0.Normal
++136.1UP
+0.Normal
++137.Invincibility Candy
+0.Normal
++138.Maxim Tomato
+0.Normal
++139.Food
+0.Normal
++140.Food
+0.Normal
++141.Food
+0.Normal
++143.Maxim Tomato
+0.Normal
++144.Copy Essence 1
 0.Be0
 1.Be1
 2.Be2
@@ -379,7 +379,7 @@
 4.Be4
 5.Be5
 6.Be6
-+145.Copy Ability 2
++145.Copy Essence 2
 0.Be0
 1.Be1
 2.Be2
@@ -393,14 +393,14 @@
 10.Be10
 11.Be11
 12.Be12
-+148.Sp148
++148.Copy Essence Deluxe 1
 0.Be0
 1.Be1
 2.Be2
 3.Be3
 4.Be4
 5.Be5
-+149.Sp149
++149.Copy Essence Deluxe 2
 0.Be0
 1.Be1
 2.Be2
@@ -414,10 +414,10 @@
 10.Be10
 11.Be11
 12.Be12
-+153.<Auto Fuse>
++153.Igniter
 0.Normal
-+154.Sp154
-0.Be0
++154.Button
+0.Normal
 +155.Button
 0.Normal
 +157.1-use Button
@@ -432,20 +432,20 @@
 0.Normal
 +166.Stage 4 Title
 0.Normal
-+168.Sp168
-0.Be0
++168.Gaol Warp Star
+0.Normal
 +170.Sp170
-0.Be0
-+171.Sp171
+0.Normal
++171.Meta Knights Controller
 0.Be0
 1.Be1
-+172.Sp172
-0.Be0
++172.Meta Knights Generator
+0.Normal
 +174.Sp174
-0.Be0
+0.Normal
 +184.Treasure Box
 0.Normal
-+185.Treasure Box?
++185.Treasure Box
 0.Normal
 +186.Saving Point
 0.Normal
@@ -550,7 +550,7 @@
 2.Be2
 +236.Sp236
 0.Normal
-+237.Sp237
++237.Phan Phan
 0.Normal
 +238.Sp238
 0.Normal
