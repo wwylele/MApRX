@@ -1,0 +1,572 @@
++0.Player
+0.-
++1.Waddle Dee
+0.Be0
+1.Be1
+2.Be2
++2.Waddle Doo
+0.Be0
+1.Be1
+2.Be2
++3.Sir kibble
+0.Be0
+1.Be1
+2.Be2
++4.Bio Spark
+0.Be0
+1.Be1
+2.Be2
++5.Bomber
+0.Be0
+1.Be1
+2.Be2
++6.Cappy
+0.Be0
+1.Be1
+2.Be2
++8.Gator
+0.Be0
+1.Be1
+2.Be2
++9.Biospark
+0.-
++10.Bronto Burt
+0.Be0
+2.Be2
+3.Be3
+4.Be4
+5.Be5
+7.Be7
+8.Be8
++11.Capsule J2
+0.Be0
+1.Be1
++12.Burning Leo
+0.Be0
+1.Be1
++13.Gordo
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
+7.Be7
+8.Be8
+9.Be9
+10.Be10
++14.Gim
+0.-
++15.Wheelie
+0.Be0
+1.Be1
++16.Jungle Bomber
+0.Be0
+2.Be2
+3.Be3
++17.Lovly
+0.Be0
+1.Be1
++18.Knuckle Joe
+0.Be0
+1.Be1
++19.Poppy Bro Jr
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
++20.Grizzo
+0.Be0
+1.Be1
+2.Be2
++21.Shotzo
+0.Be0
+2.Be2
+3.Be3
+4.Be4
+5.Be5
++22.Broom Hatter
+0.Be0
+1.Be1
++23.Kabu
+0.Be0
+1.Be1
+2.Be2
++24.Scarfy
+0.Be0
+1.Be1
+2.Be2
+3.Be3
++25.Sp25
+0.-
++26.Twizzy
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
+5.Be5
++27.Tookey
+0.Be0
+1.Be1
+2.Be2
++28.Blipper
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
+5.Be5
++29.Glunk
+0.Be0
+1.Be1
++30.Slippy
+0.Be0
+1.Be1
++31.Squashy
+0.Be0
+1.Be1
+2.Be2
++32.Blade Knight
+0.Be0
+1.Be1
+2.Be2
++33.Nova's Enemy
+0.Be0
+1.Be1
+2.Be2
+3.Be3
++34.Ax Knight
+0.-
++35.Trident Knight
+0.-
++36.Javelin Knight
+0.-
++37.Mace Knight
+0.-
++38.Birdon
+0.Be0
+1.Be1
+2.Be2
++39.Plasma Wisp
+0.Be0
+1.Be1
+2.Be2
+3.Be3
++40.Rocky
+0.Be0
+1.Be1
++41.Chilly
+0.Be0
+1.Be1
++42.Simirror
+0.-
++43.Walky
+0.Be0
+1.Be1
+2.Be2
++44.TAC
+0.-
++45.Magical Sweeper
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
++46.Moto Shotzo
+0.Be0
+1.Be1
++47.Laser Ball
+0.Be0
+1.Be1
+2.Be2
+3.Be3
++48.Gip
+0.-
++49.Swing Waddle Dee
+0.-
++50.Swint Waddle Doo
+0.-
++51.Parasol
+0.Be0
+1.Be1
++52.Parasol Waddle Dee
+0.Be0
+1.Be1
++53.Parasol Waddle Doo
+0.Be0
+1.Be1
++55.Coconut
+0.Be0
+1.Be1
++56.<Nova Enemy B>
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
+5.Be5
++59.<Nova Enemy C>
+0.Be0
+1.Be1
+2.Be2
+4.Be4
+5.Be5
++60.Iron Mom
+0.-
++61.Flotzo
+0.-
++63.Sp63
+0.Be0
+1.Be1
++64.<Mid Boss Controller?>
+0.Be0
+1.Be1
+2.Be2
++67.Poppy Bro Sr
+0.-
++70.Bonkers
+0.-
++73.Iron Mam
+0.-
++74.Jukid
+0.-
++75.Poppy Bro Sr
+0.-
++76.Chef Kawasaki
+0.-
++77.Mr Frosty
+0.-
++78.Bonkers
+0.-
++79.Bugzzy
+0.-
++80.Whispy Woods
+0.-
++81.Lololo&Lalala
+0.-
++82.Kracko Jr
+0.-
++83.Kracko
+0.-
++84.King Dedede
+0.-
++85.Dyna Blade
+0.-
++86.Fatty Whale
+0.-
++87.Chameleo Arm
+0.-
++88.Wham Bam Rock
+0.-
++89.Reactor
+0.-
++90.Meta Knight
+0.-
++91.Chasing Meta Knight
+0.-
++92.Twin Woods
+0.-
++93.Computer Virus
+0.Be0
+1.Be1
++94.Main Cannon 2
+0.-
++95.Heavy Lobster
+0.-
++96.Nova
+0.-
++97.Marx
+0.-
++98.Whispy's Revenge
+0.-
++99.Lololo & Lalala's Revenge
+0.-
++100.Kracko Jr's Revenge
+0.-
++101.Kracko's Revenge
+0.-
++102.Kabula
+0.-
++103.Masked Dedede
+0.-
++104.Wham Bam Jewel
+0.-
++105.Galacta Knight
+0.-
++106.Marx Soul
+0.-
++109.King Dedede - Gourmet Race
+0.-
++110.Mid Bosses
+0.-
++111.True Mid Bosses
+0.-
++115.Goal Star
+0.-
++116.Warp Star
+0.-
++117.Warp Star
+0.-
++118.Warp Star
+0.-
++119.Warp Star
+0.Be0
+1.Be1
+4.Be4
++120.Truck
+0.Beginning
+1.End
++121.Transport Cannon
+0.Be0
+1.Be1
+4.Be4
+5.Be5
++122.Cannon
+0.Be0
+1.Be1
+2.Be2
+4.Be4
+5.Be5
+6.Be6
+7.Be7
++123.Fuse
+0.-
++124.Catapult
+0.Be0
+1.Be1
++125.Spring
+0.-
++126.Sp126
+0.Be0
+1.Be1
+2.Be2
++127.Big Button
+0.-
++128.1UP
+0.-
++129.Invincibility Candy
+0.-
++130.Maxim Tomato
+0.-
++131.Food
+0.-
++132.Food
+0.-
++133.Food
+0.-
++134.Food
+0.-
++136.1UP
+0.-
++137.Invincibility Candy
+0.-
++138.Maxim Tomato
+0.-
++139.Food
+0.-
++140.Food
+0.-
++141.Food
+0.-
++143.Maxim Tomato
+0.-
++144.Copy Essence 1
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
+5.Be5
+6.Be6
++145.Copy Essence 2
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
+5.Be5
+6.Be6
+7.Be7
+8.Be8
+9.Be9
+10.Be10
+11.Be11
+12.Be12
++148.Copy Essence Deluxe 1
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
+5.Be5
++149.Copy Essence Deluxe 2
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
+5.Be5
+6.Be6
+7.Be7
+8.Be8
+9.Be9
+10.Be10
+11.Be11
+12.Be12
++153.Igniter
+0.-
++154.Button
+0.-
++155.Button
+0.-
++157.1-use Button
+0.-
++160.Dyna Blade Goal Game
+0.-
++163.Stage 1 Title
+0.-
++164.Stage 2 Title
+0.-
++165.Stage 3 Title
+0.-
++166.Stage 4 Title
+0.-
++168.Gaol Warp Star
+0.-
++170.Sp170
+0.-
++171.Meta Knights Controller
+0.Be0
+1.Be1
++172.Meta Knights Generator
+0.-
++174.Sp174
+0.-
++184.Treasure Box
+0.-
++185.Treasure Box
+0.-
++186.Saving Point
+0.-
++188.Messages
+0.Be0
+1.Be1
++189.Sp189
+0.Be0
+1.Be1
++192.Gourmet Race
+0.Beginning
+1.End
+2.Final End
++193.Guidepost
+0.Up
+1.Right
+2.Down
+3.Left
++194.Gourmet Race Food
+0.-
++195.Gourmet Race Food
+0.-
++196.Gourmet Race Food
+0.-
++197.Gourmet Race Food
+0.-
++198.Gourmet Race Food
+0.-
++199.Gourmet Race Food
+0.-
++200.Gourmet Race Food
+0.-
++201.Gourmet Race Food
+0.-
++202.Gourmet Race Food
+0.-
++203.Gourmet Race Food
+0.-
++204.Gourmet Race Food
+0.-
++205.Gourmet Race Food
+0.-
++206.Gourmet Race Food
+0.-
++207.Gourmet Race Food
+0.-
++208.Gourmet Race Food
+0.-
++209.Gourmet Race Food
+0.-
++210.Gourmet Race Goal?
+0.-
++213.Arena Failure
+0.-
++220.Galbel
+0.Be0
+2.Be2
++221.Rosely
+0.Be0
+1.Be1
++222.Mad Apple
+0.Be0
+2.Be2
+3.Be3
++223.Grumples
+0.Be0
+1.Be1
+2.Be2
++224.Poison Mash
+0.Be0
+1.Be1
+2.Be2
++225.Koozer
+0.Be0
+5.Be5
+6.Be6
+7.Be7
+8.Be8
++226.Croucar
+0.Be0
+1.Be1
+2.Be2
+3.Be3
+4.Be4
++227.Croucar
+0.Be0
+3.Be3
++228.Cawcun
+0.Be0
+1.Be1
+3.Be3
++229.Blatzy
+0.Be0
+2.Be2
+4.Be4
+5.Be5
++230.Spear Waddle Dee
+0.Be0
+2.Be2
++231.Parasol Spear Waddle Dee
+1.Be1
+2.Be2
++236.Fire Lion
+0.-
++237.Phan Phan
+0.-
++238.Grand Wheelie
+0.-
++239.Mr Tick Tock
+0.-
++240.Stake
+0.-
++241.Stone Door
+0.-
++242.Candle
+0.-
++243.Block Generator
+0.-
++244.Mobile Stage
+0.-
++245.Hanging Stage
+0.-
++246.Elevator
+0.-

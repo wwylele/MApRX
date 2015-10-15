@@ -17,5 +17,6 @@
         <file>image/essenceicon.png</file>
         <file>image/Item.png</file>
         <file>image/Resize.png</file>
+        <file>text/itemdic.txt</file>
     </qresource>
 </RCC>

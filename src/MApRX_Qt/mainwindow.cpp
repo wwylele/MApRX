@@ -25,6 +25,7 @@
 #include <QTextStream>
 #include <QToolButton>
 #include <QSettings>
+#include <QComboBox>
 #include <ctime>
 #include "dialogaboutme.h"
 #include "dialogmakerom.h"
@@ -72,9 +73,16 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     if(role==Qt::DisplayRole||role==Qt::EditRole){
         switch(index.column()){
         case 0:
-            return QString::number(pMap->Items(itemId).basic.species());
+            return QString::number(pMap->Items(itemId).basic.species())
+                    +(role==Qt::DisplayRole?QString("(%1)")
+                    .arg(pMainWindow->itemDictionary.entries
+                         [pMap->Items(itemId).basic.species()].speciesName):"");
         case 1:
-            return QString::number(pMap->Items(itemId).basic.behavior());
+            return QString::number(pMap->Items(itemId).basic.behavior())
+                    +(role==Qt::DisplayRole?QString("(%1)")
+                    .arg(pMainWindow->itemDictionary.entries
+                         [pMap->Items(itemId).basic.species()]
+                         .behaviorName[pMap->Items(itemId).basic.behavior()]):"");
 
         case 4:
             return QString::number(pMap->Items(itemId).basic.param());
@@ -152,13 +160,14 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
         bool toIntOk;
         int toIntBuf;
         if(index.column()==0){
-            toIntBuf=value.toString().toInt(&toIntOk);
+            toIntBuf=value.toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>255)return false;
             itemBasic.setSpecies(toIntBuf);
             itemBasic.setCatagory(itemCatagory[toIntBuf]);
+            itemBasic.setBehavior(0);
         }
         else if(index.column()==1){
-            toIntBuf=value.toString().toInt(&toIntOk);
+            toIntBuf=value.toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>15)return false;
             itemBasic.setBehavior(toIntBuf);
         }
@@ -192,6 +201,74 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
     return true;
 }
 
+ItemTableDelegate::ItemTableDelegate(MainWindow *pMainWindow,QWidget* parent)
+    :QStyledItemDelegate(parent),
+     pMainWindow(pMainWindow){
+
+}
+
+QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                                         const QModelIndex &index) const{
+    if(index.column()==0){
+        QComboBox* combo=new QComboBox(parent);
+        int j=0;
+        for(int i=0;i<256;i++){
+            QString name(pMainWindow->itemDictionary.entries[i].speciesName);
+            if(name.length()){
+                combo->addItem(QString("%1(%2)").
+                               arg(i).
+                               arg(name),
+                               QVariant(i));
+                combo->setItemData(j,itemBackground[itemCatagory[i]],Qt::BackgroundRole);
+                j++;
+            }
+
+        }
+        return combo;
+    }else if(index.column()==1){
+        QComboBox* combo=new QComboBox(parent);
+        int species=pMainWindow->map.Items(index.row()).basic.species();
+        for(int p:pMainWindow->itemDictionary.entries[species].behaviorName.keys()){
+            combo->addItem(QString("%1(%2)").
+                           arg(p).
+                           arg(pMainWindow->itemDictionary.entries[species].behaviorName[p]),
+                  QVariant(p));
+        }
+        return combo;
+    }
+    else return QStyledItemDelegate::createEditor(parent,option,index);
+}
+
+void ItemTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
+    if(index.column()==0){
+        QComboBox* combo=qobject_cast<QComboBox*>(editor);
+        for(int i=0;;i++){
+            if(combo->itemData(i).toInt()==
+                    pMainWindow->map.Items(index.row()).basic.species()){
+                combo->setCurrentIndex(i);
+                break;
+            }
+        }
+    }else if(index.column()==1){
+        QComboBox* combo=qobject_cast<QComboBox*>(editor);
+        for(int i=0;;i++){
+            if(combo->itemData(i).toInt()==
+                    pMainWindow->map.Items(index.row()).basic.behavior()){
+                combo->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+    else return QStyledItemDelegate::setEditorData(editor,index);
+}
+void ItemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+                  const QModelIndex &index)const{
+    if(index.column()==0 || index.column()==1){
+        QComboBox* combo=qobject_cast<QComboBox*>(editor);
+        model->setData(index,combo->currentData());
+    }
+    else return QStyledItemDelegate::setModelData(editor,model,index);
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -207,6 +284,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->blockStore->pMainWindow=this;
 
     ui->itemTable->setModel(&itemTableModal);
+    ui->itemTable->setItemDelegate(new ItemTableDelegate(this));
     ui->itemTable->resizeRowsToContents();
     ui->itemTable->resizeColumnsToContents();
 
@@ -243,6 +321,12 @@ MainWindow::MainWindow(QWidget *parent) :
         roomName[inl[0].toInt()]=inl[1];
     }
     roomNameResFile.close();
+
+    QFile itemDicResFile(":/text/itemdic.txt");
+    itemDicResFile.open(QIODevice::ReadOnly);
+    QTextStream itemDicRes(&itemDicResFile);
+    itemDictionary.load(itemDicRes);
+    itemDicResFile.close();
 
 
     for(int i=0;i<MAP_COUNT;i++){
