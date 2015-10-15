@@ -211,6 +211,7 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
                                          const QModelIndex &index) const{
     if(index.column()==0){
         QComboBox* combo=new QComboBox(parent);
+        int j=0;
         for(int i=0;i<256;i++){
             QString name(pMainWindow->itemDictionary.entries[i].speciesName);
             if(name.length()){
@@ -218,7 +219,10 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
                                arg(i).
                                arg(name),
                                QVariant(i));
+                combo->setItemData(j,itemBackground[itemCatagory[i]],Qt::BackgroundRole);
+                j++;
             }
+
         }
         return combo;
     }else if(index.column()==1){
