@@ -26,7 +26,7 @@ void ItemDictionary::load(QTextStream& stream){
         entry.speciesName="";
         entry.behaviorName.clear();
     }
-    int currentSpecies;
+    int currentSpecies=0;
     while(!stream.atEnd()){
         QString in;
         QStringList inl;
