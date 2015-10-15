@@ -8,29 +8,29 @@
 0.Be0
 1.Be1
 2.Be2
-+3.Sp3
++3.Sir kibble
 0.Be0
 1.Be1
 2.Be2
-+4.Sp4
++4.Bio Spark
 0.Be0
 1.Be1
 2.Be2
-+5.Sp5
++5.Bomber
 0.Be0
 1.Be1
 2.Be2
-+6.Sp6
++6.Cappy
 0.Be0
 1.Be1
 2.Be2
-+8.Sp8
++8.Gator
 0.Be0
 1.Be1
 2.Be2
-+9.Sp9
-0.Be0
-+10.Sp10
++9.Biospark
+0.Normal
++10.Bronto Burt
 0.Be0
 2.Be2
 3.Be3
@@ -38,13 +38,13 @@
 5.Be5
 7.Be7
 8.Be8
-+11.Sp11
++11.Capsule J2
 0.Be0
 1.Be1
-+12.Sp12
++12.Burning Leo
 0.Be0
 1.Be1
-+13.Sp13
++13.Gordo
 0.Be0
 1.Be1
 2.Be2
@@ -54,28 +54,28 @@
 8.Be8
 9.Be9
 10.Be10
-+14.Sp14
-0.Be0
-+15.Sp15
++14.Gim
+0.Normal
++15.Wheelie
 0.Be0
 1.Be1
-+16.Sp16
++16.Jungle Bomber
 0.Be0
 2.Be2
 3.Be3
-+17.Sp17
++17.Lovly
 0.Be0
 1.Be1
-+18.Sp18
++18.Knuckle Joe
 0.Be0
 1.Be1
-+19.Sp19
++19.Poppy Bro Jr
 0.Be0
 1.Be1
 2.Be2
 3.Be3
 4.Be4
-+20.Sp20
++20.Grizzo
 0.Be0
 1.Be1
 2.Be2
@@ -85,66 +85,66 @@
 3.Be3
 4.Be4
 5.Be5
-+22.Sp22
++22.Broom Hatter
 0.Be0
 1.Be1
-+23.Sp23
++23.Kabu
 0.Be0
 1.Be1
 2.Be2
-+24.Sp24
++24.Scarfy
 0.Be0
 1.Be1
 2.Be2
 3.Be3
 +25.Sp25
-0.Be0
-+26.Sp26
-0.Be0
-1.Be1
-2.Be2
-3.Be3
-4.Be4
-5.Be5
-+27.Sp27
-0.Be0
-1.Be1
-2.Be2
-+28.Sp28
+0.Normal
++26.Twizzy
 0.Be0
 1.Be1
 2.Be2
 3.Be3
 4.Be4
 5.Be5
-+29.Sp29
-0.Be0
-1.Be1
-+30.Sp30
-0.Be0
-1.Be1
-+31.Sp31
++27.Tookey
 0.Be0
 1.Be1
 2.Be2
-+32.Sp32
-0.Be0
-1.Be1
-2.Be2
-+33.Sp33
++28.Blipper
 0.Be0
 1.Be1
 2.Be2
 3.Be3
-+34.Sp34
+4.Be4
+5.Be5
++29.Glunk
 0.Be0
-+35.Sp35
+1.Be1
++30.Slippy
 0.Be0
-+36.Sp36
+1.Be1
++31.Squashy
 0.Be0
-+37.Sp37
+1.Be1
+2.Be2
++32.Blade Knight
 0.Be0
-+38.Sp38
+1.Be1
+2.Be2
++33.Nova's Enemy
+0.Be0
+1.Be1
+2.Be2
+3.Be3
++34.Ax Knight
+0.Normal
++35.Trident Knight
+0.Normal
++36.Javelin Knight
+0.Normal
++37.Mace Knight
+0.Normal
++38.Birdon
 0.Be0
 1.Be1
 2.Be2
