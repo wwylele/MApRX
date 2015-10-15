@@ -193,7 +193,7 @@ public:
             CATAGORY_MASK=0x7F00,
             HAS_SCRIPT=0x8000
         };
-        Item():param0(1),param1(0x20),x(24),y(24){}
+        Item():param0(1),param1(0x200),x(24),y(24){}
 
         u8 species(){
             return param0&SPECIES_MASK;
