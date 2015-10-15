@@ -569,6 +569,7 @@ void MainWindow::on_buttonItemUp_clicked()
     if(!selection.isValid())return;
     u8 selItem=selection.row();
     if(selItem==0)return;
+    if(selItem>=map.metaData.itemCount)return;
     MoSwapItem mo(selItem-1);
     mo.toolTip=QString(tr("Move up Item#%1")).arg(selItem);
     doOperation(&mo);
@@ -583,6 +584,7 @@ void MainWindow::on_buttonItemDown_clicked()
     if(!selection.isValid())return;
     u8 selItem=selection.row();
     if(selItem==map.metaData.itemCount-1)return;
+    if(selItem>=map.metaData.itemCount)return;
     MoSwapItem mo(selItem);
     mo.toolTip=QString(tr("Move down Item#%1")).arg(selItem);
     doOperation(&mo);
@@ -596,6 +598,7 @@ void MainWindow::on_buttonItemDelete_clicked()
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
+    if(selItem>=map.metaData.itemCount)return;
     MoDeleteItem mo(selItem);
     mo.toolTip=QString(tr("Remove Item#%1")).arg(selItem);
     doOperation(&mo);
