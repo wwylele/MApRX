@@ -22,12 +22,12 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayoutMapFile">
      <property name="spacing">
       <number>3</number>
      </property>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="labelMapFile">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -49,12 +49,12 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayoutRomFile">
      <property name="spacing">
       <number>3</number>
      </property>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="labelRomFile">
        <property name="text">
         <string>ROM file</string>
        </property>
@@ -113,12 +113,12 @@
     </spacer>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayoutEmu">
      <property name="spacing">
       <number>3</number>
      </property>
      <item>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="labelEmu">
        <property name="text">
         <string>DS Emulator</string>
        </property>

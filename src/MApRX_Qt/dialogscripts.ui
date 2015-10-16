@@ -25,7 +25,7 @@
     <widget class="QListWidget" name="scriptListWidget"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayoutButtons">
      <item>
       <widget class="QPushButton" name="buttonRemove">
        <property name="text">

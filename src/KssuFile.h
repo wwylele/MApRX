@@ -67,7 +67,7 @@ protected:
     };
     std::vector<Thread> threads;
 public:
-    inline const Color15& Colors(u8 i)const{
+    inline Color15 getColors(u8 i)const{
         return finalColors[i];
     }
     void tick();
@@ -121,7 +121,7 @@ struct Block{
             pchar=&tileAt(x,y);
             tileSet[(*pchar)&TILE_ID_MASK].draw(
                 fSetPixel,
-                [&plt](u8 colorId)->Color15{ return plt.Colors(colorId); },
+                [&plt](u8 colorId)->Color15{ return plt.getColors(colorId); },
                 dx+x*8,
                 dy+y*8,
                 ((*pchar)&FLIP_X)!=0,
@@ -147,14 +147,14 @@ public:
         if(blockId>=blocks.size())return invalidBlock;
         return blocks[blockId];
     }
-    inline BlockEssence Essences(u16 blockId)const{
+    inline BlockEssence getEssences(u16 blockId)const{
         return essences[blockId];
     }
 
     inline u32 blockCount()const{
         return blocks.size();
     }
-    inline bool Loaded(){
+    inline bool isLoaded(){
         return loaded;
     }
     
@@ -253,7 +253,7 @@ protected:
     std::vector<RipeCell> cells;
     std::vector<RipeItem> items;
 public:
-    inline bool Loaded(){return loaded;}
+    inline bool isLoaded(){return loaded;}
     void unload();
 
     void readFile(const u8* src);
@@ -288,17 +288,17 @@ public:
 
     static u32 getScripteLength(u8 *pScript);
 
-    inline RipeCell& at(u16 x,u16 y){
+    inline RipeCell& cellAt(u16 x,u16 y){
         return cells[x+y*metaData.width];
     }
-    inline RipeItem& Items(u8 i){
+    inline RipeItem& itemAt(u8 i){
         return items[i];
     }
     template<typename T/* [](int x,int y,const Color15&) */>
     void draw(T fSetPixel,KfPlt& plt,int dx,int dy,
         const KfBlockSet& blockSet,const KfTileSet& tileSet){
         for(u16 x=0;x<metaData.width;x++)for(u16 y=0;y<metaData.height;y++){
-            blockSet[at(x,y).blockId].draw(fSetPixel,plt,dx+x*24,dy+y*24,tileSet);
+            blockSet[cellAt(x,y).blockId].draw(fSetPixel,plt,dx+x*24,dy+y*24,tileSet);
 
         }
     }
@@ -379,7 +379,7 @@ protected:
     bool loaded=false;
 public:
     void readFile(const u8* src);
-    inline bool Loaded(){return loaded;}
+    inline bool isLoaded(){return loaded;}
     inline void unload(){
         loaded=false;
         chars.clear();
@@ -392,7 +392,7 @@ public:
             pchar=&chars[x+y*width];
             tileSet[(*pchar)&TILE_ID_MASK].draw(
                 fSetPixel,
-                [&plt](u8 colorId)->Color15{return plt.Colors(colorId);},
+                [&plt](u8 colorId)->Color15{return plt.getColors(colorId);},
                 dx+x*8,
                 dy+y*8,
                 ((*pchar)&FLIP_X)!=0,

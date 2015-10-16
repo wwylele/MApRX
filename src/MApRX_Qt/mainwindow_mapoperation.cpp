@@ -33,11 +33,11 @@ MainWindow::MoEditCell::MoEditCell(u16 _x,u16 _y,u16 toBe)
 }
 
 void MainWindow::MoEditCell::doOperation(){
-    pMap->at(x,y).blockId=blockIdToBe;
+    pMap->cellAt(x,y).blockId=blockIdToBe;
 }
 
 MainWindow::MapOperation* MainWindow::MoEditCell::generateReversal(){
-    return new MoEditCell(x,y,pMap->at(x,y).blockId);
+    return new MoEditCell(x,y,pMap->cellAt(x,y).blockId);
 }
 
 MainWindow::MoEditItemBasic::MoEditItemBasic(u8 _itemId, const KfMap::Item &toBe)
@@ -45,11 +45,11 @@ MainWindow::MoEditItemBasic::MoEditItemBasic(u8 _itemId, const KfMap::Item &toBe
 
 }
 void MainWindow::MoEditItemBasic::doOperation(){
-    pMap->Items(itemId).basic=itemBasicToBe;
+    pMap->itemAt(itemId).basic=itemBasicToBe;
     pMainWindow->itemTableModal.itemChanged(itemId);
 }
 MainWindow::MapOperation* MainWindow::MoEditItemBasic::generateReversal(){
-    return new MoEditItemBasic(itemId,pMap->Items(itemId).basic);
+    return new MoEditItemBasic(itemId,pMap->itemAt(itemId).basic);
 }
 MainWindow::MoSwapItem::MoSwapItem(u8 _firstItemId):
     firstItemId(_firstItemId){
@@ -78,7 +78,7 @@ void MainWindow::MoDeleteItem::doOperation(){
 }
 
 MainWindow::MapOperation* MainWindow::MoDeleteItem::generateReversal(){
-    return new MoNewItem(itemId,pMap->Items(itemId));
+    return new MoNewItem(itemId,pMap->itemAt(itemId));
 }
 
 
@@ -147,11 +147,11 @@ MainWindow::MoEditCellScript::MoEditCellScript(const std::vector<KfMap::Script>&
 }
 
 void MainWindow::MoEditCellScript::doOperation(){
-    pMap->at(x,y).scripts=scriptsToBe;
+    pMap->cellAt(x,y).scripts=scriptsToBe;
 }
 
 MainWindow::MapOperation* MainWindow::MoEditCellScript::generateReversal(){
-    return new MoEditCellScript(pMap->at(x,y).scripts,x,y);
+    return new MoEditCellScript(pMap->cellAt(x,y).scripts,x,y);
 }
 
 
@@ -161,11 +161,11 @@ MainWindow::MoEditItemScript::MoEditItemScript(const std::vector<KfMap::Script>&
 }
 
 void MainWindow::MoEditItemScript::doOperation(){
-    pMap->Items(itemId).scripts=scriptsToBe;
+    pMap->itemAt(itemId).scripts=scriptsToBe;
 }
 
 MainWindow::MapOperation* MainWindow::MoEditItemScript::generateReversal(){
-    return new MoEditItemScript(pMap->Items(itemId).scripts,itemId);
+    return new MoEditItemScript(pMap->itemAt(itemId).scripts,itemId);
 }
 
 
@@ -187,7 +187,7 @@ void MainWindow::doOperation(MapOperation *op){
     ui->actionRedo->setEnabled(false);
     ui->actionUndo->setToolTip(tr("Undo")+" "+op->toolTip);
     ui->actionRedo->setToolTip(tr("Redo"));
-    ui->mapPlane0->update();
+    ui->mapView->update();
 }
 void MainWindow::undo(){
     assert(!undoStack.empty());
@@ -204,7 +204,7 @@ void MainWindow::undo(){
         ui->actionUndo->setToolTip(tr("Undo")+" "+undoStack.top().get()->toolTip);
     }
     ui->actionRedo->setToolTip(tr("Redo")+" "+redoStack.top().get()->toolTip);
-    ui->mapPlane0->update();
+    ui->mapView->update();
 }
 void MainWindow::redo(){
     assert(!redoStack.empty());
@@ -221,7 +221,7 @@ void MainWindow::redo(){
         ui->actionRedo->setToolTip(tr("Redo")+" "+redoStack.top().get()->toolTip);
     }
     ui->actionUndo->setToolTip(tr("Undo")+" "+undoStack.top().get()->toolTip);
-    ui->mapPlane0->update();
+    ui->mapView->update();
 
 }
 
