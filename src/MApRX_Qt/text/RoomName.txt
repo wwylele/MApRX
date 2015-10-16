@@ -1,41 +1,84 @@
-0.[Spring Breeze] Stage 1
-6.Stage 2
-15.Stage 3
-24.Stage 3
-28.[Dyna Blade] Stage 1
-34.Stage 2
-44.Stage 3
-53.Stage 4
-64.Stage 5
-67.Stage B
-68.Trail Room 1
-69.Trail Room 2
-70.<Glitch>
-71.Gourmet Race
-74.The Great Cave Offensive
-75.Entry
-76.Area 1
-86.Area 2
-95.Area 3
-131.Area 4
-156.Revenge Of Meta Knight
-199.[Milky Way Wishes] Grass Planet
-208.Water Planet
-217.Wind Planet
-231.Flame Planet
-238.Cave Planet
-243.Machine Planet
-250.Eternal Planet
-258.??? Planet
-261.Nova
-263.Marx
-265.[Revenge Of The King] Stage 1
-273.Stage 2
-285.Stage 3
-294.Stage 4
-296.Stage 5
-308.The Arena
-328.Meta Knightmare Ultra
-515.Helper To Hero
-530.The True Arena
-547.<Debug Room>
+{0.Spring Breeze
+{0.Stage 1
+}6
+{6.Stage 2
+}15
+{15.Stage 3
+}24
+{24.Stage 4
+}28
+}28
+{28.Dyna Blade
+{28.Stage 1
+}34
+{34.Stage 2
+}44
+{44.Stage 3
+}53
+{53.Stage 4
+}64
+{64.Stage 5
+}67
+-67.Stage B
+-68.Trail Room 1
+-69.Trail Room 2
+-70.<Glitch>
+}71
+{71.Gourmet Race
+}74
+{74.The Great Cave Offensive
+-75.Entry
+{76.Area 1
+}86
+{86.Area 2
+}95
+{95.Area 3
+}131
+{131.Area 4
+}156
+}156
+{156.Revenge Of Meta Knight
+}199
+{199.Milky Way Wishes
+{199.Grass Planet
+}208
+{208.Water Planet
+}217
+{217.Wind Planet
+}231
+{231.Flame Planet
+}238
+{238.Cave Planet
+}243
+{243.Machine Planet
+}250
+{250.Eternal Planet
+}258
+{258.??? Planet
+}261
+{261.Nova
+}263
+-263.Marx
+-264.Fountain of Dream
+}265
+{265.Revenge Of The King
+{265.Stage 1
+}273
+{273.Stage 2
+}285
+{285.Stage 3
+}294
+{294.Stage 4
+}296
+{296.Stage 5
+}308
+}308
+{308.The Arena
+}328
+{328.Meta Knightmare Ultra
+}515
+{515.Helper To Hero
+}530
+{530.The True Arena
+}547
+-547.<Debug Room>

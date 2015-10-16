@@ -270,6 +270,56 @@ void ItemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     else return QStyledItemDelegate::setModelData(editor,model,index);
 }
 
+void MainWindow::loadRoomList(){
+    ui->listRoom->clear();
+    QString roomName[MAP_COUNT];
+    QFile roomNameResFile(":/text/RoomName.txt");
+    roomNameResFile.open(QIODevice::ReadOnly);
+    QTextStream roomNameRes(&roomNameResFile);
+
+    QChar command0;
+    int command1;
+    QStringList command12;
+    auto readNextCommand=[&](){
+        if(roomNameRes.atEnd()){
+            command1=-1;
+            return;
+        }
+        QString in=roomNameRes.readLine();
+        command0=in[0];
+        command12=in.right(in.size()-1).split('.');
+        command1=command12[0].toInt();
+    };
+
+    int currentRoom=0;
+    QTreeWidgetItem *currentParent=ui->listRoom->invisibleRootItem();
+    readNextCommand();
+    while(currentRoom<MAP_COUNT){
+        if(currentRoom==command1){
+            if(command0==QChar('}')){
+                currentParent=currentParent->parent();
+                if(!currentParent)currentParent=ui->listRoom->invisibleRootItem();
+            }
+            else if(command0==QChar('{')){
+                currentParent=new QTreeWidgetItem(currentParent);
+                currentParent->setText(0,command12[1]);
+                currentParent->setData(0,Qt::UserRole,-1);
+            }else if(command0==QChar('-')){
+                QTreeWidgetItem* newRoom=new QTreeWidgetItem(currentParent);
+                newRoom->setText(0,QString("Room#%1 %2").arg(currentRoom).arg(command12[1]));
+                newRoom->setData(0,Qt::UserRole,currentRoom);
+                currentRoom++;
+            }
+            readNextCommand();
+        }else{
+            QTreeWidgetItem* newRoom=new QTreeWidgetItem(currentParent);
+            newRoom->setText(0,QString("Room#%1").arg(currentRoom));
+            newRoom->setData(0,Qt::UserRole,currentRoom);
+            currentRoom++;
+        }
+    }
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     itemTableModal(this),
@@ -309,18 +359,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(undo()));
     connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(redo()));
 
-    QString roomName[MAP_COUNT];
-    QFile roomNameResFile(":/text/RoomName.txt");
-    roomNameResFile.open(QIODevice::ReadOnly);
-    QTextStream roomNameRes(&roomNameResFile);
-    while(!roomNameRes.atEnd()){
-        QString in;
-        QStringList inl;
-        in=roomNameRes.readLine();
-        inl=in.split('.');
-        roomName[inl[0].toInt()]=inl[1];
-    }
-    roomNameResFile.close();
+
 
     QFile itemDicResFile(":/text/itemdic.txt");
     itemDicResFile.open(QIODevice::ReadOnly);
@@ -329,16 +368,7 @@ MainWindow::MainWindow(QWidget *parent) :
     itemDicResFile.close();
 
 
-    for(int i=0;i<MAP_COUNT;i++){
-        QString str;
-        str=QString("Room#%1 ").arg(i);
-        str+=roomName[i];
-        QListWidgetItem *newItem;
-        newItem=new QListWidgetItem(str);
-        newItem->setData(Qt::UserRole,QVariant(i));
-        ui->listRoom->addItem(newItem);
-
-    }
+    loadRoomList();
 
     clearOperationStack();
 
@@ -425,11 +455,12 @@ void MainWindow::loadRoom(int roomId){
     mapUpdateTimer.start(5);
 }
 
-void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
+void MainWindow::on_listRoom_itemDoubleClicked(QTreeWidgetItem *item)
 {
     if(currentFileName==QString::null)return;
 
-    int roomId=item->data(Qt::UserRole).toInt();
+    int roomId=item->data(0,Qt::UserRole).toInt();
+    if(roomId==-1)return;
     if(map.isLoaded()){
         saveCurrentRoom();
     }
