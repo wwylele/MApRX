@@ -271,29 +271,12 @@ void ItemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 }
 
 void MainWindow::loadRoomList(){
+    ui->listRoom->clear();
     QString roomName[MAP_COUNT];
     QFile roomNameResFile(":/text/RoomName.txt");
     roomNameResFile.open(QIODevice::ReadOnly);
     QTextStream roomNameRes(&roomNameResFile);
-    /*while(!roomNameRes.atEnd()){
-        QString in;
-        QStringList inl;
-        in=roomNameRes.readLine();
-        inl=in.split('.');
-        roomName[inl[0].toInt()]=inl[1];
-    }
-    roomNameResFile.close();
 
-    for(int i=0;i<MAP_COUNT;i++){
-        QString str;
-        str=QString("Room#%1 ").arg(i);
-        str+=roomName[i];
-        QListWidgetItem *newItem;
-        newItem=new QListWidgetItem(str);
-        newItem->setData(Qt::UserRole,QVariant(i));
-        ui->listRoom->addItem(newItem);
-
-    }*/
     QChar command0;
     int command1;
     QStringList command12;
