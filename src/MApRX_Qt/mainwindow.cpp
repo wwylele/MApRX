@@ -420,7 +420,7 @@ void MainWindow::loadRoom(int roomId){
     ui->itemTable->resizeColumnsToContents();
     ui->itemTable->resizeRowsToContents();
 
-    ui->menu_Map->setEnabled(true);
+    ui->menuMap->setEnabled(true);
 
     mapUpdateTimer.start(5);
 }
@@ -493,7 +493,7 @@ void MainWindow::openMapdata(QString fileName){
 
     mapUpdateTimer.stop();
     map.unload();
-    ui->menu_Map->setEnabled(true);
+    ui->menuMap->setEnabled(true);
 
     ui->actionSave->setEnabled(true);
     ui->actionSaveAs->setEnabled(true);

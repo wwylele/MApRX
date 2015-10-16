@@ -108,7 +108,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tabBlocks2">
+        <widget class="QWidget" name="tabItems">
          <attribute name="title">
           <string>Items</string>
          </attribute>
@@ -127,7 +127,7 @@
            </widget>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
+           <layout class="QVBoxLayout" name="itemsVerrticalLayout">
             <item>
              <widget class="QPushButton" name="buttonItemUp">
               <property name="enabled">
@@ -224,7 +224,7 @@
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>&amp;File</string>
     </property>
@@ -245,13 +245,13 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
    </widget>
-   <widget class="QMenu" name="menu_Help">
+   <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>&amp;Help</string>
     </property>
     <addaction name="actionAboutMe"/>
    </widget>
-   <widget class="QMenu" name="menu_Map">
+   <widget class="QMenu" name="menuMap">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -265,18 +265,18 @@
     <addaction name="separator"/>
     <addaction name="actionSaveToImage"/>
    </widget>
-   <widget class="QMenu" name="menu_Language">
+   <widget class="QMenu" name="menuLanguage">
     <property name="title">
      <string>&amp;Language</string>
     </property>
     <addaction name="actionEnglish"/>
     <addaction name="actionChinese"/>
    </widget>
-   <addaction name="menu_File"/>
+   <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
-   <addaction name="menu_Map"/>
-   <addaction name="menu_Language"/>
-   <addaction name="menu_Help"/>
+   <addaction name="menuMap"/>
+   <addaction name="menuLanguage"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="minimumSize">
@@ -284,6 +284,9 @@
      <width>0</width>
      <height>0</height>
     </size>
+   </property>
+   <property name="windowTitle">
+    <string>Viewer Options</string>
    </property>
    <property name="iconSize">
     <size>
@@ -310,7 +313,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Basic Operation</string>
    </property>
    <property name="iconSize">
     <size>
