@@ -56,3 +56,4 @@ RESOURCES += \
 
 CONFIG += c++11
 
+RC_FILE = winres.rc
