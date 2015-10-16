@@ -43,13 +43,13 @@ MapView::MapView(QWidget *parent) :
 
 
 void MapView::paintEvent(QPaintEvent *){
-    if(!pMainWindow->map.Loaded())return;
+    if(!pMainWindow->map.isLoaded())return;
     QPainter painter(this);
     if(pMainWindow->showEssence){
         for(u32 x=0;x<pMainWindow->map.getWidth();x++)
             for(u32 y=0;y<pMainWindow->map.getHeight();y++){
                 BlockEssence e;
-                e=pMainWindow->blocks.Essences(pMainWindow->map.at(x,y).blockId);
+                e=pMainWindow->blocks.getEssences(pMainWindow->map.cellAt(x,y).blockId);
                 painter.drawPixmap(x*24,y*24,pMainWindow->essenceSheet,
                                    (e%16)*24,e/16*24,24,24);
             }
@@ -64,7 +64,7 @@ void MapView::paintEvent(QPaintEvent *){
             },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
         }
         else{
-            if(pMainWindow->showBackground &&pMainWindow->bckScr.Loaded())
+            if(pMainWindow->showBackground &&pMainWindow->bckScr.isLoaded())
                 pMainWindow->bckScr.draw(
                     [this,&image](int x,int y,const Color15& c15){
                         u32 c=c15.toARGB32();
@@ -91,7 +91,7 @@ void MapView::paintEvent(QPaintEvent *){
             QBrush brushScript(QColor(255,0,255,100),Qt::SolidPattern);
             for(u32 x=0;x<pMainWindow->map.getWidth();x++)
                 for(u32 y=0;y<pMainWindow->map.getHeight();y++){
-                    if(!pMainWindow->map.at(x,y).scripts.empty()){
+                    if(!pMainWindow->map.cellAt(x,y).scripts.empty()){
                         painter.fillRect(x*24,y*24,24,24,brushScript);
                     }
                 }
@@ -102,15 +102,15 @@ void MapView::paintEvent(QPaintEvent *){
         extern QBrush itemBackground[13];
 
         for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
-            u8 catagory=(pMainWindow->map.Items(i).basic.param1
+            u8 catagory=(pMainWindow->map.itemAt(i).basic.param1
                          &KfMap::Item::CATAGORY_MASK)>>8;
             if(catagory>=13)catagory=0;
             painter.setBrush(itemBackground[catagory]);
-            painter.drawEllipse(pMainWindow->map.Items(i).basic.x-8,
-                                pMainWindow->map.Items(i).basic.y-8,
+            painter.drawEllipse(pMainWindow->map.itemAt(i).basic.x-8,
+                                pMainWindow->map.itemAt(i).basic.y-8,
                                 16,16);
-            painter.drawText(pMainWindow->map.Items(i).basic.x-8,
-                             pMainWindow->map.Items(i).basic.y-8,
+            painter.drawText(pMainWindow->map.itemAt(i).basic.x-8,
+                             pMainWindow->map.itemAt(i).basic.y-8,
                              16,16,Qt::AlignCenter,QString::number(i));
         }
     }else{
@@ -139,12 +139,12 @@ QString MapView::generateStatusTip(u16 x,u16 y){
     return QString(tr("Left button: change block. Middle button: get block."
                    " Right button: edit scripts. "
                 "Cell (%1,%2)=%3, %4 script(s)"))
-            .arg(x).arg(y).arg(pMainWindow->map.at(x,y).blockId)
-            .arg(pMainWindow->map.at(x,y).scripts.size());
+            .arg(x).arg(y).arg(pMainWindow->map.cellAt(x,y).blockId)
+            .arg(pMainWindow->map.cellAt(x,y).scripts.size());
 }
 
 void MapView::mouseMoveEvent(QMouseEvent * event){
-    if(!pMainWindow->map.Loaded()){
+    if(!pMainWindow->map.isLoaded()){
         curX=curY=-1;
         return;
     }
@@ -168,7 +168,7 @@ void MapView::mouseMoveEvent(QMouseEvent * event){
 }
 
 void MapView::mousePressEvent(QMouseEvent* event){
-    if(!pMainWindow->map.Loaded()){
+    if(!pMainWindow->map.isLoaded()){
         return;
     }
     if(!pMainWindow->showItems){
@@ -178,10 +178,10 @@ void MapView::mousePressEvent(QMouseEvent* event){
                 editCell.toolTip=QString(tr("Edit cell(%1,%2)")).arg(curX).arg(curY);
                 pMainWindow->doOperation(&editCell);
             }else if(event->button()==Qt::MidButton){
-                pMainWindow->selBlock=pMainWindow->map.at(curX,curY).blockId;
+                pMainWindow->selBlock=pMainWindow->map.cellAt(curX,curY).blockId;
                 pBlockStore->repaint();
             }else if(event->button()==Qt::RightButton){
-                DialogScripts dlg(pMainWindow->map.at(curX,curY).scripts,pMainWindow);
+                DialogScripts dlg(pMainWindow->map.cellAt(curX,curY).scripts,pMainWindow);
                 int x=curX,y=curY;
                 dlg.setWindowTitle(QString(tr("Scripts for cell(%1,%2)")).arg(x).arg(y));
                 if(dlg.exec()==QDialog::Accepted){

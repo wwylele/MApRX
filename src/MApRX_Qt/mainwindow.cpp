@@ -62,36 +62,36 @@ int ItemTableModal::columnCount(const QModelIndex &) const{
     return 7;
 }
 int ItemTableModal::rowCount(const QModelIndex &) const{
-    if(!pMap->Loaded())return 0;
+    if(!pMap->isLoaded())return 0;
     return pMap->metaData.itemCount;
 }
 QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
 
-    if(!pMap->Loaded())return QVariant();
+    if(!pMap->isLoaded())return QVariant();
     u8 itemId=index.row();
     if(itemId>=pMap->metaData.itemCount)return QVariant();
     if(role==Qt::DisplayRole||role==Qt::EditRole){
         switch(index.column()){
         case 0:
-            return QString::number(pMap->Items(itemId).basic.species())
+            return QString::number(pMap->itemAt(itemId).basic.species())
                     +(role==Qt::DisplayRole?QString("(%1)")
                     .arg(pMainWindow->itemDictionary.entries
-                         [pMap->Items(itemId).basic.species()].speciesName):"");
+                         [pMap->itemAt(itemId).basic.species()].speciesName):"");
         case 1:
-            return QString::number(pMap->Items(itemId).basic.behavior())
+            return QString::number(pMap->itemAt(itemId).basic.behavior())
                     +(role==Qt::DisplayRole?QString("(%1)")
                     .arg(pMainWindow->itemDictionary.entries
-                         [pMap->Items(itemId).basic.species()]
-                         .behaviorName[pMap->Items(itemId).basic.behavior()]):"");
+                         [pMap->itemAt(itemId).basic.species()]
+                         .behaviorName[pMap->itemAt(itemId).basic.behavior()]):"");
 
         case 4:
-            return QString::number(pMap->Items(itemId).basic.param());
+            return QString::number(pMap->itemAt(itemId).basic.param());
         case 5:
-            return QString::number(pMap->Items(itemId).scripts.size());
+            return QString::number(pMap->itemAt(itemId).scripts.size());
         case 6:{
             int x,y;
-            x=pMap->Items(itemId).basic.x;
-            y=pMap->Items(itemId).basic.y;
+            x=pMap->itemAt(itemId).basic.x;
+            y=pMap->itemAt(itemId).basic.y;
             QString str;
             str.sprintf("%d(%02d),%d(%02d)",x/24,x%24,y/24,y%24);
             return str;
@@ -100,13 +100,13 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     }else if(role==Qt::CheckStateRole){
         switch(index.column()){
         case 2:
-            return pMap->Items(itemId).basic.flagA()?Qt::Checked:Qt::Unchecked;
+            return pMap->itemAt(itemId).basic.flagA()?Qt::Checked:Qt::Unchecked;
         case 3:
-            return pMap->Items(itemId).basic.flagB()?Qt::Checked:Qt::Unchecked;
+            return pMap->itemAt(itemId).basic.flagB()?Qt::Checked:Qt::Unchecked;
         }
     }else if(role==Qt::BackgroundRole){
-        if(pMap->Items(itemId).basic.catagory()>=13)return itemBackground[0];
-        return itemBackground[pMap->Items(itemId).basic.catagory()];
+        if(pMap->itemAt(itemId).basic.catagory()>=13)return itemBackground[0];
+        return itemBackground[pMap->itemAt(itemId).basic.catagory()];
     }
     return QVariant();
 }
@@ -155,7 +155,7 @@ QModelIndex ItemTableModal::getIndex(int row,int column){
 }
 
 bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, int role){
-    KfMap::Item itemBasic=pMap->Items(index.row()).basic;
+    KfMap::Item itemBasic=pMap->itemAt(index.row()).basic;
     if(role==Qt::EditRole){
         bool toIntOk;
         int toIntBuf;
@@ -227,7 +227,7 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
         return combo;
     }else if(index.column()==1){
         QComboBox* combo=new QComboBox(parent);
-        int species=pMainWindow->map.Items(index.row()).basic.species();
+        int species=pMainWindow->map.itemAt(index.row()).basic.species();
         for(int p:pMainWindow->itemDictionary.entries[species].behaviorName.keys()){
             combo->addItem(QString("%1(%2)").
                            arg(p).
@@ -244,7 +244,7 @@ void ItemTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
         QComboBox* combo=qobject_cast<QComboBox*>(editor);
         for(int i=0;;i++){
             if(combo->itemData(i).toInt()==
-                    pMainWindow->map.Items(index.row()).basic.species()){
+                    pMainWindow->map.itemAt(index.row()).basic.species()){
                 combo->setCurrentIndex(i);
                 break;
             }
@@ -253,7 +253,7 @@ void ItemTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
         QComboBox* combo=qobject_cast<QComboBox*>(editor);
         for(int i=0;;i++){
             if(combo->itemData(i).toInt()==
-                    pMainWindow->map.Items(index.row()).basic.behavior()){
+                    pMainWindow->map.itemAt(index.row()).basic.behavior()){
                 combo->setCurrentIndex(i);
                 break;
             }
@@ -430,7 +430,7 @@ void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
     if(currentFileName==QString::null)return;
 
     int roomId=item->data(Qt::UserRole).toInt();
-    if(map.Loaded()){
+    if(map.isLoaded()){
         saveCurrentRoom();
     }
     loadRoom(roomId);
@@ -450,7 +450,7 @@ void MainWindow::on_updateMap(){
 
         plt.tick();
         tiles.tick();
-        if(bckScr.Loaded()){
+        if(bckScr.isLoaded()){
             bckPlt.tick();
             bckTiles.tick();
         }
@@ -512,7 +512,7 @@ void MainWindow::on_actionSave_triggered()
         msgBox.exec();
         return;
     }
-    if(map.Loaded())saveCurrentRoom();
+    if(map.isLoaded())saveCurrentRoom();
     mapdata.toFile(file);
     std::fclose(file);
 }
@@ -529,7 +529,7 @@ void MainWindow::on_actionSaveAs_triggered(){
         msgBox.exec();
         return;
     }
-    if(map.Loaded())saveCurrentRoom();
+    if(map.isLoaded())saveCurrentRoom();
     mapdata.toFile(file);
     std::fclose(file);
     currentFileName=fileName;
@@ -575,7 +575,7 @@ void MainWindow::on_actionMakeRom_triggered()
 
 void MainWindow::on_actionMapProperties_triggered()
 {
-    if(!map.Loaded()){
+    if(!map.isLoaded()){
         return;
     }
     DialogProperties dlg(map.metaData);
@@ -648,7 +648,7 @@ void MainWindow::on_actionExtract_triggered(){
 
 void MainWindow::on_buttonItemUp_clicked()
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
@@ -663,7 +663,7 @@ void MainWindow::on_buttonItemUp_clicked()
 
 void MainWindow::on_buttonItemDown_clicked()
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
@@ -678,7 +678,7 @@ void MainWindow::on_buttonItemDown_clicked()
 
 void MainWindow::on_buttonItemDelete_clicked()
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
@@ -690,7 +690,7 @@ void MainWindow::on_buttonItemDelete_clicked()
 
 void MainWindow::on_buttonItemNew_clicked()
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     KfMap::RipeItem item;
     QSize size=ui->mapViewScrollArea->size();
     int tx=(ui->mapViewScrollArea->horizontalScrollBar()->value()+size.width()/2);
@@ -708,9 +708,9 @@ void MainWindow::on_buttonItemNew_clicked()
 
 void MainWindow::on_itemTable_clicked(const QModelIndex &index)
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     u8 itemId=index.row();
-    KfMap::Item& item=map.Items(itemId).basic;
+    KfMap::Item& item=map.itemAt(itemId).basic;
     QSize size=ui->mapViewScrollArea->size();
     ui->mapViewScrollArea->horizontalScrollBar()->setValue(
                 item.x-size.width()/2);
@@ -718,7 +718,7 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
                 item.y-size.height()/2);
 
     if(index.column()==5){
-        DialogScripts dlg(map.Items(itemId).scripts,this);
+        DialogScripts dlg(map.itemAt(itemId).scripts,this);
         dlg.setWindowTitle(QString(tr("Scripts for item#%1")).arg(itemId));
         if(dlg.exec()==QDialog::Accepted){
             MoEditItemScript mo(dlg.scripts,itemId);
@@ -729,7 +729,7 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
 
 }
 void MainWindow::on_actionDiscardChanges_triggered(){
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     QMessageBox msgBox;
     msgBox.setText(tr("Do you really want to discard your changes on this room?"));
     msgBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
@@ -737,7 +737,7 @@ void MainWindow::on_actionDiscardChanges_triggered(){
     loadRoom(curRoomId);
 }
 void MainWindow::on_actionResizeMap_triggered(){
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     DialogResizeMap dlg(map.metaData.width,map.metaData.height);
     if(dlg.exec()!=QDialog::Accepted)return;
     MoResizeMap mo(dlg.mapWidth,dlg.mapHeight,dlg.hAlign,dlg.vAlign);
@@ -745,7 +745,7 @@ void MainWindow::on_actionResizeMap_triggered(){
     doOperation(&mo);
 }
 void MainWindow::on_actionSaveToImage_triggered(){
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     QString fileName=QFileDialog::getSaveFileName(this, tr("Save image to..."),
         "",
         "PNG(*.png);;BMP(*.bmp)");
