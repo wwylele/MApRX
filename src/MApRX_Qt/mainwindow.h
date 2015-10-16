@@ -25,7 +25,7 @@
 
 #include "../KssuFile.h"
 #include <QMainWindow>
-#include <QListWidget>
+#include <QTreeWidget>
 #include <QTimer>
 #include <QImage>
 #include <QPixmap>
@@ -204,7 +204,7 @@ public:
 
     int selBlock;
 private slots:
-    void on_listRoom_itemDoubleClicked(QListWidgetItem * item);
+    void on_listRoom_itemDoubleClicked(QTreeWidgetItem * item);
     void on_updateMap();
 
     void on_actionAboutMe_triggered();
@@ -254,6 +254,7 @@ private slots:
 
     void resetMap();
 
+
 private:
     Ui::MainWindow *ui;
     QTimer mapUpdateTimer;
@@ -262,7 +263,7 @@ private:
     Kf_mapdata mapdata;
     void saveCurrentRoom();
     void loadRoom(int roomId);
-
+    void loadRoomList();
 
 };
 

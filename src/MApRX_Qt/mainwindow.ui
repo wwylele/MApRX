@@ -36,13 +36,21 @@
       <property name="opaqueResize">
        <bool>true</bool>
       </property>
-      <widget class="QListWidget" name="listRoom">
+      <widget class="QTreeWidget" name="listRoom">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
       </widget>
       <widget class="QSplitter" name="splitterRight">
        <property name="orientation">
@@ -96,7 +104,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>411</width>
+               <width>380</width>
                <height>201</height>
               </rect>
              </property>
