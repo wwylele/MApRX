@@ -1,5 +1,5 @@
 /*************************************************************************
-    mapplane0.h
+    mapview.h
     :A widget present the map
 
     Copyright (C) 2015 wwylele
@@ -29,11 +29,11 @@
 #include "blockstore.h"
 #include "../KssuFile.h"
 
-class MapPlane0 : public QWidget
+class MapView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MapPlane0(QWidget *parent = 0);
+    explicit MapView(QWidget *parent = 0);
     void reset();
     MainWindow* pMainWindow;
     BlockStore* pBlockStore;

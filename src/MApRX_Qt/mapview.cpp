@@ -1,5 +1,5 @@
 /*************************************************************************
-    mapplane0.cpp
+    mapview.cpp
     Copyright (C) 2015 wwylele
 
     This file is part of MApRX.
@@ -18,12 +18,12 @@
     along with MApRX.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-#include "mapplane0.h"
+#include "mapview.h"
 #include <QPainter>
 #include <QImage>
 #include <QMouseEvent>
 #include "dialogscripts.h"
-MapPlane0::MapPlane0(QWidget *parent) :
+MapView::MapView(QWidget *parent) :
     QWidget(parent),
     transparentPattern(TRAN_PAT_GRID_SIZE*2,
                        TRAN_PAT_GRID_SIZE*2,
@@ -42,7 +42,7 @@ MapPlane0::MapPlane0(QWidget *parent) :
 
 
 
-void MapPlane0::paintEvent(QPaintEvent *){
+void MapView::paintEvent(QPaintEvent *){
     if(!pMainWindow->map.Loaded())return;
     QPainter painter(this);
     if(pMainWindow->showEssence){
@@ -127,7 +127,7 @@ void MapPlane0::paintEvent(QPaintEvent *){
 
 }
 
-void MapPlane0::reset(){
+void MapView::reset(){
     width=pMainWindow->map.metaData.width*24;
     height=pMainWindow->map.metaData.height*24;
     setMinimumSize(width,height);
@@ -135,7 +135,7 @@ void MapPlane0::reset(){
     curX=curY=-1;
 
 }
-QString MapPlane0::generateStatusTip(u16 x,u16 y){
+QString MapView::generateStatusTip(u16 x,u16 y){
     return QString(tr("Left button: change block. Middle button: get block."
                    " Right button: edit scripts. "
                 "Cell (%1,%2)=%3, %4 script(s)"))
@@ -143,7 +143,7 @@ QString MapPlane0::generateStatusTip(u16 x,u16 y){
             .arg(pMainWindow->map.at(x,y).scripts.size());
 }
 
-void MapPlane0::mouseMoveEvent(QMouseEvent * event){
+void MapView::mouseMoveEvent(QMouseEvent * event){
     if(!pMainWindow->map.Loaded()){
         curX=curY=-1;
         return;
@@ -167,7 +167,7 @@ void MapPlane0::mouseMoveEvent(QMouseEvent * event){
     repaint();
 }
 
-void MapPlane0::mousePressEvent(QMouseEvent* event){
+void MapView::mousePressEvent(QMouseEvent* event){
     if(!pMainWindow->map.Loaded()){
         return;
     }
@@ -195,7 +195,7 @@ void MapPlane0::mousePressEvent(QMouseEvent* event){
 
     }
 }
-void MapPlane0::leaveEvent(QEvent * ){
+void MapView::leaveEvent(QEvent * ){
     curX=curY=-1;
     repaint();
     emit showStatusTip("");

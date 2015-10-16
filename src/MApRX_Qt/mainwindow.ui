@@ -48,11 +48,11 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QScrollArea" name="mapPlane0ScrollArea">
+       <widget class="QScrollArea" name="mapViewScrollArea">
         <property name="widgetResizable">
          <bool>false</bool>
         </property>
-        <widget class="MapPlane0" name="mapPlane0">
+        <widget class="MapView" name="mapView">
          <property name="geometry">
           <rect>
            <x>0</x>
@@ -561,12 +561,6 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
-  <customwidget>
-   <class>MapPlane0</class>
-   <extends>QWidget</extends>
-   <header>mapplane0.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>BlockStore</class>
    <extends>QWidget</extends>

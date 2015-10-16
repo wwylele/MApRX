@@ -187,7 +187,7 @@ void MainWindow::doOperation(MapOperation *op){
     ui->actionRedo->setEnabled(false);
     ui->actionUndo->setToolTip(tr("Undo")+" "+op->toolTip);
     ui->actionRedo->setToolTip(tr("Redo"));
-    ui->mapPlane0->update();
+    ui->mapView->update();
 }
 void MainWindow::undo(){
     assert(!undoStack.empty());
@@ -204,7 +204,7 @@ void MainWindow::undo(){
         ui->actionUndo->setToolTip(tr("Undo")+" "+undoStack.top().get()->toolTip);
     }
     ui->actionRedo->setToolTip(tr("Redo")+" "+redoStack.top().get()->toolTip);
-    ui->mapPlane0->update();
+    ui->mapView->update();
 }
 void MainWindow::redo(){
     assert(!redoStack.empty());
@@ -221,7 +221,7 @@ void MainWindow::redo(){
         ui->actionRedo->setToolTip(tr("Redo")+" "+redoStack.top().get()->toolTip);
     }
     ui->actionUndo->setToolTip(tr("Undo")+" "+undoStack.top().get()->toolTip);
-    ui->mapPlane0->update();
+    ui->mapView->update();
 
 }
 

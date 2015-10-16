@@ -279,8 +279,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->actionShow_Animation->setChecked(true);
 
-    ui->mapPlane0->pMainWindow=this;
-    ui->mapPlane0->pBlockStore=ui->blockStore;
+    ui->mapView->pMainWindow=this;
+    ui->mapView->pBlockStore=ui->blockStore;
     ui->blockStore->pMainWindow=this;
 
     ui->itemTable->setModel(&itemTableModal);
@@ -291,14 +291,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitterMain->setStretchFactor(1,1);
     ui->splitterRight->setStretchFactor(0,1);
 
-    connect(ui->mapPlane0,SIGNAL(showStatusTip(const QString&)),
+    connect(ui->mapView,SIGNAL(showStatusTip(const QString&)),
             ui->statusBar,SLOT(showMessage(const QString&)));
     connect(ui->blockStore,SIGNAL(showStatusTip(const QString&)),
             ui->statusBar,SLOT(showMessage(const QString&)));
 
     QToolButton* scrollAreaCornerResize=new QToolButton(this);
     scrollAreaCornerResize->setDefaultAction(ui->action_Resize_Map);
-    ui->mapPlane0ScrollArea->setCornerWidget(scrollAreaCornerResize);
+    ui->mapViewScrollArea->setCornerWidget(scrollAreaCornerResize);
 
     MapOperation::pMap=&map;
     MapOperation::pMainWindow=this;
@@ -454,7 +454,7 @@ void MainWindow::on_updateMap(){
             bckPlt.tick();
             bckTiles.tick();
         }
-        ui->mapPlane0->update();
+        ui->mapView->update();
         ui->blockStore->update();
 
     }
@@ -539,12 +539,12 @@ void MainWindow::on_actionSave_As_triggered(){
 void MainWindow::on_actionShow_Essence_triggered(bool checked)
 {
     showEssence=checked;
-    ui->mapPlane0->update();
+    ui->mapView->update();
     ui->blockStore->update();
 }
 void MainWindow::on_actionShow_Script_triggered(bool checked){
     showScript=checked;
-    ui->mapPlane0->update();
+    ui->mapView->update();
     ui->blockStore->update();
 }
 
@@ -556,13 +556,13 @@ void MainWindow::on_actionShow_Items_triggered(bool checked)
 {
 
     showItems=checked;
-    ui->mapPlane0->update();
+    ui->mapView->update();
 }
 void MainWindow::on_actionShow_Background_triggered(bool checked)
 {
 
     showBackground=checked;
-    ui->mapPlane0->update();
+    ui->mapView->update();
 }
 
 
@@ -692,10 +692,10 @@ void MainWindow::on_buttonItemNew_clicked()
 {
     if(!map.Loaded())return;
     KfMap::RipeItem item;
-    QSize size=ui->mapPlane0ScrollArea->size();
-    int tx=(ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2);
+    QSize size=ui->mapViewScrollArea->size();
+    int tx=(ui->mapViewScrollArea->horizontalScrollBar()->value()+size.width()/2);
     item.basic.x=(tx>=0?tx:0);
-    int ty=(ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2);
+    int ty=(ui->mapViewScrollArea->verticalScrollBar()->value()+size.height()/2);
     item.basic.y=(ty>=0?ty:0);
     if(item.basic.x>map.metaData.width*24)item.basic.x=map.metaData.width*24;
     if(item.basic.y>map.metaData.height*24)item.basic.y=map.metaData.height*24;
@@ -711,10 +711,10 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
     if(!map.Loaded())return;
     u8 itemId=index.row();
     KfMap::Item& item=map.Items(itemId).basic;
-    QSize size=ui->mapPlane0ScrollArea->size();
-    ui->mapPlane0ScrollArea->horizontalScrollBar()->setValue(
+    QSize size=ui->mapViewScrollArea->size();
+    ui->mapViewScrollArea->horizontalScrollBar()->setValue(
                 item.x-size.width()/2);
-    ui->mapPlane0ScrollArea->verticalScrollBar()->setValue(
+    ui->mapViewScrollArea->verticalScrollBar()->setValue(
                 item.y-size.height()/2);
 
     if(index.column()==5){
@@ -760,7 +760,7 @@ void MainWindow::on_actionSave_to_Image_triggered(){
 }
 
 void MainWindow::resetMap(){
-    ui->mapPlane0->reset();
-    ui->mapPlane0ScrollArea->horizontalScrollBar()->setValue(0);
-    ui->mapPlane0ScrollArea->verticalScrollBar()->setValue(0);
+    ui->mapView->reset();
+    ui->mapViewScrollArea->horizontalScrollBar()->setValue(0);
+    ui->mapViewScrollArea->verticalScrollBar()->setValue(0);
 }
