@@ -277,7 +277,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mapUpdateTimer(this)
 {
     ui->setupUi(this);
-    ui->actionShow_Animation->setChecked(true);
+    ui->actionShowAnimation->setChecked(true);
 
     ui->mapView->pMainWindow=this;
     ui->mapView->pBlockStore=ui->blockStore;
@@ -297,7 +297,7 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->statusBar,SLOT(showMessage(const QString&)));
 
     QToolButton* scrollAreaCornerResize=new QToolButton(this);
-    scrollAreaCornerResize->setDefaultAction(ui->action_Resize_Map);
+    scrollAreaCornerResize->setDefaultAction(ui->actionResizeMap);
     ui->mapViewScrollArea->setCornerWidget(scrollAreaCornerResize);
 
     MapOperation::pMap=&map;
@@ -350,9 +350,9 @@ MainWindow::MainWindow(QWidget *parent) :
     mapdata.fromFile(file);
     std::fclose(file);
     currentFileName=fileName;
-    ui->action_Save->setEnabled(true);
-    ui->actionSave_As->setEnabled(true);
-    ui->actionMake_Rom->setEnabled(true);
+    ui->actionSave->setEnabled(true);
+    ui->actionSaveAs->setEnabled(true);
+    ui->actionMakeRom->setEnabled(true);
 
 
 
@@ -463,13 +463,13 @@ void MainWindow::on_updateMap(){
 
 }
 
-void MainWindow::on_actionAbout_MApRX_triggered()
+void MainWindow::on_actionAboutMe_triggered()
 {
     DialogAboutMe dlg;
     dlg.exec();
 }
 
-void MainWindow::on_action_Open_triggered()
+void MainWindow::on_actionOpen_triggered()
 {
     QString fileName=QFileDialog::getOpenFileName(this, tr("Open File"),
         "",
@@ -495,13 +495,13 @@ void MainWindow::openMapdata(QString fileName){
     map.unload();
     ui->menu_Map->setEnabled(true);
 
-    ui->action_Save->setEnabled(true);
-    ui->actionSave_As->setEnabled(true);
-    ui->actionMake_Rom->setEnabled(true);
+    ui->actionSave->setEnabled(true);
+    ui->actionSaveAs->setEnabled(true);
+    ui->actionMakeRom->setEnabled(true);
     clearOperationStack();
 }
 
-void MainWindow::on_action_Save_triggered()
+void MainWindow::on_actionSave_triggered()
 {
     if(currentFileName==QString::null)return;
     std::FILE* file=fopenQ(currentFileName,"wb");
@@ -516,7 +516,7 @@ void MainWindow::on_action_Save_triggered()
     mapdata.toFile(file);
     std::fclose(file);
 }
-void MainWindow::on_actionSave_As_triggered(){
+void MainWindow::on_actionSaveAs_triggered(){
     QString fileName=QFileDialog::getSaveFileName(this, tr("Save As ..."),
         "",
         tr("mapdata File(*.bin)"));
@@ -536,29 +536,29 @@ void MainWindow::on_actionSave_As_triggered(){
 }
 
 
-void MainWindow::on_actionShow_Essence_triggered(bool checked)
+void MainWindow::on_actionShowEssence_triggered(bool checked)
 {
     showEssence=checked;
     ui->mapView->update();
     ui->blockStore->update();
 }
-void MainWindow::on_actionShow_Script_triggered(bool checked){
+void MainWindow::on_actionShowScript_triggered(bool checked){
     showScript=checked;
     ui->mapView->update();
     ui->blockStore->update();
 }
 
-void MainWindow::on_actionShow_Animation_triggered(bool checked)
+void MainWindow::on_actionShowAnimation_triggered(bool checked)
 {
     showAnimation=checked;
 }
-void MainWindow::on_actionShow_Items_triggered(bool checked)
+void MainWindow::on_actionShowItem_triggered(bool checked)
 {
 
     showItems=checked;
     ui->mapView->update();
 }
-void MainWindow::on_actionShow_Background_triggered(bool checked)
+void MainWindow::on_actionShowBackground_triggered(bool checked)
 {
 
     showBackground=checked;
@@ -566,14 +566,14 @@ void MainWindow::on_actionShow_Background_triggered(bool checked)
 }
 
 
-void MainWindow::on_actionMake_Rom_triggered()
+void MainWindow::on_actionMakeRom_triggered()
 {
-    on_action_Save_triggered();
+    on_actionSave_triggered();
     DialogMakeRom dlg(currentFileName);
     dlg.exec();
 }
 
-void MainWindow::on_actionMap_Properties_triggered()
+void MainWindow::on_actionMapProperties_triggered()
 {
     if(!map.Loaded()){
         return;
@@ -728,7 +728,7 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
     }
 
 }
-void MainWindow::on_actionDiscard_Changes_triggered(){
+void MainWindow::on_actionDiscardChanges_triggered(){
     if(!map.Loaded())return;
     QMessageBox msgBox;
     msgBox.setText(tr("Do you really want to discard your changes on this room?"));
@@ -736,7 +736,7 @@ void MainWindow::on_actionDiscard_Changes_triggered(){
     if(msgBox.exec()!=QMessageBox::Yes)return;
     loadRoom(curRoomId);
 }
-void MainWindow::on_action_Resize_Map_triggered(){
+void MainWindow::on_actionResizeMap_triggered(){
     if(!map.Loaded())return;
     DialogResizeMap dlg(map.metaData.width,map.metaData.height);
     if(dlg.exec()!=QDialog::Accepted)return;
@@ -744,7 +744,7 @@ void MainWindow::on_action_Resize_Map_triggered(){
     mo.toolTip=tr("Resize Map");
     doOperation(&mo);
 }
-void MainWindow::on_actionSave_to_Image_triggered(){
+void MainWindow::on_actionSaveToImage_triggered(){
     if(!map.Loaded())return;
     QString fileName=QFileDialog::getSaveFileName(this, tr("Save image to..."),
         "",

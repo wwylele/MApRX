@@ -207,26 +207,26 @@ private slots:
     void on_listRoom_itemDoubleClicked(QListWidgetItem * item);
     void on_updateMap();
 
-    void on_actionAbout_MApRX_triggered();
+    void on_actionAboutMe_triggered();
 
-    void on_action_Open_triggered();
+    void on_actionOpen_triggered();
 
-    void on_action_Save_triggered();
+    void on_actionSave_triggered();
 
-    void on_actionShow_Essence_triggered(bool checked);
-    void on_actionShow_Script_triggered(bool checked);
+    void on_actionShowEssence_triggered(bool checked);
+    void on_actionShowScript_triggered(bool checked);
 
-    void on_actionShow_Animation_triggered(bool checked);
+    void on_actionShowAnimation_triggered(bool checked);
 
-    void on_actionShow_Items_triggered(bool checked);
+    void on_actionShowItem_triggered(bool checked);
 
-    void on_actionShow_Background_triggered(bool checked);
+    void on_actionShowBackground_triggered(bool checked);
 
-    void on_actionSave_As_triggered();
+    void on_actionSaveAs_triggered();
 
-    void on_actionMake_Rom_triggered();
+    void on_actionMakeRom_triggered();
 
-    void on_actionMap_Properties_triggered();
+    void on_actionMapProperties_triggered();
 
     void on_actionEnglish_triggered();
 
@@ -246,11 +246,11 @@ private slots:
 
     void on_itemTable_clicked(const QModelIndex &index);
 
-    void on_actionDiscard_Changes_triggered();
+    void on_actionDiscardChanges_triggered();
 
-    void on_action_Resize_Map_triggered();
+    void on_actionResizeMap_triggered();
 
-    void on_actionSave_to_Image_triggered();
+    void on_actionSaveToImage_triggered();
 
     void resetMap();
 

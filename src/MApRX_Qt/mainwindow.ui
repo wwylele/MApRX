@@ -228,15 +228,15 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="action_Open"/>
+    <addaction name="actionOpen"/>
     <addaction name="actionExtract"/>
     <addaction name="separator"/>
-    <addaction name="action_Save"/>
-    <addaction name="actionSave_As"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
-    <addaction name="actionMake_Rom"/>
+    <addaction name="actionMakeRom"/>
     <addaction name="separator"/>
-    <addaction name="action_Exit"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -249,7 +249,7 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="actionAbout_MApRX"/>
+    <addaction name="actionAboutMe"/>
    </widget>
    <widget class="QMenu" name="menu_Map">
     <property name="enabled">
@@ -258,12 +258,12 @@
     <property name="title">
      <string>&amp;Map</string>
     </property>
-    <addaction name="actionDiscard_Changes"/>
+    <addaction name="actionDiscardChanges"/>
     <addaction name="separator"/>
-    <addaction name="action_Resize_Map"/>
-    <addaction name="actionMap_Properties"/>
+    <addaction name="actionResizeMap"/>
+    <addaction name="actionMapProperties"/>
     <addaction name="separator"/>
-    <addaction name="actionSave_to_Image"/>
+    <addaction name="actionSaveToImage"/>
    </widget>
    <widget class="QMenu" name="menu_Language">
     <property name="title">
@@ -300,11 +300,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionShow_Essence"/>
-   <addaction name="actionShow_Script"/>
-   <addaction name="actionShow_Items"/>
-   <addaction name="actionShow_Animation"/>
-   <addaction name="actionShow_Background"/>
+   <addaction name="actionShowEssence"/>
+   <addaction name="actionShowScript"/>
+   <addaction name="actionShowItem"/>
+   <addaction name="actionShowAnimation"/>
+   <addaction name="actionShowBackground"/>
    <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -324,14 +324,14 @@
    <attribute name="toolBarBreak">
     <bool>true</bool>
    </attribute>
-   <addaction name="action_Open"/>
-   <addaction name="action_Save"/>
-   <addaction name="actionMake_Rom"/>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="actionMakeRom"/>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
   </widget>
-  <action name="action_Open">
+  <action name="actionOpen">
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/image/Open.png</normaloff>:/image/Open.png</iconset>
@@ -343,7 +343,7 @@
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="action_Save">
+  <action name="actionSave">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -358,7 +358,7 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="action_Exit">
+  <action name="actionExit">
    <property name="text">
     <string>&amp;Exit</string>
    </property>
@@ -390,7 +390,7 @@
     <string>Ctrl+Y</string>
    </property>
   </action>
-  <action name="actionAbout_MApRX">
+  <action name="actionAboutMe">
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/image/ICON.png</normaloff>:/image/ICON.png</iconset>
@@ -399,7 +399,7 @@
     <string>About &amp;MApRX</string>
    </property>
   </action>
-  <action name="actionShow_Essence">
+  <action name="actionShowEssence">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -417,7 +417,7 @@
     <string>E</string>
    </property>
   </action>
-  <action name="actionShow_Script">
+  <action name="actionShowScript">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -435,7 +435,7 @@
     <string>S</string>
    </property>
   </action>
-  <action name="actionShow_Animation">
+  <action name="actionShowAnimation">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -450,7 +450,7 @@
     <string>A</string>
    </property>
   </action>
-  <action name="actionShow_Items">
+  <action name="actionShowItem">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -468,7 +468,7 @@
     <string>I</string>
    </property>
   </action>
-  <action name="actionSave_As">
+  <action name="actionSaveAs">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -479,7 +479,7 @@
     <string>Save &amp;As...</string>
    </property>
   </action>
-  <action name="actionMake_Rom">
+  <action name="actionMakeRom">
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/image/NDS.png</normaloff>:/image/NDS.png</iconset>
@@ -494,7 +494,7 @@
     <string>F5</string>
    </property>
   </action>
-  <action name="action_Resize_Map">
+  <action name="actionResizeMap">
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/image/Resize.png</normaloff>:/image/Resize.png</iconset>
@@ -503,7 +503,7 @@
     <string>&amp;Resize Map...</string>
    </property>
   </action>
-  <action name="actionMap_Properties">
+  <action name="actionMapProperties">
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/image/Properties.png</normaloff>:/image/Properties.png</iconset>
@@ -527,7 +527,7 @@
     <string>Extract &amp;Map From ROM...</string>
    </property>
   </action>
-  <action name="actionShow_Background">
+  <action name="actionShowBackground">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -542,7 +542,7 @@
     <string>B</string>
    </property>
   </action>
-  <action name="actionDiscard_Changes">
+  <action name="actionDiscardChanges">
    <property name="enabled">
     <bool>true</bool>
    </property>
@@ -553,7 +553,7 @@
     <string>Discard Changes</string>
    </property>
   </action>
-  <action name="actionSave_to_Image">
+  <action name="actionSaveToImage">
    <property name="text">
     <string>Save to &amp;Image...</string>
    </property>
@@ -567,13 +567,18 @@
    <header>blockstore.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>MapView</class>
+   <extends>QWidget</extends>
+   <header>mapview.h</header>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="resource.qrc"/>
  </resources>
  <connections>
   <connection>
-   <sender>action_Exit</sender>
+   <sender>actionExit</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
