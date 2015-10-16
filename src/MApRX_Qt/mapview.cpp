@@ -22,6 +22,7 @@
 #include <QPainter>
 #include <QImage>
 #include <QMouseEvent>
+#include <cassert>
 #include "dialogscripts.h"
 MapView::MapView(QWidget *parent) :
     QWidget(parent),
@@ -136,12 +137,14 @@ void MapView::reset(){
 
 }
 QString MapView::generateStatusTip(u16 x,u16 y){
+    assert(x!=0xFFFF);
     return QString(tr("Left button: change block. Middle button: get block."
                    " Right button: edit scripts. "
                 "Cell (%1,%2)=%3, %4 script(s)"))
             .arg(x).arg(y).arg(pMainWindow->map.cellAt(x,y).blockId)
             .arg(pMainWindow->map.cellAt(x,y).scripts.size());
 }
+
 
 void MapView::mouseMoveEvent(QMouseEvent * event){
     if(!pMainWindow->map.isLoaded()){
@@ -164,7 +167,7 @@ void MapView::mouseMoveEvent(QMouseEvent * event){
     }
 
 
-    repaint();
+    update();
 }
 
 void MapView::mousePressEvent(QMouseEvent* event){
@@ -177,9 +180,10 @@ void MapView::mousePressEvent(QMouseEvent* event){
                 MainWindow::MoEditCell editCell(curX,curY,pMainWindow->selBlock);
                 editCell.toolTip=QString(tr("Edit cell(%1,%2)")).arg(curX).arg(curY);
                 pMainWindow->doOperation(&editCell);
+                emit showStatusTip(generateStatusTip(curX,curY));
             }else if(event->button()==Qt::MidButton){
                 pMainWindow->selBlock=pMainWindow->map.cellAt(curX,curY).blockId;
-                pBlockStore->repaint();
+                pBlockStore->update();
             }else if(event->button()==Qt::RightButton){
                 DialogScripts dlg(pMainWindow->map.cellAt(curX,curY).scripts,pMainWindow);
                 int x=curX,y=curY;
@@ -190,13 +194,13 @@ void MapView::mousePressEvent(QMouseEvent* event){
                     pMainWindow->doOperation(&mo);
                 }
             }
-            emit showStatusTip(generateStatusTip(curX,curY));
+
         }
 
     }
 }
 void MapView::leaveEvent(QEvent * ){
     curX=curY=-1;
-    repaint();
+    update();
     emit showStatusTip("");
 }

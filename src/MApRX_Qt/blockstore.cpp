@@ -98,7 +98,7 @@ void BlockStore::mouseMoveEvent(QMouseEvent * event){
         }
     }
 
-    repaint();
+    update();
 }
 
 void BlockStore::mousePressEvent(QMouseEvent* ){
@@ -106,10 +106,10 @@ void BlockStore::mousePressEvent(QMouseEvent* ){
         return;
     }
     if(curBlock!=-1)pMainWindow->selBlock=curBlock;
-    repaint();
+    update();
 }
 void BlockStore::leaveEvent(QEvent * ){
     curBlock=-1;
     emit showStatusTip("");
-    repaint();
+    update();
 }
