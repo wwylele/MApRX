@@ -255,6 +255,10 @@ private slots:
     void resetMap();
 
 
+    void on_actionExportMap_triggered();
+
+    void on_actionImportMap_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTimer mapUpdateTimer;

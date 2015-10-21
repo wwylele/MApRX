@@ -795,3 +795,55 @@ void MainWindow::resetMap(){
     ui->mapViewScrollArea->horizontalScrollBar()->setValue(0);
     ui->mapViewScrollArea->verticalScrollBar()->setValue(0);
 }
+
+const char* exportMapMagic="KSSU";
+void MainWindow::on_actionExportMap_triggered()
+{
+    if(!map.isLoaded())return;
+    QString fileName=QFileDialog::getSaveFileName(this, tr("Export map to..."),
+        "",
+        tr("Binary file(*.bin)"));
+    if(fileName==QString::null)return;
+    u32 len;
+    std::unique_ptr<u8[]> buf(map.generateFile(&len));
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadWrite)){
+        QMessageBox msgBox;
+        msgBox.setText(tr("Failed to create the file."));
+        msgBox.setIcon(QMessageBox::Icon::Critical);
+        msgBox.exec();
+        return;
+    }
+    file.resize(len+4);
+    uchar* dst=file.map(0,len+4);
+    std::memcpy(dst,exportMapMagic,4);
+    std::memcpy(dst+4,buf.get(),len);
+}
+
+void MainWindow::on_actionImportMap_triggered()
+{
+    if(!map.isLoaded())return;
+    QString fileName=QFileDialog::getOpenFileName(this, tr("Import map from..."),
+        "",
+        tr("Binary file(*.bin)"));
+    if(fileName==QString::null)return;
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadOnly)){
+        QMessageBox msgBox;
+        msgBox.setText(tr("Failed to open the file."));
+        msgBox.setIcon(QMessageBox::Icon::Critical);
+        msgBox.exec();
+        return;
+    }
+    const uchar* src=file.map(0,file.size());
+    if(std::memcmp(src,exportMapMagic,4)!=0){
+        QMessageBox msgBox;
+        msgBox.setText(tr("The file is not a map."));
+        msgBox.setIcon(QMessageBox::Icon::Critical);
+        msgBox.exec();
+        return;
+    }
+    map.readFile(src+4);
+    ui->mapView->reset();
+    clearOperationStack();
+}
