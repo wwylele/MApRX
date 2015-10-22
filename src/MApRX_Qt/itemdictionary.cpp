@@ -38,7 +38,11 @@ void ItemDictionary::load(QTextStream& stream){
                     .toInt();
             entries[currentSpecies].speciesName
                     =inl[1];
-        }else{
+        }else if(inl[0]==QChar('P')){
+            entries[currentSpecies].paramName
+                    =inl[1];
+        }
+        else{
             entries[currentSpecies]
                     .behaviorName[inl[0].toInt()]
                     =inl[1];
