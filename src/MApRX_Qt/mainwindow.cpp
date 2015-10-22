@@ -814,10 +814,11 @@ void MainWindow::on_actionExportMap_triggered()
         msgBox.exec();
         return;
     }
-    file.resize(len+4);
-    uchar* dst=file.map(0,len+4);
+    file.resize(len+8);
+    uchar* dst=file.map(0,len+8);
     std::memcpy(dst,exportMapMagic,4);
-    std::memcpy(dst+4,buf.get(),len);
+    std::memcpy(dst+4,&curRoomId,4);
+    std::memcpy(dst+8,buf.get(),len);
 }
 
 void MainWindow::on_actionImportMap_triggered()
@@ -843,7 +844,19 @@ void MainWindow::on_actionImportMap_triggered()
         msgBox.exec();
         return;
     }
-    map.readFile(src+4);
+    int importRoomId;
+    memcpy(&importRoomId,src+4,4);
+    if(importRoomId!=curRoomId){
+        QMessageBox msgBox;
+        msgBox.setText(tr("The index of the map being imported is not equal to current map's, "
+                       "and they probably use different block sets.\n"
+                       "Do you still want to import this map?"));
+        msgBox.setIcon(QMessageBox::Icon::Warning);
+        msgBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        if(msgBox.exec()!=QMessageBox::Yes)return;
+    }
+    map.readFile(src+8);
     ui->mapView->reset();
     clearOperationStack();
 }
