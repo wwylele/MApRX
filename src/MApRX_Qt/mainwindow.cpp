@@ -85,7 +85,11 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
                          .behaviorName[pMap->itemAt(itemId).basic.behavior()]):"");
 
         case 4:
-            return QString::number(pMap->itemAt(itemId).basic.param());
+            if(role==Qt::DisplayRole)return QString("%1:%2").arg(
+                        pMainWindow->itemDictionary.entries
+                        [pMap->itemAt(itemId).basic.species()].paramName)
+                        .arg(pMap->itemAt(itemId).basic.param());
+            else return QString::number(pMap->itemAt(itemId).basic.param());
         case 5:
             return QString::number(pMap->itemAt(itemId).scripts.size());
         case 6:{
