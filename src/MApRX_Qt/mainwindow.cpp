@@ -859,6 +859,6 @@ void MainWindow::on_actionImportMap_triggered()
     KfMap importMap;
     importMap.readFile(src+8);
     MoPasteMap pasteMap(importMap);
-    pasteMap.toolTip="Import Map";
+    pasteMap.toolTip=tr("Import Map");
     doOperation(&pasteMap);
 }
