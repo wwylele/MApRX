@@ -4,10 +4,12 @@
 0.Be0
 1.Be1
 2.Be2
+P.-
 +2.Waddle Doo
 0.Be0
 1.Be1
 2.Be2
+P.-
 +3.Sir kibble
 0.Be0
 1.Be1
@@ -30,6 +32,7 @@
 2.Be2
 +9.Biospark
 0.-
+P.-
 +10.Bronto Burt
 0.Be0
 2.Be2
@@ -45,6 +48,7 @@
 0.Be0
 1.Be1
 +13.Gordo
+P.-
 0.Be0
 1.Be1
 2.Be2
@@ -57,6 +61,7 @@
 +14.Gim
 0.-
 +15.Wheelie
+P.-
 0.Be0
 1.Be1
 +16.Jungle Bomber
@@ -64,12 +69,14 @@
 2.Be2
 3.Be3
 +17.Lovly
+P.-
 0.Be0
 1.Be1
 +18.Knuckle Joe
 0.Be0
 1.Be1
 +19.Poppy Bro Jr
+P.-
 0.Be0
 1.Be1
 2.Be2
@@ -80,6 +87,7 @@
 1.Be1
 2.Be2
 +21.Shotzo
+P.-
 0.Be0
 2.Be2
 3.Be3
@@ -93,6 +101,7 @@
 1.Be1
 2.Be2
 +24.Scarfy
+P.-
 0.Be0
 1.Be1
 2.Be2
@@ -100,6 +109,7 @@
 +25.Sp25
 0.-
 +26.Twizzy
+P.-
 0.Be0
 1.Be1
 2.Be2
@@ -107,10 +117,12 @@
 4.Be4
 5.Be5
 +27.Tookey
+P.-
 0.Be0
 1.Be1
 2.Be2
 +28.Blipper
+P.-
 0.Be0
 1.Be1
 2.Be2
@@ -132,6 +144,7 @@
 1.Be1
 2.Be2
 +33.Nova's Enemy
+P.-
 0.Be0
 1.Be1
 2.Be2
@@ -157,6 +170,7 @@
 0.Be0
 1.Be1
 +41.Chilly
+P.-
 0.Be0
 1.Be1
 +42.Simirror
@@ -174,6 +188,7 @@
 3.Be3
 4.Be4
 +46.Moto Shotzo
+P.-
 0.Be0
 1.Be1
 +47.Laser Ball
@@ -182,6 +197,7 @@
 2.Be2
 3.Be3
 +48.Gip
+P.-
 0.-
 +49.Swing Waddle Dee
 0.-
@@ -200,6 +216,7 @@
 0.Be0
 1.Be1
 +56.<Nova Enemy B>
+P.-
 0.Be0
 1.Be1
 2.Be2
@@ -217,6 +234,7 @@
 +61.Flotzo
 0.-
 +63.Sp63
+P.-
 0.Be0
 1.Be1
 +64.<Mid Boss Controller?>
@@ -228,6 +246,7 @@
 +70.Bonkers
 0.-
 +73.Iron Mam
+P.-
 0.-
 +74.Jukid
 0.-
@@ -273,6 +292,7 @@
 +94.Main Cannon 2
 0.-
 +95.Heavy Lobster
+P.-
 0.-
 +96.Nova
 0.-
@@ -287,6 +307,7 @@
 +101.Kracko's Revenge
 0.-
 +102.Kabula
+P.-
 0.-
 +103.Masked Dedede
 0.-
@@ -311,10 +332,12 @@
 +118.Warp Star
 0.-
 +119.Warp Star
+P.-
 0.Be0
 1.Be1
 4.Be4
 +120.Truck
+P.-
 0.Beginning
 1.End
 +121.Transport Cannon
@@ -323,6 +346,7 @@
 4.Be4
 5.Be5
 +122.Cannon
+P.-
 0.Be0
 1.Be1
 2.Be2
@@ -372,6 +396,7 @@
 +143.Maxim Tomato
 0.-
 +144.Copy Essence 1
+P.-
 0.Be0
 1.Be1
 2.Be2
@@ -423,6 +448,7 @@
 +157.1-use Button
 0.-
 +160.Dyna Blade Goal Game
+P.-
 0.-
 +163.Stage 1 Title
 0.-
@@ -433,6 +459,7 @@
 +166.Stage 4 Title
 0.-
 +168.Gaol Warp Star
+P.-
 0.-
 +170.Sp170
 0.-
@@ -444,15 +471,18 @@
 +174.Sp174
 0.-
 +184.Treasure Box
+P.-
 0.-
 +185.Treasure Box
 0.-
 +186.Saving Point
 0.-
 +188.Messages
+P.-
 0.Be0
 1.Be1
 +189.Sp189
+P.-
 0.Be0
 1.Be1
 +192.Gourmet Race
@@ -519,6 +549,7 @@
 1.Be1
 2.Be2
 +225.Koozer
+P.-
 0.Be0
 5.Be5
 6.Be6
@@ -534,6 +565,7 @@
 0.Be0
 3.Be3
 +228.Cawcun
+P.-
 0.Be0
 1.Be1
 3.Be3
@@ -543,6 +575,7 @@
 4.Be4
 5.Be5
 +230.Spear Waddle Dee
+P.-
 0.Be0
 2.Be2
 +231.Parasol Spear Waddle Dee
@@ -551,22 +584,29 @@
 +236.Fire Lion
 0.-
 +237.Phan Phan
+P.-
 0.-
 +238.Grand Wheelie
+P.-
 0.-
 +239.Mr Tick Tock
+P.-
 0.-
 +240.Stake
 0.-
 +241.Stone Door
 0.-
 +242.Candle
+P.-
 0.-
 +243.Block Generator
+P.-
 0.-
 +244.Mobile Stage
+P.-
 0.-
 +245.Hanging Stage
 0.-
 +246.Elevator
+P.-
 0.-
