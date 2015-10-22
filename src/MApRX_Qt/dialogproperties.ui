@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>348</width>
-    <height>582</height>
+    <height>629</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,15 +22,15 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_9">
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="groupBoxFrontClip">
      <property name="title">
       <string>Frontground Clip</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="1">
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="verticalLayoutTopClip">
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="labelTopClip">
           <property name="text">
            <string>Top</string>
           </property>
@@ -49,9 +49,9 @@
        </layout>
       </item>
       <item row="1" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayoutLeftClip">
         <item>
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="labelLeftClip">
           <property name="text">
            <string>Left</string>
           </property>
@@ -70,9 +70,9 @@
        </layout>
       </item>
       <item row="1" column="2">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayoutRightClip">
         <item>
-         <widget class="QLabel" name="label_3">
+         <widget class="QLabel" name="labelRightClip">
           <property name="text">
            <string>Right</string>
           </property>
@@ -91,9 +91,9 @@
        </layout>
       </item>
       <item row="2" column="1">
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayoutBottomClip">
         <item>
-         <widget class="QLabel" name="label_4">
+         <widget class="QLabel" name="labelBottomClip">
           <property name="text">
            <string>Bottom</string>
           </property>
@@ -112,7 +112,7 @@
        </layout>
       </item>
       <item row="1" column="1">
-       <widget class="QFrame" name="frame">
+       <widget class="QFrame" name="frameClip">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -125,15 +125,15 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBoxBack">
      <property name="title">
       <string>Background</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="1">
-       <layout class="QVBoxLayout" name="verticalLayout_5">
+       <layout class="QVBoxLayout" name="verticalLayoutHO">
         <item>
-         <widget class="QLabel" name="label_5">
+         <widget class="QLabel" name="labelHO">
           <property name="text">
            <string>Horizontal Offset</string>
           </property>
@@ -152,9 +152,9 @@
        </layout>
       </item>
       <item row="1" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout_7">
+       <layout class="QVBoxLayout" name="verticalLayoutVO">
         <item>
-         <widget class="QLabel" name="label_7">
+         <widget class="QLabel" name="labelVO">
           <property name="text">
            <string>Vertical Offset</string>
           </property>
@@ -173,9 +173,9 @@
        </layout>
       </item>
       <item row="0" column="2">
-       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <layout class="QVBoxLayout" name="verticalLayoutHS">
         <item>
-         <widget class="QLabel" name="label_6">
+         <widget class="QLabel" name="labelHS">
           <property name="text">
            <string>Horizontal Speed</string>
           </property>
@@ -194,9 +194,9 @@
        </layout>
       </item>
       <item row="2" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout_8">
+       <layout class="QVBoxLayout" name="verticalLayoutVS">
         <item>
-         <widget class="QLabel" name="label_8">
+         <widget class="QLabel" name="labelVS">
           <property name="text">
            <string>Vertical Speed</string>
           </property>
@@ -215,7 +215,7 @@
        </layout>
       </item>
       <item row="1" column="1">
-       <widget class="QFrame" name="frame_2">
+       <widget class="QFrame" name="frameBack">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -228,13 +228,13 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="groupBoxPal">
      <property name="title">
       <string>Item Palette</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
-       <widget class="QLabel" name="label_9">
+       <widget class="QLabel" name="labelP0">
         <property name="text">
          <string>Slot A</string>
         </property>
@@ -244,7 +244,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="label_10">
+       <widget class="QLabel" name="labelP1">
         <property name="text">
          <string>Slot B</string>
         </property>
@@ -254,7 +254,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QLabel" name="label_11">
+       <widget class="QLabel" name="labeP2">
         <property name="text">
          <string>Slot C</string>
         </property>
@@ -264,7 +264,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QLabel" name="label_12">
+       <widget class="QLabel" name="labelP3">
         <property name="text">
          <string>Slot D</string>
         </property>
@@ -274,7 +274,7 @@
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QLabel" name="label_13">
+       <widget class="QLabel" name="labelP4">
         <property name="text">
          <string>Slot E</string>
         </property>
@@ -322,13 +322,13 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_4">
+    <widget class="QGroupBox" name="groupBoxMisc">
      <property name="title">
       <string>Misc.</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="1">
-       <widget class="QLabel" name="label_15">
+       <widget class="QLabel" name="labelWD">
         <property name="text">
          <string>Wind Direction</string>
         </property>
@@ -355,7 +355,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLabel" name="label_14">
+       <widget class="QLabel" name="labelBgm">
         <property name="text">
          <string>BGM</string>
         </property>
@@ -365,7 +365,7 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="label_16">
+       <widget class="QLabel" name="labelWS">
         <property name="text">
          <string>Wind Scale</string>
         </property>

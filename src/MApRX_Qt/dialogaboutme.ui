@@ -25,9 +25,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayoutA">
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="labelIcon">
        <property name="text">
         <string/>
        </property>
@@ -37,7 +37,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="labelTitle">
        <property name="font">
         <font>
          <family>Arial</family>
@@ -50,7 +50,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_2">
+      <spacer name="horizontalSpacerA">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -87,9 +87,9 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayoutB">
      <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="horizontalSpacerB">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>

@@ -62,36 +62,36 @@ int ItemTableModal::columnCount(const QModelIndex &) const{
     return 7;
 }
 int ItemTableModal::rowCount(const QModelIndex &) const{
-    if(!pMap->Loaded())return 0;
+    if(!pMap->isLoaded())return 0;
     return pMap->metaData.itemCount;
 }
 QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
 
-    if(!pMap->Loaded())return QVariant();
+    if(!pMap->isLoaded())return QVariant();
     u8 itemId=index.row();
     if(itemId>=pMap->metaData.itemCount)return QVariant();
     if(role==Qt::DisplayRole||role==Qt::EditRole){
         switch(index.column()){
         case 0:
-            return QString::number(pMap->Items(itemId).basic.species())
+            return QString::number(pMap->itemAt(itemId).basic.species())
                     +(role==Qt::DisplayRole?QString("(%1)")
                     .arg(pMainWindow->itemDictionary.entries
-                         [pMap->Items(itemId).basic.species()].speciesName):"");
+                         [pMap->itemAt(itemId).basic.species()].speciesName):"");
         case 1:
-            return QString::number(pMap->Items(itemId).basic.behavior())
+            return QString::number(pMap->itemAt(itemId).basic.behavior())
                     +(role==Qt::DisplayRole?QString("(%1)")
                     .arg(pMainWindow->itemDictionary.entries
-                         [pMap->Items(itemId).basic.species()]
-                         .behaviorName[pMap->Items(itemId).basic.behavior()]):"");
+                         [pMap->itemAt(itemId).basic.species()]
+                         .behaviorName[pMap->itemAt(itemId).basic.behavior()]):"");
 
         case 4:
-            return QString::number(pMap->Items(itemId).basic.param());
+            return QString::number(pMap->itemAt(itemId).basic.param());
         case 5:
-            return QString::number(pMap->Items(itemId).scripts.size());
+            return QString::number(pMap->itemAt(itemId).scripts.size());
         case 6:{
             int x,y;
-            x=pMap->Items(itemId).basic.x;
-            y=pMap->Items(itemId).basic.y;
+            x=pMap->itemAt(itemId).basic.x;
+            y=pMap->itemAt(itemId).basic.y;
             QString str;
             str.sprintf("%d(%02d),%d(%02d)",x/24,x%24,y/24,y%24);
             return str;
@@ -100,13 +100,13 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     }else if(role==Qt::CheckStateRole){
         switch(index.column()){
         case 2:
-            return pMap->Items(itemId).basic.flagA()?Qt::Checked:Qt::Unchecked;
+            return pMap->itemAt(itemId).basic.flagA()?Qt::Checked:Qt::Unchecked;
         case 3:
-            return pMap->Items(itemId).basic.flagB()?Qt::Checked:Qt::Unchecked;
+            return pMap->itemAt(itemId).basic.flagB()?Qt::Checked:Qt::Unchecked;
         }
     }else if(role==Qt::BackgroundRole){
-        if(pMap->Items(itemId).basic.catagory()>=13)return itemBackground[0];
-        return itemBackground[pMap->Items(itemId).basic.catagory()];
+        if(pMap->itemAt(itemId).basic.catagory()>=13)return itemBackground[0];
+        return itemBackground[pMap->itemAt(itemId).basic.catagory()];
     }
     return QVariant();
 }
@@ -155,7 +155,7 @@ QModelIndex ItemTableModal::getIndex(int row,int column){
 }
 
 bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, int role){
-    KfMap::Item itemBasic=pMap->Items(index.row()).basic;
+    KfMap::Item itemBasic=pMap->itemAt(index.row()).basic;
     if(role==Qt::EditRole){
         bool toIntOk;
         int toIntBuf;
@@ -227,7 +227,7 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
         return combo;
     }else if(index.column()==1){
         QComboBox* combo=new QComboBox(parent);
-        int species=pMainWindow->map.Items(index.row()).basic.species();
+        int species=pMainWindow->map.itemAt(index.row()).basic.species();
         for(int p:pMainWindow->itemDictionary.entries[species].behaviorName.keys()){
             combo->addItem(QString("%1(%2)").
                            arg(p).
@@ -244,7 +244,7 @@ void ItemTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
         QComboBox* combo=qobject_cast<QComboBox*>(editor);
         for(int i=0;;i++){
             if(combo->itemData(i).toInt()==
-                    pMainWindow->map.Items(index.row()).basic.species()){
+                    pMainWindow->map.itemAt(index.row()).basic.species()){
                 combo->setCurrentIndex(i);
                 break;
             }
@@ -253,7 +253,7 @@ void ItemTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
         QComboBox* combo=qobject_cast<QComboBox*>(editor);
         for(int i=0;;i++){
             if(combo->itemData(i).toInt()==
-                    pMainWindow->map.Items(index.row()).basic.behavior()){
+                    pMainWindow->map.itemAt(index.row()).basic.behavior()){
                 combo->setCurrentIndex(i);
                 break;
             }
@@ -270,6 +270,56 @@ void ItemTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     else return QStyledItemDelegate::setModelData(editor,model,index);
 }
 
+void MainWindow::loadRoomList(){
+    ui->listRoom->clear();
+    QString roomName[MAP_COUNT];
+    QFile roomNameResFile(":/text/RoomName.txt");
+    roomNameResFile.open(QIODevice::ReadOnly);
+    QTextStream roomNameRes(&roomNameResFile);
+
+    QChar command0;
+    int command1;
+    QStringList command12;
+    auto readNextCommand=[&](){
+        if(roomNameRes.atEnd()){
+            command1=-1;
+            return;
+        }
+        QString in=roomNameRes.readLine();
+        command0=in[0];
+        command12=in.right(in.size()-1).split('.');
+        command1=command12[0].toInt();
+    };
+
+    int currentRoom=0;
+    QTreeWidgetItem *currentParent=ui->listRoom->invisibleRootItem();
+    readNextCommand();
+    while(currentRoom<MAP_COUNT){
+        if(currentRoom==command1){
+            if(command0==QChar('}')){
+                currentParent=currentParent->parent();
+                if(!currentParent)currentParent=ui->listRoom->invisibleRootItem();
+            }
+            else if(command0==QChar('{')){
+                currentParent=new QTreeWidgetItem(currentParent);
+                currentParent->setText(0,command12[1]);
+                currentParent->setData(0,Qt::UserRole,-1);
+            }else if(command0==QChar('-')){
+                QTreeWidgetItem* newRoom=new QTreeWidgetItem(currentParent);
+                newRoom->setText(0,QString("Room#%1 %2").arg(currentRoom).arg(command12[1]));
+                newRoom->setData(0,Qt::UserRole,currentRoom);
+                currentRoom++;
+            }
+            readNextCommand();
+        }else{
+            QTreeWidgetItem* newRoom=new QTreeWidgetItem(currentParent);
+            newRoom->setText(0,QString("Room#%1").arg(currentRoom));
+            newRoom->setData(0,Qt::UserRole,currentRoom);
+            currentRoom++;
+        }
+    }
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     itemTableModal(this),
@@ -277,10 +327,10 @@ MainWindow::MainWindow(QWidget *parent) :
     mapUpdateTimer(this)
 {
     ui->setupUi(this);
-    ui->actionShow_Animation->setChecked(true);
+    ui->actionShowAnimation->setChecked(true);
 
-    ui->mapPlane0->pMainWindow=this;
-    ui->mapPlane0->pBlockStore=ui->blockStore;
+    ui->mapView->pMainWindow=this;
+    ui->mapView->pBlockStore=ui->blockStore;
     ui->blockStore->pMainWindow=this;
 
     ui->itemTable->setModel(&itemTableModal);
@@ -291,14 +341,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitterMain->setStretchFactor(1,1);
     ui->splitterRight->setStretchFactor(0,1);
 
-    connect(ui->mapPlane0,SIGNAL(showStatusTip(const QString&)),
+    connect(ui->mapView,SIGNAL(showStatusTip(const QString&)),
             ui->statusBar,SLOT(showMessage(const QString&)));
     connect(ui->blockStore,SIGNAL(showStatusTip(const QString&)),
             ui->statusBar,SLOT(showMessage(const QString&)));
 
     QToolButton* scrollAreaCornerResize=new QToolButton(this);
-    scrollAreaCornerResize->setDefaultAction(ui->action_Resize_Map);
-    ui->mapPlane0ScrollArea->setCornerWidget(scrollAreaCornerResize);
+    scrollAreaCornerResize->setDefaultAction(ui->actionResizeMap);
+    ui->mapViewScrollArea->setCornerWidget(scrollAreaCornerResize);
 
     MapOperation::pMap=&map;
     MapOperation::pMainWindow=this;
@@ -309,18 +359,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(undo()));
     connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(redo()));
 
-    QString roomName[MAP_COUNT];
-    QFile roomNameResFile(":/text/RoomName.txt");
-    roomNameResFile.open(QIODevice::ReadOnly);
-    QTextStream roomNameRes(&roomNameResFile);
-    while(!roomNameRes.atEnd()){
-        QString in;
-        QStringList inl;
-        in=roomNameRes.readLine();
-        inl=in.split('.');
-        roomName[inl[0].toInt()]=inl[1];
-    }
-    roomNameResFile.close();
+
 
     QFile itemDicResFile(":/text/itemdic.txt");
     itemDicResFile.open(QIODevice::ReadOnly);
@@ -329,16 +368,7 @@ MainWindow::MainWindow(QWidget *parent) :
     itemDicResFile.close();
 
 
-    for(int i=0;i<MAP_COUNT;i++){
-        QString str;
-        str=QString("Room#%1 ").arg(i);
-        str+=roomName[i];
-        QListWidgetItem *newItem;
-        newItem=new QListWidgetItem(str);
-        newItem->setData(Qt::UserRole,QVariant(i));
-        ui->listRoom->addItem(newItem);
-
-    }
+    loadRoomList();
 
     clearOperationStack();
 
@@ -350,9 +380,9 @@ MainWindow::MainWindow(QWidget *parent) :
     mapdata.fromFile(file);
     std::fclose(file);
     currentFileName=fileName;
-    ui->action_Save->setEnabled(true);
-    ui->actionSave_As->setEnabled(true);
-    ui->actionMake_Rom->setEnabled(true);
+    ui->actionSave->setEnabled(true);
+    ui->actionSaveAs->setEnabled(true);
+    ui->actionMakeRom->setEnabled(true);
 
 
 
@@ -420,17 +450,18 @@ void MainWindow::loadRoom(int roomId){
     ui->itemTable->resizeColumnsToContents();
     ui->itemTable->resizeRowsToContents();
 
-    ui->menu_Map->setEnabled(true);
+    ui->menuMap->setEnabled(true);
 
     mapUpdateTimer.start(5);
 }
 
-void MainWindow::on_listRoom_itemDoubleClicked(QListWidgetItem * item)
+void MainWindow::on_listRoom_itemDoubleClicked(QTreeWidgetItem *item)
 {
     if(currentFileName==QString::null)return;
 
-    int roomId=item->data(Qt::UserRole).toInt();
-    if(map.Loaded()){
+    int roomId=item->data(0,Qt::UserRole).toInt();
+    if(roomId==-1)return;
+    if(map.isLoaded()){
         saveCurrentRoom();
     }
     loadRoom(roomId);
@@ -450,11 +481,11 @@ void MainWindow::on_updateMap(){
 
         plt.tick();
         tiles.tick();
-        if(bckScr.Loaded()){
+        if(bckScr.isLoaded()){
             bckPlt.tick();
             bckTiles.tick();
         }
-        ui->mapPlane0->update();
+        ui->mapView->update();
         ui->blockStore->update();
 
     }
@@ -463,13 +494,13 @@ void MainWindow::on_updateMap(){
 
 }
 
-void MainWindow::on_actionAbout_MApRX_triggered()
+void MainWindow::on_actionAboutMe_triggered()
 {
     DialogAboutMe dlg;
     dlg.exec();
 }
 
-void MainWindow::on_action_Open_triggered()
+void MainWindow::on_actionOpen_triggered()
 {
     QString fileName=QFileDialog::getOpenFileName(this, tr("Open File"),
         "",
@@ -493,15 +524,15 @@ void MainWindow::openMapdata(QString fileName){
 
     mapUpdateTimer.stop();
     map.unload();
-    ui->menu_Map->setEnabled(true);
+    ui->menuMap->setEnabled(true);
 
-    ui->action_Save->setEnabled(true);
-    ui->actionSave_As->setEnabled(true);
-    ui->actionMake_Rom->setEnabled(true);
+    ui->actionSave->setEnabled(true);
+    ui->actionSaveAs->setEnabled(true);
+    ui->actionMakeRom->setEnabled(true);
     clearOperationStack();
 }
 
-void MainWindow::on_action_Save_triggered()
+void MainWindow::on_actionSave_triggered()
 {
     if(currentFileName==QString::null)return;
     std::FILE* file=fopenQ(currentFileName,"wb");
@@ -512,11 +543,11 @@ void MainWindow::on_action_Save_triggered()
         msgBox.exec();
         return;
     }
-    if(map.Loaded())saveCurrentRoom();
+    if(map.isLoaded())saveCurrentRoom();
     mapdata.toFile(file);
     std::fclose(file);
 }
-void MainWindow::on_actionSave_As_triggered(){
+void MainWindow::on_actionSaveAs_triggered(){
     QString fileName=QFileDialog::getSaveFileName(this, tr("Save As ..."),
         "",
         tr("mapdata File(*.bin)"));
@@ -529,53 +560,53 @@ void MainWindow::on_actionSave_As_triggered(){
         msgBox.exec();
         return;
     }
-    if(map.Loaded())saveCurrentRoom();
+    if(map.isLoaded())saveCurrentRoom();
     mapdata.toFile(file);
     std::fclose(file);
     currentFileName=fileName;
 }
 
 
-void MainWindow::on_actionShow_Essence_triggered(bool checked)
+void MainWindow::on_actionShowEssence_triggered(bool checked)
 {
     showEssence=checked;
-    ui->mapPlane0->update();
+    ui->mapView->update();
     ui->blockStore->update();
 }
-void MainWindow::on_actionShow_Script_triggered(bool checked){
+void MainWindow::on_actionShowScript_triggered(bool checked){
     showScript=checked;
-    ui->mapPlane0->update();
+    ui->mapView->update();
     ui->blockStore->update();
 }
 
-void MainWindow::on_actionShow_Animation_triggered(bool checked)
+void MainWindow::on_actionShowAnimation_triggered(bool checked)
 {
     showAnimation=checked;
 }
-void MainWindow::on_actionShow_Items_triggered(bool checked)
+void MainWindow::on_actionShowItem_triggered(bool checked)
 {
 
     showItems=checked;
-    ui->mapPlane0->update();
+    ui->mapView->update();
 }
-void MainWindow::on_actionShow_Background_triggered(bool checked)
+void MainWindow::on_actionShowBackground_triggered(bool checked)
 {
 
     showBackground=checked;
-    ui->mapPlane0->update();
+    ui->mapView->update();
 }
 
 
-void MainWindow::on_actionMake_Rom_triggered()
+void MainWindow::on_actionMakeRom_triggered()
 {
-    on_action_Save_triggered();
+    on_actionSave_triggered();
     DialogMakeRom dlg(currentFileName);
     dlg.exec();
 }
 
-void MainWindow::on_actionMap_Properties_triggered()
+void MainWindow::on_actionMapProperties_triggered()
 {
-    if(!map.Loaded()){
+    if(!map.isLoaded()){
         return;
     }
     DialogProperties dlg(map.metaData);
@@ -648,7 +679,7 @@ void MainWindow::on_actionExtract_triggered(){
 
 void MainWindow::on_buttonItemUp_clicked()
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
@@ -663,7 +694,7 @@ void MainWindow::on_buttonItemUp_clicked()
 
 void MainWindow::on_buttonItemDown_clicked()
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
@@ -678,7 +709,7 @@ void MainWindow::on_buttonItemDown_clicked()
 
 void MainWindow::on_buttonItemDelete_clicked()
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
@@ -690,12 +721,12 @@ void MainWindow::on_buttonItemDelete_clicked()
 
 void MainWindow::on_buttonItemNew_clicked()
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     KfMap::RipeItem item;
-    QSize size=ui->mapPlane0ScrollArea->size();
-    int tx=(ui->mapPlane0ScrollArea->horizontalScrollBar()->value()+size.width()/2);
+    QSize size=ui->mapViewScrollArea->size();
+    int tx=(ui->mapViewScrollArea->horizontalScrollBar()->value()+size.width()/2);
     item.basic.x=(tx>=0?tx:0);
-    int ty=(ui->mapPlane0ScrollArea->verticalScrollBar()->value()+size.height()/2);
+    int ty=(ui->mapViewScrollArea->verticalScrollBar()->value()+size.height()/2);
     item.basic.y=(ty>=0?ty:0);
     if(item.basic.x>map.metaData.width*24)item.basic.x=map.metaData.width*24;
     if(item.basic.y>map.metaData.height*24)item.basic.y=map.metaData.height*24;
@@ -708,17 +739,17 @@ void MainWindow::on_buttonItemNew_clicked()
 
 void MainWindow::on_itemTable_clicked(const QModelIndex &index)
 {
-    if(!map.Loaded())return;
+    if(!map.isLoaded())return;
     u8 itemId=index.row();
-    KfMap::Item& item=map.Items(itemId).basic;
-    QSize size=ui->mapPlane0ScrollArea->size();
-    ui->mapPlane0ScrollArea->horizontalScrollBar()->setValue(
+    KfMap::Item& item=map.itemAt(itemId).basic;
+    QSize size=ui->mapViewScrollArea->size();
+    ui->mapViewScrollArea->horizontalScrollBar()->setValue(
                 item.x-size.width()/2);
-    ui->mapPlane0ScrollArea->verticalScrollBar()->setValue(
+    ui->mapViewScrollArea->verticalScrollBar()->setValue(
                 item.y-size.height()/2);
 
     if(index.column()==5){
-        DialogScripts dlg(map.Items(itemId).scripts,this);
+        DialogScripts dlg(map.itemAt(itemId).scripts,this);
         dlg.setWindowTitle(QString(tr("Scripts for item#%1")).arg(itemId));
         if(dlg.exec()==QDialog::Accepted){
             MoEditItemScript mo(dlg.scripts,itemId);
@@ -728,24 +759,24 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
     }
 
 }
-void MainWindow::on_actionDiscard_Changes_triggered(){
-    if(!map.Loaded())return;
+void MainWindow::on_actionDiscardChanges_triggered(){
+    if(!map.isLoaded())return;
     QMessageBox msgBox;
     msgBox.setText(tr("Do you really want to discard your changes on this room?"));
     msgBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
     if(msgBox.exec()!=QMessageBox::Yes)return;
     loadRoom(curRoomId);
 }
-void MainWindow::on_action_Resize_Map_triggered(){
-    if(!map.Loaded())return;
+void MainWindow::on_actionResizeMap_triggered(){
+    if(!map.isLoaded())return;
     DialogResizeMap dlg(map.metaData.width,map.metaData.height);
     if(dlg.exec()!=QDialog::Accepted)return;
     MoResizeMap mo(dlg.mapWidth,dlg.mapHeight,dlg.hAlign,dlg.vAlign);
     mo.toolTip=tr("Resize Map");
     doOperation(&mo);
 }
-void MainWindow::on_actionSave_to_Image_triggered(){
-    if(!map.Loaded())return;
+void MainWindow::on_actionSaveToImage_triggered(){
+    if(!map.isLoaded())return;
     QString fileName=QFileDialog::getSaveFileName(this, tr("Save image to..."),
         "",
         "PNG(*.png);;BMP(*.bmp)");
@@ -760,7 +791,7 @@ void MainWindow::on_actionSave_to_Image_triggered(){
 }
 
 void MainWindow::resetMap(){
-    ui->mapPlane0->reset();
-    ui->mapPlane0ScrollArea->horizontalScrollBar()->setValue(0);
-    ui->mapPlane0ScrollArea->verticalScrollBar()->setValue(0);
+    ui->mapView->reset();
+    ui->mapViewScrollArea->horizontalScrollBar()->setValue(0);
+    ui->mapViewScrollArea->verticalScrollBar()->setValue(0);
 }

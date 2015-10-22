@@ -16,7 +16,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     ../KssuFile.cpp \
     ../NitroLz.cpp \
-    mapplane0.cpp \
     blockstore.cpp \
     dialogaboutme.cpp \
     dialogmakerom.cpp \
@@ -26,7 +25,8 @@ SOURCES += main.cpp\
     ../itemcatagory.cpp \
     dialogscripts.cpp \
     dialogresizemap.cpp \
-    itemdictionary.cpp
+    itemdictionary.cpp \
+    mapview.cpp
 
 TRANSLATIONS = maprx_zh.ts
 
@@ -34,7 +34,6 @@ HEADERS  += mainwindow.h \
     ../KssuFile.h \
     ../Nitro.h \
     ../NitroLz.h \
-    mapplane0.h \
     blockstore.h \
     dialogaboutme.h \
     dialogmakerom.h \
@@ -42,7 +41,8 @@ HEADERS  += mainwindow.h \
     dialogscripts.h \
     dialogresizemap.h \
     main.h \
-    itemdictionary.h
+    itemdictionary.h \
+    mapview.h
 
 FORMS    += mainwindow.ui \
     dialogaboutme.ui \
@@ -56,3 +56,4 @@ RESOURCES += \
 
 CONFIG += c++11
 
+RC_FILE = winres.rc

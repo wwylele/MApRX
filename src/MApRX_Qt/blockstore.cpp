@@ -27,15 +27,15 @@ BlockStore::BlockStore(QWidget *parent) : QWidget(parent)
 const int blockStoreColumnCount=16;
 
 void BlockStore::paintEvent(QPaintEvent *){
-    if(!pMainWindow->blocks.Loaded())return;
+    if(!pMainWindow->blocks.isLoaded())return;
     QPainter painter(this);
 
     if(pMainWindow->showEssence){
         for(u32 i=0;i<pMainWindow->blocks.blockCount();i++){
             painter.drawPixmap((i%blockStoreColumnCount)*24,(i/blockStoreColumnCount)*24,
                     pMainWindow->essenceSheet,
-                    (pMainWindow->blocks.Essences(i)%16)*24,
-                    pMainWindow->blocks.Essences(i)/16*24,24,24);
+                    (pMainWindow->blocks.getEssences(i)%16)*24,
+                    pMainWindow->blocks.getEssences(i)/16*24,24,24);
         }
     }
     else{
@@ -76,7 +76,7 @@ void BlockStore::reset(){
     pMainWindow->selBlock=0;
 }
 void BlockStore::mouseMoveEvent(QMouseEvent * event){
-    if(!pMainWindow->blocks.Loaded()){
+    if(!pMainWindow->blocks.isLoaded()){
         curBlock=-1;
         emit showStatusTip("");
         return;
@@ -98,18 +98,18 @@ void BlockStore::mouseMoveEvent(QMouseEvent * event){
         }
     }
 
-    repaint();
+    update();
 }
 
 void BlockStore::mousePressEvent(QMouseEvent* ){
-    if(!pMainWindow->blocks.Loaded()){
+    if(!pMainWindow->blocks.isLoaded()){
         return;
     }
     if(curBlock!=-1)pMainWindow->selBlock=curBlock;
-    repaint();
+    update();
 }
 void BlockStore::leaveEvent(QEvent * ){
     curBlock=-1;
     emit showStatusTip("");
-    repaint();
+    update();
 }
