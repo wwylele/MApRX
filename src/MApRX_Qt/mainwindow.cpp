@@ -856,7 +856,9 @@ void MainWindow::on_actionImportMap_triggered()
         msgBox.setDefaultButton(QMessageBox::No);
         if(msgBox.exec()!=QMessageBox::Yes)return;
     }
-    map.readFile(src+8);
-    ui->mapView->reset();
-    clearOperationStack();
+    KfMap importMap;
+    importMap.readFile(src+8);
+    MoPasteMap pasteMap(importMap);
+    pasteMap.toolTip="Import Map";
+    doOperation(&pasteMap);
 }
