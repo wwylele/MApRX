@@ -70,7 +70,12 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     if(!pMap->isLoaded())return QVariant();
     u8 itemId=index.row();
     if(itemId>=pMap->metaData.itemCount)return QVariant();
-    if(role==Qt::DisplayRole||role==Qt::EditRole){
+    if(role==Qt::DecorationRole && index.column()==0){
+        return pMainWindow->itemImages.images[
+                pMap->itemAt(itemId).basic.species()]
+                .small;
+    }
+    else if(role==Qt::DisplayRole||role==Qt::EditRole){
         switch(index.column()){
         case 0:
             return QString::number(pMap->itemAt(itemId).basic.species())
@@ -371,6 +376,11 @@ MainWindow::MainWindow(QWidget *parent) :
     itemDictionary.load(itemDicRes);
     itemDicResFile.close();
 
+    QFile itemImageResFile(":/text/itemimage.txt");
+    itemImageResFile.open(QIODevice::ReadOnly);
+    QTextStream itemImageRes(&itemImageResFile);
+    itemImages.load(QImage(":/image/itemimage.png"),itemImageRes);
+    itemImageResFile.close();
 
     loadRoomList();
 
