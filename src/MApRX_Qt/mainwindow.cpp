@@ -229,6 +229,7 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
                                arg(name),
                                QVariant(i));
                 combo->setItemData(j,itemBackground[itemCatagory[i]],Qt::BackgroundRole);
+                combo->setItemData(j,pMainWindow->itemImages.images[i].small,Qt::DecorationRole);
                 j++;
             }
 
