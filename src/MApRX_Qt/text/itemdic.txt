@@ -448,7 +448,7 @@ P.-
 +157.1-use Button
 0.-
 +160.Dyna Blade Goal Game
-P.-
+P.Distance
 0.-
 +163.Stage 1 Title
 0.-
@@ -471,14 +471,14 @@ P.-
 +174.Sp174
 0.-
 +184.Treasure Box
-P.-
+P.Treasure ID
 0.-
 +185.Treasure Box
 0.-
 +186.Saving Point
 0.-
 +188.Messages
-P.-
+P.Message ID
 0.Be0
 1.Be1
 +189.Sp189
