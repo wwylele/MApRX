@@ -143,13 +143,13 @@ P.-
 0.Be0
 1.Be1
 2.Be2
-+33.Nova's Enemy
++33.Cooga
 P.-
 0.Be0
 1.Be1
 2.Be2
 3.Be3
-+34.Ax Knight
++34.Axe Knight
 0.-
 +35.Trident Knight
 0.-
@@ -215,7 +215,7 @@ P.-
 +55.Coconut
 0.Be0
 1.Be1
-+56.<Nova Enemy B>
++56.Pata
 P.-
 0.Be0
 1.Be1
@@ -223,7 +223,7 @@ P.-
 3.Be3
 4.Be4
 5.Be5
-+59.<Nova Enemy C>
++59.Valm
 0.Be0
 1.Be1
 2.Be2
