@@ -128,8 +128,13 @@ void MapView::paintEvent(QPaintEvent *){
                 curItem=-1;
             }else{
                 int x,y;
-                x=pMainWindow->map.itemAt(curItem).basic.x;
-                y=pMainWindow->map.itemAt(curItem).basic.y;
+                if(itemDraging){
+                    x=dragX;
+                    y=dragY;
+                }else{
+                    x=pMainWindow->map.itemAt(curItem).basic.x;
+                    y=pMainWindow->map.itemAt(curItem).basic.y;
+                }
                 painter.setPen(QColor(255,255,0));
                 painter.drawLine(x-16,y,x+16,y);
                 painter.drawLine(x,y-16,x,y+16);
@@ -158,6 +163,7 @@ void MapView::reset(){
     resize(width,height);
     curX=curY=-1;
     curItem=-1;
+    itemDraging=false;
 
 }
 QString MapView::generateStatusTip(u16 x,u16 y){
@@ -176,7 +182,22 @@ void MapView::mouseMoveEvent(QMouseEvent * event){
         curItem=-1;
         return;
     }
-    if(!pMainWindow->showItems){
+    if(itemDraging){
+        if(!itemShaked){
+            int dx=dragX-event->x();
+            int dy=dragY-event->y();
+            if(dx*dx+dy*dy>256)itemShaked=true;
+        }
+        if(itemShaked){
+            dragX=event->x();
+            dragY=event->y();
+            dragX=std::min(std::max(0,dragX),pMainWindow->map.metaData.width*24);
+            dragY=std::min(std::max(0,dragY),pMainWindow->map.metaData.height*24);
+            update();
+        }
+
+    }
+    else if(!pMainWindow->showItems){
         curItem=-1;
         if(event->x()>pMainWindow->map.metaData.width*24||
            event->y()>pMainWindow->map.metaData.height*24||
@@ -253,9 +274,31 @@ void MapView::mousePressEvent(QMouseEvent* event){
     }else{
         if(curItem!=-1 && curItem<pMainWindow->map.metaData.itemCount){
             emit selectItem(curItem);
+            grabKeyboard();
+            grabMouse();
+            itemDraging=true;
+            itemShaked=false;
+            dragX=pMainWindow->map.itemAt(curItem).basic.x;
+            dragY=pMainWindow->map.itemAt(curItem).basic.y;
         }
     }
 }
+void MapView::mouseReleaseEvent(QMouseEvent *){
+    if(pMainWindow->showItems){
+        releaseKeyboard();
+        releaseMouse();
+        itemDraging=false;
+        if(itemShaked){
+            KfMap::Item item(pMainWindow->map.itemAt(curItem).basic);
+            item.x=dragX;
+            item.y=dragY;
+            MainWindow::MoEditItemBasic mo(curItem,item);
+            mo.toolTip=tr("Move Item#%1").arg(curItem);
+            pMainWindow->doOperation(&mo);
+        }
+    }
+}
+
 void MapView::leaveEvent(QEvent * ){
     curX=curY=-1;
     curItem=-1;
