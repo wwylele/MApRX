@@ -29,6 +29,13 @@ typedef unsigned long u32;
 typedef signed char s8;
 typedef signed short s16;
 typedef signed long s32;
+#define assert_size(type,size) static_assert(sizeof(type)==(size),"sizeof("#type ")!=" #size)
+assert_size(u8,1);
+assert_size(u16,2);
+assert_size(u32,4);
+assert_size(s8,1);
+assert_size(s16,2);
+assert_size(s32,4);
 
 struct Color15
 {
@@ -67,6 +74,7 @@ struct Color15
     }
     
 };
+assert_size(Color15,2);
 
 typedef u16 CharData;
 enum CharDataFlags{
@@ -74,6 +82,7 @@ enum CharDataFlags{
     FLIP_X=1024,
     FLIP_Y=2048,
 };
+assert_size(CharData,2);
 
 struct Tile8bpp
 {
@@ -94,6 +103,7 @@ struct Tile8bpp
         }
     }
 };
+assert_size(Tile8bpp,64);
 
 
 struct ROM_HEADER

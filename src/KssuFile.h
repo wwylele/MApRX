@@ -166,6 +166,7 @@ class KfMap{
 public:
     typedef std::vector<u8> Script;
     typedef u16 Cell;
+    assert_size(Cell,2);
     enum CellFlags{
         BLOCK_ID_MASK=0x7FFF,
         CELL_HAS_SCRIPT=0x8000
@@ -240,6 +241,7 @@ public:
             else param0&=~FLAG_B;
         }
     };
+    assert_size(Item,8);
 
     struct RipeItem{
         Item basic;
@@ -260,7 +262,7 @@ public:
 
     u8* generateFile(u32 *length);
 
-    struct MetaData_Struct/*28 bytes*/{
+    struct MetaData_Struct{
         u16 width;
         u16 height;
         u16 clipTop;
@@ -276,6 +278,7 @@ public:
         u8 itemCount;
         u8 itemPlts[5];
     }metaData;
+    assert_size(MetaData_Struct,28);
 
     
     /*struct Script_{
@@ -418,6 +421,7 @@ struct RoomInfo{
             u32 rawBckScrId;
         }subFileIdSlots;
     }subFileIdData;
+    assert_size(subFileIdData,28);
     static const u32 invalidId;
 };
 class Kf_mapdata{
