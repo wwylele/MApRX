@@ -355,6 +355,8 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->statusBar,SLOT(showMessage(const QString&)));
     connect(ui->blockStore,SIGNAL(showStatusTip(const QString&)),
             ui->statusBar,SLOT(showMessage(const QString&)));
+    connect(ui->mapView,SIGNAL(selectItem(int)),
+            this,SLOT(onSelectItem(int)));
 
     QToolButton* scrollAreaCornerResize=new QToolButton(this);
     scrollAreaCornerResize->setDefaultAction(ui->actionResizeMap);
@@ -809,4 +811,8 @@ void MainWindow::resetMap(){
     ui->mapView->reset();
     ui->mapViewScrollArea->horizontalScrollBar()->setValue(0);
     ui->mapViewScrollArea->verticalScrollBar()->setValue(0);
+}
+
+void MainWindow::onSelectItem(int itemId){
+    ui->itemTable->setCurrentIndex(itemTableModal.getIndex(itemId,0));
 }

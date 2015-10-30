@@ -256,6 +256,8 @@ private slots:
 
     void resetMap();
 
+    void onSelectItem(int itemId);
+
 
 private:
     Ui::MainWindow *ui;

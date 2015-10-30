@@ -111,7 +111,7 @@ void MapView::paintEvent(QPaintEvent *){
                                    item.basic.y-image.dy,
                                    image.large);
             }else{
-                u8 catagory=(item.basic.catagory())>>8;
+                u8 catagory=item.basic.catagory();
                 if(catagory>=13)catagory=0;
                 painter.setBrush(itemBackground[catagory]);
                 painter.drawEllipse(item.basic.x-8,
@@ -120,6 +120,20 @@ void MapView::paintEvent(QPaintEvent *){
                 painter.drawText(item.basic.x-8,
                                  item.basic.y-8,
                                  16,16,Qt::AlignCenter,QString::number(i));
+            }
+
+        }
+        if(curItem!=-1){
+            if(curItem>=pMainWindow->map.metaData.itemCount){
+                curItem=-1;
+            }else{
+                int x,y;
+                x=pMainWindow->map.itemAt(curItem).basic.x;
+                y=pMainWindow->map.itemAt(curItem).basic.y;
+                painter.setPen(QColor(255,255,0));
+                painter.drawLine(x-16,y,x+16,y);
+                painter.drawLine(x,y-16,x,y+16);
+                painter.drawArc(x-16,y-16,32,32,0,5760);
             }
 
         }
@@ -143,6 +157,7 @@ void MapView::reset(){
     setMinimumSize(width,height);
     resize(width,height);
     curX=curY=-1;
+    curItem=-1;
 
 }
 QString MapView::generateStatusTip(u16 x,u16 y){
@@ -158,9 +173,11 @@ QString MapView::generateStatusTip(u16 x,u16 y){
 void MapView::mouseMoveEvent(QMouseEvent * event){
     if(!pMainWindow->map.isLoaded()){
         curX=curY=-1;
+        curItem=-1;
         return;
     }
     if(!pMainWindow->showItems){
+        curItem=-1;
         if(event->x()>pMainWindow->map.metaData.width*24||
            event->y()>pMainWindow->map.metaData.height*24||
                 event->x()<0||event->y()<0){
@@ -173,6 +190,33 @@ void MapView::mouseMoveEvent(QMouseEvent * event){
             emit showStatusTip(generateStatusTip(curX,curY));
         }
 
+    }else{
+        curX=curY=-1;
+        for(int i=pMainWindow->map.metaData.itemCount;i>=0;--i){
+            KfMap::RipeItem &item=pMainWindow->map.itemAt(i);
+            ItemImages::ItemImage image=pMainWindow->itemImages.images[item.basic.species()];
+            QRect rect;
+            if(image.loaded)
+                rect=QRect(item.basic.x-image.dx,item.basic.y-image.dy,
+                       image.large.width(),image.large.height());
+            else
+                rect=QRect(item.basic.x-8,item.basic.y-8,16,16);
+            if(rect.contains(event->pos())){
+                curItem=i;
+                emit showStatusTip(QString(tr("Item #%1, %2 at(%3(%4),%5(%6)"))
+                                   .arg(i)
+                                   .arg(pMainWindow->itemDictionary.entries[item.basic.species()].speciesName)
+                                   .arg(item.basic.x/24)
+                                   .arg(item.basic.x%24)
+                                   .arg(item.basic.y/24)
+                                   .arg(item.basic.y%24));
+                goto set_curItem;
+            }
+        }
+        curItem=-1;
+        emit showStatusTip("");
+        set_curItem:
+        ;
     }
 
 
@@ -206,10 +250,15 @@ void MapView::mousePressEvent(QMouseEvent* event){
 
         }
 
+    }else{
+        if(curItem!=-1 && curItem<pMainWindow->map.metaData.itemCount){
+            emit selectItem(curItem);
+        }
     }
 }
 void MapView::leaveEvent(QEvent * ){
     curX=curY=-1;
+    curItem=-1;
     update();
     emit showStatusTip("");
 }
