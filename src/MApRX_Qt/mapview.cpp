@@ -111,7 +111,7 @@ void MapView::paintEvent(QPaintEvent *){
                                    item.basic.y-image.dy,
                                    image.large);
             }else{
-                u8 catagory=(pMainWindow->map.itemAt(i).basic.catagory())>>8;
+                u8 catagory=(item.basic.catagory())>>8;
                 if(catagory>=13)catagory=0;
                 painter.setBrush(itemBackground[catagory]);
                 painter.drawEllipse(item.basic.x-8,
