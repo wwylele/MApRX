@@ -39,6 +39,7 @@ public:
     BlockStore* pBlockStore;
 protected:
     int curX,curY;
+    int curItem;
     int width;
     int height;
 #define TRAN_PAT_GRID_SIZE 6
@@ -50,6 +51,7 @@ protected:
     QString generateStatusTip(u16 x,u16 y);
 signals:
     void showStatusTip(const QString& message);
+    void selectItem(int itemId);
 
 public slots:
 };
