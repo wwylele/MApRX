@@ -229,7 +229,7 @@ P.-
 2.Be2
 4.Be4
 5.Be5
-+60.Iron Mom
++60.Iron Mam
 0.-
 +61.Flotzo
 0.-
