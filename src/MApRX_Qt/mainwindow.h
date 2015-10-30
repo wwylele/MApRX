@@ -34,6 +34,7 @@
 #include <QAbstractTableModel>
 #include <QStyledItemDelegate>
 #include "itemdictionary.h"
+#include "itemimages.h"
 
 namespace Ui {
     class MainWindow;
@@ -188,6 +189,7 @@ public:
     ~MainWindow();
 
     ItemDictionary itemDictionary;
+    ItemImages itemImages;
     KfPlt plt,bckPlt;
     KfTileSet tiles,bckTiles;
     KfBlockSet blocks;
@@ -253,6 +255,8 @@ private slots:
     void on_actionSaveToImage_triggered();
 
     void resetMap();
+
+    void onSelectItem(int itemId);
 
 
     void on_actionExportMap_triggered();

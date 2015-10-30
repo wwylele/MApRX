@@ -39,17 +39,22 @@ public:
     BlockStore* pBlockStore;
 protected:
     int curX,curY;
+    int curItem;
     int width;
     int height;
+    bool itemDraging,itemShaked;
+    int dragX,dragY;
 #define TRAN_PAT_GRID_SIZE 6
     QImage transparentPattern;
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent * event);
     void mousePressEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent * event);
     void leaveEvent(QEvent * event);
     QString generateStatusTip(u16 x,u16 y);
 signals:
     void showStatusTip(const QString& message);
+    void selectItem(int itemId);
 
 public slots:
 };

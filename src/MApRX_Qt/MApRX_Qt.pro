@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     dialogscripts.cpp \
     dialogresizemap.cpp \
     itemdictionary.cpp \
-    mapview.cpp
+    mapview.cpp \
+    itemimages.cpp
 
 TRANSLATIONS = maprx_zh.ts
 
@@ -44,7 +45,8 @@ HEADERS  += mainwindow.h \
     dialogresizemap.h \
     main.h \
     itemdictionary.h \
-    mapview.h
+    mapview.h \
+    itemimages.h
 
 FORMS    += mainwindow.ui \
     dialogaboutme.ui \

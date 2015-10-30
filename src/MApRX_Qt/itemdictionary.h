@@ -32,6 +32,7 @@ public:
     public:
         QString speciesName;
         QMap<int,QString> behaviorName;
+        QString paramName;
     }entries[256];
     void load(QTextStream& stream);
 };

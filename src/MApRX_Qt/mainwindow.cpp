@@ -70,7 +70,12 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     if(!pMap->isLoaded())return QVariant();
     u8 itemId=index.row();
     if(itemId>=pMap->metaData.itemCount)return QVariant();
-    if(role==Qt::DisplayRole||role==Qt::EditRole){
+    if(role==Qt::DecorationRole && index.column()==0){
+        return pMainWindow->itemImages.images[
+                pMap->itemAt(itemId).basic.species()]
+                .small;
+    }
+    else if(role==Qt::DisplayRole||role==Qt::EditRole){
         switch(index.column()){
         case 0:
             return QString::number(pMap->itemAt(itemId).basic.species())
@@ -85,7 +90,11 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
                          .behaviorName[pMap->itemAt(itemId).basic.behavior()]):"");
 
         case 4:
-            return QString::number(pMap->itemAt(itemId).basic.param());
+            if(role==Qt::DisplayRole)return QString("%1:%2").arg(
+                        pMainWindow->itemDictionary.entries
+                        [pMap->itemAt(itemId).basic.species()].paramName)
+                        .arg(pMap->itemAt(itemId).basic.param());
+            else return QString::number(pMap->itemAt(itemId).basic.param());
         case 5:
             return QString::number(pMap->itemAt(itemId).scripts.size());
         case 6:{
@@ -220,6 +229,7 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
                                arg(name),
                                QVariant(i));
                 combo->setItemData(j,itemBackground[itemCatagory[i]],Qt::BackgroundRole);
+                combo->setItemData(j,pMainWindow->itemImages.images[i].small,Qt::DecorationRole);
                 j++;
             }
 
@@ -345,6 +355,8 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->statusBar,SLOT(showMessage(const QString&)));
     connect(ui->blockStore,SIGNAL(showStatusTip(const QString&)),
             ui->statusBar,SLOT(showMessage(const QString&)));
+    connect(ui->mapView,SIGNAL(selectItem(int)),
+            this,SLOT(onSelectItem(int)));
 
     QToolButton* scrollAreaCornerResize=new QToolButton(this);
     scrollAreaCornerResize->setDefaultAction(ui->actionResizeMap);
@@ -367,6 +379,11 @@ MainWindow::MainWindow(QWidget *parent) :
     itemDictionary.load(itemDicRes);
     itemDicResFile.close();
 
+    QFile itemImageResFile(":/text/itemimage.txt");
+    itemImageResFile.open(QIODevice::ReadOnly);
+    QTextStream itemImageRes(&itemImageResFile);
+    itemImages.load(QImage(":/image/itemimage.png"),itemImageRes);
+    itemImageResFile.close();
 
     loadRoomList();
 
@@ -796,6 +813,10 @@ void MainWindow::resetMap(){
     ui->mapViewScrollArea->verticalScrollBar()->setValue(0);
 }
 
+
+void MainWindow::onSelectItem(int itemId){
+    ui->itemTable->setCurrentIndex(itemTableModal.getIndex(itemId,0));
+}
 const char* exportMapMagic="KSSU";
 void MainWindow::on_actionExportMap_triggered()
 {
