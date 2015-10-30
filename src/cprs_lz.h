@@ -1,6 +1,6 @@
 /*************************************************************************
-    NitroLz.cpp
-    :A wrapper for cprs_lz.cpp, just like DS a wrapper for GBA
+    cprs_lz.h
+    :glue between NitroLz.cpp and cprs_lz.cpp
     Copyright (C) 2015 wwylele
 
     This file is part of MApRX.
@@ -19,35 +19,25 @@
     along with MApRX.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-#include "NitroLz.h"
-#include <cstring>
-#include <cstdlib>
-#include "cprs_lz.h"
+/*
+ * Taken from grit/cldib/cldib_core.h
+ */
+#ifndef _CPRS_LZ_H_
+#define _CPRS_LZ_H_
+typedef unsigned char   BYTE, uchar, echar;
+typedef unsigned short  ushort, eshort;
+typedef unsigned int    uint, eint, DWORD;
 
-u32 compressLZ(const u8 *srcp,u32 size,u8 *dstp)
-{
-    RECORD src,dst;
-    src.data=(BYTE*)srcp;
-    src.width=1;
-    src.height=size;
-    dst.data=0;
-    lz77gba_compress(&dst,&src);
-    std::memcpy(dstp,dst.data,dst.height);
-    std::free(dst.data);
-    return dst.height;
-}
-void uncompressLZ(const  u8 *srcp,u8 *destp)
-{
-    RECORD src,dst;
-    src.data=(BYTE*)srcp;
-    dst.data=0;
-    lz77gba_decompress(&dst,&src);
-    std::memcpy(destp,dst.data,dst.height);
-    std::free(dst.data);
-}
 
-u32 getLengthLZ(const u8* srcp){
-    u32 length;
-    memcpy(&length,srcp,4);
-    return length>>8;
-}
+
+typedef struct RECORD
+{
+    int width;		//!< Width of \a data / datatype
+    int height;		//!< Height of data / Length of data
+    BYTE *data;		//!< Binary data.
+} RECORD;
+
+uint lz77gba_compress(RECORD *dst, const RECORD *src);
+uint lz77gba_decompress(RECORD *dst, const RECORD *src);
+
+#endif

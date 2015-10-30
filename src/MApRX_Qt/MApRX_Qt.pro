@@ -21,6 +21,7 @@ SOURCES += main.cpp\
     dialogmakerom.cpp \
     dialogproperties.cpp \
     ../Nitro.cpp \
+    ../cprs_lz.cpp \
     mainwindow_mapoperation.cpp \
     ../itemcatagory.cpp \
     dialogscripts.cpp \
@@ -35,6 +36,7 @@ HEADERS  += mainwindow.h \
     ../KssuFile.h \
     ../Nitro.h \
     ../NitroLz.h \
+    ../cprs_lz.h \
     blockstore.h \
     dialogaboutme.h \
     dialogmakerom.h \

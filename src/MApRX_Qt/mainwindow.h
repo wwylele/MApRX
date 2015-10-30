@@ -259,6 +259,10 @@ private slots:
     void onSelectItem(int itemId);
 
 
+    void on_actionExportMap_triggered();
+
+    void on_actionImportMap_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTimer mapUpdateTimer;
