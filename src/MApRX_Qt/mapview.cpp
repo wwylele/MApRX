@@ -135,7 +135,7 @@ void MapView::paintEvent(QPaintEvent *){
                     x=pMainWindow->map.itemAt(curItem).basic.x;
                     y=pMainWindow->map.itemAt(curItem).basic.y;
                 }
-                painter.setPen(QColor(255,255,0));
+                painter.setPen(QColor(255,0,0));
                 painter.drawLine(x-16,y,x+16,y);
                 painter.drawLine(x,y-16,x,y+16);
                 painter.drawArc(x-16,y-16,32,32,0,5760);
