@@ -9,10 +9,11 @@ class ItemImages
 public:
     ItemImages();
     void load(const QImage& srcImage,QTextStream& srcDesc);
-    struct{
+    struct ItemImage{
         QPixmap large;
         QPixmap small;
         int dx,dy;
+        bool loaded;
     }images[256];
     static int smallImageSize;
 

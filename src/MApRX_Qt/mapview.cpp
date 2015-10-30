@@ -103,16 +103,25 @@ void MapView::paintEvent(QPaintEvent *){
         extern QBrush itemBackground[13];
 
         for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
-            u8 catagory=(pMainWindow->map.itemAt(i).basic.param1
-                         &KfMap::Item::CATAGORY_MASK)>>8;
-            if(catagory>=13)catagory=0;
-            painter.setBrush(itemBackground[catagory]);
-            painter.drawEllipse(pMainWindow->map.itemAt(i).basic.x-8,
-                                pMainWindow->map.itemAt(i).basic.y-8,
-                                16,16);
-            painter.drawText(pMainWindow->map.itemAt(i).basic.x-8,
-                             pMainWindow->map.itemAt(i).basic.y-8,
-                             16,16,Qt::AlignCenter,QString::number(i));
+            KfMap::RipeItem &item=pMainWindow->map.itemAt(i);
+            u8 species=item.basic.species();
+            ItemImages::ItemImage& image=pMainWindow->itemImages.images[species];
+            if(image.loaded){
+                painter.drawPixmap(item.basic.x-image.dx,
+                                   item.basic.y-image.dy,
+                                   image.large);
+            }else{
+                u8 catagory=(pMainWindow->map.itemAt(i).basic.catagory())>>8;
+                if(catagory>=13)catagory=0;
+                painter.setBrush(itemBackground[catagory]);
+                painter.drawEllipse(item.basic.x-8,
+                                    item.basic.y-8,
+                                    16,16);
+                painter.drawText(item.basic.x-8,
+                                 item.basic.y-8,
+                                 16,16,Qt::AlignCenter,QString::number(i));
+            }
+
         }
     }else{
         if(curX!=-1){

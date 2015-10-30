@@ -6,6 +6,7 @@ ItemImages::ItemImages()
 }
 int ItemImages::smallImageSize=24;
 void ItemImages::load(const QImage &srcImage, QTextStream &srcDesc){
+    for(ItemImage& i:images)i.loaded=false;
     QImage mask=srcImage.createMaskFromColor(srcImage.pixel(0,0));
     QPixmap pixmap=QPixmap::fromImage(srcImage);
     pixmap.setMask(QBitmap::fromImage(mask));
@@ -37,6 +38,6 @@ void ItemImages::load(const QImage &srcImage, QTextStream &srcDesc){
                     smallImageSize,
                     smallImageSize
                     );
-
+        images[currentSpec].loaded=true;
     }
 }
