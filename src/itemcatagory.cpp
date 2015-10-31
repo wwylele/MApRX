@@ -19,9 +19,9 @@
     You should have received a copy of the GNU General Public License
     along with MApRX.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
-#include "Nitro.h"
+#include "KssuFile.h"
 
-u8 itemCatagory[256/*species*/]={
+u8 KfMap::itemCatagory[256/*species*/]={
     1,
     2,
     2,

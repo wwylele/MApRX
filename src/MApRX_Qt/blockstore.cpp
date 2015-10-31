@@ -20,6 +20,7 @@
 
 #include "blockstore.h"
 #include <QPainter>
+#include "main.h"
 BlockStore::BlockStore(QWidget *parent) : QWidget(parent)
 {
 }
@@ -33,7 +34,7 @@ void BlockStore::paintEvent(QPaintEvent *){
     if(pMainWindow->showEssence){
         for(u32 i=0;i<pMainWindow->blocks.blockCount();i++){
             painter.drawPixmap((i%blockStoreColumnCount)*24,(i/blockStoreColumnCount)*24,
-                    pMainWindow->essenceSheet,
+                    res->essenceSheet,
                     (pMainWindow->blocks.getEssences(i)%16)*24,
                     pMainWindow->blocks.getEssences(i)/16*24,24,24);
         }

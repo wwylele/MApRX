@@ -36,21 +36,7 @@
 #include <cassert>
 
 
-QBrush itemBackground[13]{
-                    QColor(255,255,255),
-                    QColor(128,255,128),
-                    QColor(255,255,128),
-                    QColor(255,128,128),
-                    QColor(255,128,255),
-                    QColor(128,128,255),
-                    QColor(128,255,255),
-                    Qt::transparent,
-                    Qt::transparent,
-                    Qt::transparent,
-                    QColor(128,128,128),
-                    QColor(192,192,192),
-                    QColor(255,192,128)
-};
+
 
 ItemTableModal::ItemTableModal
     (MainWindow *_pMainWindow, QObject *parent):
@@ -71,7 +57,7 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
     u8 itemId=index.row();
     if(itemId>=pMap->metaData.itemCount)return QVariant();
     if(role==Qt::DecorationRole && index.column()==0){
-        return pMainWindow->itemImages.images[
+        return res->itemImages.images[
                 pMap->itemAt(itemId).basic.species()]
                 .small;
     }
@@ -80,18 +66,18 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
         case 0:
             return QString::number(pMap->itemAt(itemId).basic.species())
                     +(role==Qt::DisplayRole?QString("(%1)")
-                    .arg(pMainWindow->itemDictionary.entries
+                    .arg(res->itemDictionary.entries
                          [pMap->itemAt(itemId).basic.species()].speciesName):"");
         case 1:
             return QString::number(pMap->itemAt(itemId).basic.behavior())
                     +(role==Qt::DisplayRole?QString("(%1)")
-                    .arg(pMainWindow->itemDictionary.entries
+                    .arg(res->itemDictionary.entries
                          [pMap->itemAt(itemId).basic.species()]
                          .behaviorName[pMap->itemAt(itemId).basic.behavior()]):"");
 
         case 4:
             if(role==Qt::DisplayRole)return QString("%1:%2").arg(
-                        pMainWindow->itemDictionary.entries
+                        res->itemDictionary.entries
                         [pMap->itemAt(itemId).basic.species()].paramName)
                         .arg(pMap->itemAt(itemId).basic.param());
             else return QString::number(pMap->itemAt(itemId).basic.param());
@@ -114,8 +100,8 @@ QVariant ItemTableModal::data(const QModelIndex &index, int role) const{
             return pMap->itemAt(itemId).basic.flagB()?Qt::Checked:Qt::Unchecked;
         }
     }else if(role==Qt::BackgroundRole){
-        if(pMap->itemAt(itemId).basic.catagory()>=13)return itemBackground[0];
-        return itemBackground[pMap->itemAt(itemId).basic.catagory()];
+        if(pMap->itemAt(itemId).basic.catagory()>=13)return res->itemBackground[0];
+        return res->itemBackground[pMap->itemAt(itemId).basic.catagory()];
     }
     return QVariant();
 }
@@ -172,7 +158,7 @@ bool ItemTableModal::setData(const QModelIndex & index, const QVariant & value, 
             toIntBuf=value.toInt(&toIntOk);
             if(!toIntOk || toIntBuf<0 || toIntBuf>255)return false;
             itemBasic.setSpecies(toIntBuf);
-            itemBasic.setCatagory(itemCatagory[toIntBuf]);
+            itemBasic.setCatagory(KfMap::itemCatagory[toIntBuf]);
             itemBasic.setBehavior(0);
         }
         else if(index.column()==1){
@@ -222,14 +208,14 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
         QComboBox* combo=new QComboBox(parent);
         int j=0;
         for(int i=0;i<256;i++){
-            QString name(pMainWindow->itemDictionary.entries[i].speciesName);
+            QString name(res->itemDictionary.entries[i].speciesName);
             if(name.length()){
                 combo->addItem(QString("%1(%2)").
                                arg(i).
                                arg(name),
                                QVariant(i));
-                combo->setItemData(j,itemBackground[itemCatagory[i]],Qt::BackgroundRole);
-                combo->setItemData(j,pMainWindow->itemImages.images[i].small,Qt::DecorationRole);
+                combo->setItemData(j,res->itemBackground[KfMap::itemCatagory[i]],Qt::BackgroundRole);
+                combo->setItemData(j,res->itemImages.images[i].small,Qt::DecorationRole);
                 j++;
             }
 
@@ -238,10 +224,10 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
     }else if(index.column()==1){
         QComboBox* combo=new QComboBox(parent);
         int species=pMainWindow->map.itemAt(index.row()).basic.species();
-        for(int p:pMainWindow->itemDictionary.entries[species].behaviorName.keys()){
+        for(int p:res->itemDictionary.entries[species].behaviorName.keys()){
             combo->addItem(QString("%1(%2)").
                            arg(p).
-                           arg(pMainWindow->itemDictionary.entries[species].behaviorName[p]),
+                           arg(res->itemDictionary.entries[species].behaviorName[p]),
                   QVariant(p));
         }
         return combo;
@@ -365,25 +351,10 @@ MainWindow::MainWindow(QWidget *parent) :
     MapOperation::pMap=&map;
     MapOperation::pMainWindow=this;
 
-    essenceSheet.load(":/image/Essence.png");
-
     connect(&mapUpdateTimer, SIGNAL(timeout()), this, SLOT(on_updateMap()));
     connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(undo()));
     connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(redo()));
 
-
-
-    QFile itemDicResFile(":/text/itemdic.txt");
-    itemDicResFile.open(QIODevice::ReadOnly);
-    QTextStream itemDicRes(&itemDicResFile);
-    itemDictionary.load(itemDicRes);
-    itemDicResFile.close();
-
-    QFile itemImageResFile(":/text/itemimage.txt");
-    itemImageResFile.open(QIODevice::ReadOnly);
-    QTextStream itemImageRes(&itemImageResFile);
-    itemImages.load(QImage(":/image/itemimage.png"),itemImageRes);
-    itemImageResFile.close();
 
     loadRoomList();
 

@@ -23,6 +23,7 @@
 #include <QImage>
 #include <QMouseEvent>
 #include <cassert>
+#include "main.h"
 #include "dialogscripts.h"
 MapView::MapView(QWidget *parent) :
     QWidget(parent),
@@ -51,7 +52,7 @@ void MapView::paintEvent(QPaintEvent *){
             for(u32 y=0;y<pMainWindow->map.getHeight();y++){
                 BlockEssence e;
                 e=pMainWindow->blocks.getEssences(pMainWindow->map.cellAt(x,y).blockId);
-                painter.drawPixmap(x*24,y*24,pMainWindow->essenceSheet,
+                painter.drawPixmap(x*24,y*24,res->essenceSheet,
                                    (e%16)*24,e/16*24,24,24);
             }
     }
@@ -100,12 +101,11 @@ void MapView::paintEvent(QPaintEvent *){
 
     }
     if(pMainWindow->showItems){
-        extern QBrush itemBackground[13];
 
         for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
             KfMap::RipeItem &item=pMainWindow->map.itemAt(i);
             u8 species=item.basic.species();
-            ItemImages::ItemImage& image=pMainWindow->itemImages.images[species];
+            ItemImages::ItemImage& image=res->itemImages.images[species];
             if(image.loaded){
                 painter.drawPixmap(item.basic.x-image.dx,
                                    item.basic.y-image.dy,
@@ -113,7 +113,7 @@ void MapView::paintEvent(QPaintEvent *){
             }else{
                 u8 catagory=item.basic.catagory();
                 if(catagory>=13)catagory=0;
-                painter.setBrush(itemBackground[catagory]);
+                painter.setBrush(res->itemBackground[catagory]);
                 painter.drawEllipse(item.basic.x-8,
                                     item.basic.y-8,
                                     16,16);
@@ -215,7 +215,7 @@ void MapView::mouseMoveEvent(QMouseEvent * event){
         curX=curY=-1;
         for(int i=pMainWindow->map.metaData.itemCount;i>=0;--i){
             KfMap::RipeItem &item=pMainWindow->map.itemAt(i);
-            ItemImages::ItemImage image=pMainWindow->itemImages.images[item.basic.species()];
+            ItemImages::ItemImage image=res->itemImages.images[item.basic.species()];
             QRect rect;
             if(image.loaded)
                 rect=QRect(item.basic.x-image.dx,item.basic.y-image.dy,
@@ -226,7 +226,7 @@ void MapView::mouseMoveEvent(QMouseEvent * event){
                 curItem=i;
                 emit showStatusTip(QString(tr("Item #%1, %2 at(%3(%4),%5(%6)"))
                                    .arg(i)
-                                   .arg(pMainWindow->itemDictionary.entries[item.basic.species()].speciesName)
+                                   .arg(res->itemDictionary.entries[item.basic.species()].speciesName)
                                    .arg(item.basic.x/24)
                                    .arg(item.basic.x%24)
                                    .arg(item.basic.y/24)
