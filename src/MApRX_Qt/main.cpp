@@ -71,4 +71,11 @@ CommonResources::CommonResources(){
 
     essenceSheet.load(":/image/Essence.png");
 
+    QFile versionFile(":/text/version.txt");
+    versionFile.open(QIODevice::ReadOnly);
+    QTextStream versionText(&versionFile);
+    QString versionString=versionText.readLine();
+    QStringList sl=versionString.split(",");
+    for(int i=0;i<4;i++)version[i]=sl[i].toInt();
+    versionFile.close();
 }

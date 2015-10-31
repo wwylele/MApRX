@@ -20,5 +20,6 @@
         <file>text/itemdic.txt</file>
         <file>image/itemimage.png</file>
         <file>text/itemimage.txt</file>
+        <file>text/version.txt</file>
     </qresource>
 </RCC>

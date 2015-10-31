@@ -20,6 +20,7 @@
 
 #include "dialogaboutme.h"
 #include "ui_dialogaboutme.h"
+#include "main.h"
 
 DialogAboutMe::DialogAboutMe(QWidget *parent) :
     QDialog(parent),
@@ -28,11 +29,18 @@ DialogAboutMe::DialogAboutMe(QWidget *parent) :
     ui->setupUi(this);
     ui->aboutMeText->setText(
                 "MApRX<br>"
-                "version 1.0.0.2<br>"
+                "version "+QString("%1.%2.%3.%4")
+                .arg(res->version[0])
+                .arg(res->version[1])
+                .arg(res->version[2])
+                .arg(res->version[3])
+                +"<br>"
                 "by wwylele<br>"
-                "Compiled: " __DATE__" " __TIME__ "<br><br>"
+            #if defined(__DATE__) && defined(__TIME__)
+                "Compiled: " __DATE__" " __TIME__ "<br>"
+            #endif
 
-                "Menu and tootbar icons by "
+                "<br>Menu and tootbar icons by "
                       "<a href=\"http://icons8.com/\">"
                       "icons8</a><br><br>"
 

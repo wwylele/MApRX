@@ -54,6 +54,7 @@ public:
                         QColor(255,192,128)
     };
     CommonResources();
+    int version[4];
 };
 extern CommonResources* res;
 
