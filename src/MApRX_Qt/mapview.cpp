@@ -57,10 +57,9 @@ void MapView::paintEvent(QPaintEvent *){
             }
     }
     else{
-        QImage image(width,height,QImage::Format_ARGB32);
         image.fill(Qt::transparent);
         if(pMainWindow->showItems){
-            pMainWindow->map.draw([this,&image](int x,int y,const Color15& c15){
+            pMainWindow->map.draw([this](int x,int y,const Color15& c15){
                 u32 c=c15.toGray32();
                 image.setPixel(x,y,c);
             },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
@@ -68,7 +67,7 @@ void MapView::paintEvent(QPaintEvent *){
         else{
             if(pMainWindow->showBackground &&pMainWindow->bckScr.isLoaded())
                 pMainWindow->bckScr.draw(
-                    [this,&image](int x,int y,const Color15& c15){
+                    [this](int x,int y,const Color15& c15){
                         u32 c=c15.toARGB32();
                         for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)
                             for(int ty=y;ty<height;ty+=pMainWindow->bckScr.getHeight()*8)
@@ -76,7 +75,7 @@ void MapView::paintEvent(QPaintEvent *){
                     },
                     pMainWindow->bckPlt,
                     0,0,pMainWindow->bckTiles);
-            pMainWindow->map.draw([this,&image](int x,int y,const Color15& c15){
+            pMainWindow->map.draw([this](int x,int y,const Color15& c15){
                 u32 c=c15.toARGB32();
                 image.setPixel(x,y,c);
             },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
@@ -161,6 +160,7 @@ void MapView::reset(){
     height=pMainWindow->map.metaData.height*24;
     setMinimumSize(width,height);
     resize(width,height);
+    image=QImage(width,height,QImage::Format_ARGB32);
     curX=curY=-1;
     curItem=-1;
     itemDraging=false;

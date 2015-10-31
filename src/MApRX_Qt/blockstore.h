@@ -42,6 +42,7 @@ protected:
     int curBlock;
     int width;
     int height;
+    QImage image;
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent * event);
     void mousePressEvent(QMouseEvent * event);
