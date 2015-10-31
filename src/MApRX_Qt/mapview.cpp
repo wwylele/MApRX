@@ -276,6 +276,7 @@ void MapView::mousePressEvent(QMouseEvent* event){
             emit selectItem(curItem);
             grabKeyboard();
             grabMouse();
+            emit itemDragging(true);
             itemDraging=true;
             itemShaked=false;
             dragX=pMainWindow->map.itemAt(curItem).basic.x;
@@ -287,6 +288,7 @@ void MapView::mouseReleaseEvent(QMouseEvent *){
     if(pMainWindow->showItems){
         releaseKeyboard();
         releaseMouse();
+        emit itemDragging(false);
         itemDraging=false;
         if(itemShaked){
             KfMap::Item item(pMainWindow->map.itemAt(curItem).basic);

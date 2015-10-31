@@ -343,6 +343,8 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->statusBar,SLOT(showMessage(const QString&)));
     connect(ui->mapView,SIGNAL(selectItem(int)),
             this,SLOT(onSelectItem(int)));
+    connect(ui->mapView,SIGNAL(itemDragging(bool)),
+            this,SLOT(onItemDragging(bool)));
 
     QToolButton* scrollAreaCornerResize=new QToolButton(this);
     scrollAreaCornerResize->setDefaultAction(ui->actionResizeMap);
@@ -853,4 +855,22 @@ void MainWindow::on_actionImportMap_triggered()
     MoPasteMap pasteMap(importMap);
     pasteMap.toolTip=tr("Import Map");
     doOperation(&pasteMap);
+}
+
+void MainWindow::onItemDragging(bool isDragging){
+    static bool prevState[5];
+    int i=0;
+    for(QAction* action:{
+        ui->actionShowEssence,
+        ui->actionShowItem,
+        ui->actionShowScript,
+        ui->actionUndo,
+        ui->actionRedo
+    }){
+        if(isDragging){
+            prevState[i]=action->isEnabled();
+            action->setEnabled(false);
+        }else action->setEnabled(prevState[i]);
+        ++i;
+    }
 }
