@@ -25,11 +25,37 @@
 #include <cstdio>
 #include <QApplication>
 #include <QTranslator>
+#include "itemdictionary.h"
+#include "itemimages.h"
 std::FILE *fopenQ(const QString& name,const char* mode);
 
 extern QTranslator translator;
 extern QApplication* pApp;
 extern QString commandLineFile;
+
+class CommonResources{
+public:
+    ItemDictionary itemDictionary;
+    ItemImages itemImages;
+    QPixmap essenceSheet;
+    QBrush itemBackground[13]{
+                        QColor(255,255,255),
+                        QColor(128,255,128),
+                        QColor(255,255,128),
+                        QColor(255,128,128),
+                        QColor(255,128,255),
+                        QColor(128,128,255),
+                        QColor(128,255,255),
+                        Qt::transparent,
+                        Qt::transparent,
+                        Qt::transparent,
+                        QColor(128,128,128),
+                        QColor(192,192,192),
+                        QColor(255,192,128)
+    };
+    CommonResources();
+};
+extern CommonResources* res;
 
 #endif // MAIN_H
 

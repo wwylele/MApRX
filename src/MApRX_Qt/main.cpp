@@ -21,10 +21,13 @@
 #include "mainwindow.h"
 #include "main.h"
 #include <QSettings>
+#include <QFile>
+#include <QTextStream>
 
 QTranslator translator;
 QApplication* pApp;
 QString commandLineFile;
+CommonResources* res=0;
 int main(int argc, char *argv[])
 {
     /*
@@ -34,6 +37,8 @@ int main(int argc, char *argv[])
     if(argc>1)commandLineFile=argv[1];
     QApplication a(argc, argv);
     pApp=&a;
+    CommonResources theRes;
+    res=&theRes;
     translator.load("maprx_zh",":/");
     QSettings settings("maprx.ini",QSettings::IniFormat);
     if(settings.value("UI/LANG","en").toString()=="ch")
@@ -49,4 +54,21 @@ std::FILE *fopenQ(const QString& name, const char *mode){
     QByteArray nameLocale=name.toLocal8Bit();
     nameLocale.push_back('\0');
     return std::fopen(nameLocale.data(),mode);
+}
+
+CommonResources::CommonResources(){
+    QFile itemDicResFile(":/text/itemdic.txt");
+    itemDicResFile.open(QIODevice::ReadOnly);
+    QTextStream itemDicRes(&itemDicResFile);
+    itemDictionary.load(itemDicRes);
+    itemDicResFile.close();
+
+    QFile itemImageResFile(":/text/itemimage.txt");
+    itemImageResFile.open(QIODevice::ReadOnly);
+    QTextStream itemImageRes(&itemImageResFile);
+    itemImages.load(QImage(":/image/itemimage.png"),itemImageRes);
+    itemImageResFile.close();
+
+    essenceSheet.load(":/image/Essence.png");
+
 }

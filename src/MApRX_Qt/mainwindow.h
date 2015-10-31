@@ -33,8 +33,7 @@
 #include <memory>
 #include <QAbstractTableModel>
 #include <QStyledItemDelegate>
-#include "itemdictionary.h"
-#include "itemimages.h"
+
 
 namespace Ui {
     class MainWindow;
@@ -188,8 +187,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    ItemDictionary itemDictionary;
-    ItemImages itemImages;
+
     KfPlt plt,bckPlt;
     KfTileSet tiles,bckTiles;
     KfBlockSet blocks;
@@ -202,7 +200,6 @@ public:
     bool showAnimation=true;
     bool showItems=false;
     bool showBackground=false;
-    QPixmap essenceSheet;
 
     int selBlock;
 private slots:
