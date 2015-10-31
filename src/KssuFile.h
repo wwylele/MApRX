@@ -371,6 +371,7 @@ public:
 
     void resizeMap(u16 width,u16 height,Align hAlign,Align vAlign);
 
+    static u8 itemCatagory[256/*species*/];
 };
 
 //#6
@@ -471,6 +472,5 @@ public:
     }
 };
 
-extern u8 itemCatagory[256/*species*/];
 
 #endif

@@ -20,6 +20,7 @@
 
 #include "blockstore.h"
 #include <QPainter>
+#include "main.h"
 BlockStore::BlockStore(QWidget *parent) : QWidget(parent)
 {
 }
@@ -33,16 +34,15 @@ void BlockStore::paintEvent(QPaintEvent *){
     if(pMainWindow->showEssence){
         for(u32 i=0;i<pMainWindow->blocks.blockCount();i++){
             painter.drawPixmap((i%blockStoreColumnCount)*24,(i/blockStoreColumnCount)*24,
-                    pMainWindow->essenceSheet,
+                    res->essenceSheet,
                     (pMainWindow->blocks.getEssences(i)%16)*24,
                     pMainWindow->blocks.getEssences(i)/16*24,24,24);
         }
     }
     else{
-        QImage image(width,height,QImage::Format_ARGB32);
         image.fill(Qt::transparent);
         for(u32 i=0;i<pMainWindow->blocks.blockCount();i++){
-            pMainWindow->blocks[i].draw([this,&image](int x,int y,const Color15& c15){
+            pMainWindow->blocks[i].draw([this](int x,int y,const Color15& c15){
                 u32 c=c15.toARGB32();
                 image.setPixel(x,y,c);
             },pMainWindow->plt,(i%blockStoreColumnCount)*24,(i/blockStoreColumnCount)*24,pMainWindow->tiles);
@@ -70,6 +70,7 @@ void BlockStore::paintEvent(QPaintEvent *){
 void BlockStore::reset(){
     width=blockStoreColumnCount*24;
     height=(pMainWindow->blocks.blockCount()/blockStoreColumnCount+1)*24;
+    image=QImage(width,height,QImage::Format_ARGB32);
     setMinimumSize(width,height);
     resize(width,height);
     curBlock=-1;

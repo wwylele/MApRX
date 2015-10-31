@@ -46,6 +46,7 @@ protected:
     int dragX,dragY;
 #define TRAN_PAT_GRID_SIZE 6
     QImage transparentPattern;
+    QImage image;
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent * event);
     void mousePressEvent(QMouseEvent * event);
