@@ -89,6 +89,13 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayoutB">
      <item>
+      <widget class="QPushButton" name="buttonCheckUpdate">
+       <property name="text">
+        <string>check update...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacerB">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>

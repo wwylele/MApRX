@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     dialogresizemap.cpp \
     itemdictionary.cpp \
     mapview.cpp \
-    itemimages.cpp
+    itemimages.cpp \
+    versionchecker.cpp
 
 TRANSLATIONS = maprx_zh.ts
 
@@ -46,7 +47,8 @@ HEADERS  += mainwindow.h \
     main.h \
     itemdictionary.h \
     mapview.h \
-    itemimages.h
+    itemimages.h \
+    versionchecker.h
 
 FORMS    += mainwindow.ui \
     dialogaboutme.ui \

@@ -26,6 +26,7 @@
 
 QTranslator translator;
 QApplication* pApp;
+VersionChecker* pVerCheck;
 QString commandLineFile;
 CommonResources* res=0;
 int main(int argc, char *argv[])
@@ -37,12 +38,14 @@ int main(int argc, char *argv[])
     if(argc>1)commandLineFile=argv[1];
     QApplication a(argc, argv);
     pApp=&a;
+    pVerCheck=new VersionChecker(pApp);
     CommonResources theRes;
     res=&theRes;
     translator.load("maprx_zh",":/");
     QSettings settings("maprx.ini",QSettings::IniFormat);
     if(settings.value("UI/LANG","en").toString()=="ch")
         a.installTranslator(&translator);
+    pVerCheck->beginCheck(true);
     MainWindow w;
     w.show();
 
@@ -54,6 +57,10 @@ std::FILE *fopenQ(const QString& name, const char *mode){
     QByteArray nameLocale=name.toLocal8Bit();
     nameLocale.push_back('\0');
     return std::fopen(nameLocale.data(),mode);
+}
+
+QString versionToString(int v[4]){
+    return QString("%1.%2.%3.%4").arg(v[0]).arg(v[1]).arg(v[2]).arg(v[3]);
 }
 
 CommonResources::CommonResources(){

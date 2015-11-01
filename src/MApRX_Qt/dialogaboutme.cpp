@@ -29,11 +29,7 @@ DialogAboutMe::DialogAboutMe(QWidget *parent) :
     ui->setupUi(this);
     ui->aboutMeText->setText(
                 "MApRX<br>"
-                "version "+QString("%1.%2.%3.%4")
-                .arg(res->version[0])
-                .arg(res->version[1])
-                .arg(res->version[2])
-                .arg(res->version[3])
+                "version "+versionToString(res->version)
                 +"<br>"
                 "by wwylele<br>"
             #if defined(__DATE__) && defined(__TIME__)
@@ -56,4 +52,9 @@ DialogAboutMe::DialogAboutMe(QWidget *parent) :
 DialogAboutMe::~DialogAboutMe()
 {
     delete ui;
+}
+
+void DialogAboutMe::on_buttonCheckUpdate_clicked()
+{
+    pVerCheck->beginCheck(false);
 }

@@ -27,10 +27,13 @@
 #include <QTranslator>
 #include "itemdictionary.h"
 #include "itemimages.h"
+#include "versionchecker.h"
 std::FILE *fopenQ(const QString& name,const char* mode);
+QString versionToString(int v[4]);
 
 extern QTranslator translator;
 extern QApplication* pApp;
+extern VersionChecker* pVerCheck;
 extern QString commandLineFile;
 
 class CommonResources{
