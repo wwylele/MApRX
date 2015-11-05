@@ -27,7 +27,15 @@
 #include <QLineEdit>
 #include <QLabel>
 
-
+QString ScriptDelegate::scriptText[7]={
+    tr(""),
+    tr("Change block to "),
+    tr("Bind with cell"),//+(%1,%2)
+    tr("Transport to room#"),//+%1, cell(%2,%3)
+    tr("Bind with item#"),//+%1
+    tr("Misc:"),//+ %1, %2
+    tr("Generate Meta Knights:")
+};
 
 ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
     QStyledItemDelegate(parent),
@@ -35,6 +43,51 @@ ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
 {
 
 }
+QString ScriptDelegate::scriptToString(const KfMap::Script& script){
+    switch(script[0]){
+    case 1:
+        return scriptText[1];
+    case 2:{
+        u16 x,y;
+        std::memcpy(&x,script.data()+3,2);
+        std::memcpy(&y,script.data()+5,2);
+        return scriptText[2]+QString("(%1,%2)").arg(x).arg(y);
+    }
+    case 3:{
+        u16 r,x,y;
+        std::memcpy(&r,script.data()+3,2);
+        std::memcpy(&x,script.data()+5,2);
+        std::memcpy(&y,script.data()+7,2);
+        return scriptText[3]+QString("%1, cell(%2,%3)").arg(r).arg(x).arg(y);
+    }
+    case 4:
+        return scriptText[4]+QString::number(script[3]);
+    case 5:{
+
+        QString arg1,arg2;
+        s16 time;
+        std::memcpy(&time,script.data()+3,2);
+        if(time<0){
+            arg1=QString::number(-time);
+            arg2="VOID";
+        }else{
+            arg1=QString::number(time);
+            arg2=QString::number(script[6]);
+        }
+        return scriptText[5]+QString(" %1, %2").arg(arg1,arg2);
+    }
+    case 6:{
+        QString t=scriptText[6];
+        for(int i=0;i<script[3];i++){
+            t+=" #"+QString::number(script[4+2*i]);
+        }
+        return t;
+    }
+    }
+    assert(0);
+    return QString("");
+}
+
 QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/,
                       const QModelIndex &index) const{
     KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
@@ -42,54 +95,24 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
     editor->setBackgroundRole(QPalette::Highlight);
     editor->setAutoFillBackground(true);
     switch(script[0]){
-    case 1:{
+    case 1:case 2:case 4:case 5:case 6:{
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Change block to"),editor));
-        layout->addWidget(new QLineEdit(editor));
-        editor->setLayout(layout);
-        break;
-    }
-    case 2:{
-
-        QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Bind with cell"),editor));
+        layout->addWidget(new QLabel(scriptText[script[0]],editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
     }
     case 3:{
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Transport to room"),editor));
+        layout->addWidget(new QLabel(scriptText[3],editor));
         layout->addWidget(new QLineEdit(editor));
         layout->addWidget(new QLabel(tr(",cell"),editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
     }
-    case 4:{
-
-        QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Bind with item"),editor));
-        layout->addWidget(new QLineEdit(editor));
-        editor->setLayout(layout);
-        break;
-    }
-    case 5:{
-        QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Timer"),editor));
-        layout->addWidget(new QLineEdit(editor));
-        editor->setLayout(layout);
-        break;
-    }
-    case 6:{
-        QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Generate Meta Knights"),editor));
-        layout->addWidget(new QLineEdit(editor));
-        editor->setLayout(layout);
-        break;
-    }
     default:
-        break;
+        assert(0);
     }
     return editor;
 }
@@ -279,48 +302,8 @@ void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
             painter->drawPixmap(dx+width+i*30+3,dy+3,24,24,QPixmap::fromImage(image));
         }
         break;}
-    case 2:{
-        u16 x,y;
-        std::memcpy(&x,script.data()+3,2);
-        std::memcpy(&y,script.data()+5,2);
-        QString t=scriptText[2].arg(x).arg(y);
-        width=option.fontMetrics.width(t);
-        painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
-        break;}
-    case 3:{
-        u16 r,x,y;
-        std::memcpy(&r,script.data()+3,2);
-        std::memcpy(&x,script.data()+5,2);
-        std::memcpy(&y,script.data()+7,2);
-        QString t=scriptText[3].arg(r).arg(x).arg(y);
-        width=option.fontMetrics.width(t);
-        painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
-        break;}
-    case 4:{
-        QString t=scriptText[4].arg(script[3]);
-        width=option.fontMetrics.width(t);
-        painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
-        break;}
-    case 5:{
-        QString arg1,arg2,t;
-        s16 time;
-        std::memcpy(&time,script.data()+3,2);
-        if(time<0){
-            arg1=QString::number(-time);
-            arg2="VOID";
-        }else{
-            arg1=QString::number(time);
-            arg2=QString::number(script[6]);
-        }
-        t=scriptText[5].arg(arg1,arg2);
-        width=option.fontMetrics.width(t);
-        painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
-        break;}
-    case 6:{
-        QString t=scriptText[6];
-        for(int i=0;i<script[3];i++){
-            t+=" #"+QString::number(script[4+2*i]);
-        }
+    case 2:case 3:case 4:case 5:case 6:{
+        QString t=scriptToString(script);
         width=option.fontMetrics.width(t);
         painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
         break;}
@@ -335,43 +318,9 @@ QSize ScriptDelegate::sizeHint(const QStyleOptionViewItem &option,
     case 1:
         width=option.fontMetrics.width(scriptText[1])+30*script[3];
         break;
-    case 2:{
-        u16 x,y;
-        std::memcpy(&x,script.data()+3,2);
-        std::memcpy(&y,script.data()+5,2);
-        width=option.fontMetrics.width(scriptText[2].arg(x).arg(y));
-        break;}
-    case 3:{
-        u16 r,x,y;
-        std::memcpy(&r,script.data()+3,2);
-        std::memcpy(&x,script.data()+5,2);
-        std::memcpy(&y,script.data()+7,2);
-        width=option.fontMetrics.width(scriptText[3].arg(r).arg(x).arg(y));
-        break;}
-    case 4:
-        width=option.fontMetrics.width(scriptText[4].arg(script[3]));
+    case 2:case 3:case 4:case 5:case 6:
+        width=option.fontMetrics.width(scriptToString(script));
         break;
-    case 5:{
-        QString arg1,arg2,t;
-        s16 time;
-        std::memcpy(&time,script.data()+3,2);
-        if(time<0){
-            arg1=QString::number(-time);
-            arg2="VOID";
-        }else{
-            arg1=QString::number(time);
-            arg2=QString::number(script[6]);
-        }
-        t=scriptText[5].arg(arg1,arg2);
-        width=option.fontMetrics.width(t);
-        break;}
-    case 6:{
-        QString t=scriptText[6];
-        for(int i=0;i<script[3];i++){
-            t+=" #"+QString::number(script[4+2*i]);
-        }
-        width=option.fontMetrics.width(t);
-        break;}
     }
 
     return QSize(width,30);
