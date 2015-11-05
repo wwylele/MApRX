@@ -36,7 +36,7 @@ class ScriptDelegate:public QStyledItemDelegate{
 private:
     MainWindow* pMainWindow;
 
-    static QString scriptText[7];
+    static QString scriptText[8];
     static QString scriptToString(const KfMap::Script& script);
 public:
     ScriptDelegate(MainWindow* pMainWindow,QWidget *parent = 0);
@@ -78,6 +78,8 @@ private slots:
     void on_actionAddScript5_triggered();
 
     void on_actionAddScript6_triggered();
+
+    void on_actionAddScript5Door_triggered();
 
 private:
     Ui::DialogScripts *ui;

@@ -27,14 +27,15 @@
 #include <QLineEdit>
 #include <QLabel>
 
-QString ScriptDelegate::scriptText[7]={
+QString ScriptDelegate::scriptText[8]={
     tr(""),
     tr("Change block to "),
-    tr("Bind with cell"),//+(%1,%2)
-    tr("Transport to room#"),//+%1, cell(%2,%3)
-    tr("Bind with item#"),//+%1
-    tr("Misc:"),//+ %1, %2
-    tr("Generate Meta Knights:")
+    tr("Bind with cell"),
+    tr("Transport to room#"),
+    tr("Bind with item#"),
+    tr("Misc:"),
+    tr("Generate Meta Knights:"),
+    tr("Special Door: ")// for code=5 special door
 };
 
 ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
@@ -64,17 +65,14 @@ QString ScriptDelegate::scriptToString(const KfMap::Script& script){
         return scriptText[4]+QString::number(script[3]);
     case 5:{
 
-        QString arg1,arg2;
         s16 time;
         std::memcpy(&time,script.data()+3,2);
         if(time<0){
-            arg1=QString::number(-time);
-            arg2="VOID";
+            return scriptText[7]+QString(" %1").arg(-time);
         }else{
-            arg1=QString::number(time);
-            arg2=QString::number(script[6]);
+            return scriptText[5]+QString(" %1, %2").arg(time).arg(script[6]);
         }
-        return scriptText[5]+QString(" %1, %2").arg(arg1,arg2);
+
     }
     case 6:{
         QString t=scriptText[6];
@@ -97,7 +95,11 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
     switch(script[0]){
     case 1:case 2:case 4:case 5:case 6:{
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(scriptText[script[0]],editor));
+        int scriptTextI;
+        if(script[0]==5 && script.size()==5){
+            scriptTextI=7;
+        }else scriptTextI=5;
+        layout->addWidget(new QLabel(scriptText[scriptTextI],editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
@@ -248,10 +250,11 @@ void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                 ->text();
         QStringList strL=str.split(',');
         bool ok;
-        if(strL.size()>1){
+        if(script.size()==7/*strL.size()>1*/){
+            if(strL.size()<2)return;
             u16 t=strL[0].toUShort(&ok);
             if(!ok||t>0x7FFF)return;
-            script.resize(7);
+            //script.resize(7);
             memcpy(script.data()+3,&t,2);
             script[5]=0;
             t=strL[1].toUShort(&ok);
@@ -262,7 +265,7 @@ void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
             s16 time;
             if(!ok||t>0x7FFF || t==0)return;
             time=-t;
-            script.resize(5);
+            //script.resize(5);
             memcpy(script.data()+3,&time,2);
         }
         break;
@@ -350,6 +353,7 @@ DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWind
     menu.addAction(ui->actionAddScript3);
     menu.addAction(ui->actionAddScript4);
     menu.addAction(ui->actionAddScript5);
+    menu.addAction(ui->actionAddScript5Door);
     menu.addAction(ui->actionAddScript6);
 
 }
@@ -409,10 +413,15 @@ void DialogScripts::on_actionAddScript4_triggered()
 
 void DialogScripts::on_actionAddScript5_triggered()
 {
-    addScript(KfMap::Script{5,0xCC,0xCC,0xFF,0xFF});
+    addScript(KfMap::Script{5,0xCC,0xCC,0x0,0x0,0x0,0x0});
 }
 
 void DialogScripts::on_actionAddScript6_triggered()
 {
     addScript(KfMap::Script{6,0xCC,0xCC,1,0,0});
+}
+
+void DialogScripts::on_actionAddScript5Door_triggered()
+{
+    addScript(KfMap::Script{5,0xCC,0xCC,0xff,0xff});
 }
