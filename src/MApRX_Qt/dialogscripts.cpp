@@ -344,6 +344,7 @@ DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWind
         ui->scriptListWidget->addItem(pItem);
     }
 
+    ui->buttonAdd->setMenu(&menu);
     menu.addAction(ui->actionAddScript1);
     menu.addAction(ui->actionAddScript2);
     menu.addAction(ui->actionAddScript3);
@@ -377,12 +378,7 @@ void DialogScripts::on_buttonRemove_clicked()
                 ui->scriptListWidget->currentRow());
 }
 
-void DialogScripts::on_buttonAdd_clicked()
-{
 
-
-    menu.exec(ui->buttonAdd->mapToGlobal(ui->buttonAdd->rect().bottomLeft()));
-}
 void DialogScripts::addScript(const KfMap::Script& script){
     QListWidgetItem *pItem=new QListWidgetItem();
     pItem->setData(Qt::DisplayRole,QVariant::fromValue

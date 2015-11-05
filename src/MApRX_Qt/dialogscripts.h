@@ -67,8 +67,6 @@ private slots:
 
     void on_buttonRemove_clicked();
 
-    void on_buttonAdd_clicked();
-
     void on_actionAddScript1_triggered();
 
     void on_actionAddScript2_triggered();
