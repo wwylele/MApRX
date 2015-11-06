@@ -78,12 +78,17 @@
   </action>
   <action name="actionAddScript5">
    <property name="text">
-    <string>Add timer</string>
+    <string>Add misc</string>
    </property>
   </action>
   <action name="actionAddScript6">
    <property name="text">
     <string>Add Meta Knights generator</string>
+   </property>
+  </action>
+  <action name="actionAddScript5Door">
+   <property name="text">
+    <string>Add special door</string>
    </property>
   </action>
  </widget>

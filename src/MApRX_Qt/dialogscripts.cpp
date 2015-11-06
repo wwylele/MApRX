@@ -25,9 +25,28 @@
 #include <QImage>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QComboBox>
 #include <QLabel>
 
+QString ScriptDelegate::scriptText[8]={
+    "Error",
+    tr(" - Change block to "),
+    tr(" - Bind with cell"),
+    tr(" - Transport to room#"),
+    tr(" - Bind with item#"),
+    tr(" - Misc:"),
+    tr(" - Generate Meta Knights:"),
+    tr(" - Special Door: ")// for code=5 special door
+};
 
+QString ScriptDelegate::specialDoorText[5]={
+    "Error",
+    tr("Goal"),
+    tr("Save Point"),
+    tr("The Arena"),
+    tr("Hidden"),
+
+};
 
 ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
     QStyledItemDelegate(parent),
@@ -35,6 +54,48 @@ ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
 {
 
 }
+QString ScriptDelegate::scriptToString(const KfMap::Script& script){
+    switch(script[0]){
+    case 1:
+        return scriptText[1];
+    case 2:{
+        u16 x,y;
+        std::memcpy(&x,script.data()+3,2);
+        std::memcpy(&y,script.data()+5,2);
+        return scriptText[2]+QString("(%1,%2)").arg(x).arg(y);
+    }
+    case 3:{
+        u16 r,x,y;
+        std::memcpy(&r,script.data()+3,2);
+        std::memcpy(&x,script.data()+5,2);
+        std::memcpy(&y,script.data()+7,2);
+        return scriptText[3]+QString("%1, cell(%2,%3)").arg(r).arg(x).arg(y);
+    }
+    case 4:
+        return scriptText[4]+QString::number(script[3]);
+    case 5:{
+
+        s16 time;
+        std::memcpy(&time,script.data()+3,2);
+        if(time<0){
+            return scriptText[7]+specialDoorText[-time];
+        }else{
+            return scriptText[5]+QString(" %1, %2").arg(time).arg(script[6]);
+        }
+
+    }
+    case 6:{
+        QString t=scriptText[6];
+        for(int i=0;i<script[3];i++){
+            t+=" #"+QString::number(script[4+2*i]);
+        }
+        return t;
+    }
+    }
+    assert(0);
+    return QString("");
+}
+
 QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/,
                       const QModelIndex &index) const{
     KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
@@ -42,54 +103,47 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
     editor->setBackgroundRole(QPalette::Highlight);
     editor->setAutoFillBackground(true);
     switch(script[0]){
-    case 1:{
+    case 1:case 2:case 4:case 5:case 6:{
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Change block to"),editor));
-        layout->addWidget(new QLineEdit(editor));
-        editor->setLayout(layout);
-        break;
-    }
-    case 2:{
+        layout->setMargin(0);
+        int scriptTextI;
+        if(script[0]==5 && script.size()==5){
+            scriptTextI=7;
+        }else scriptTextI=script[0];
+        layout->addWidget(new QLabel(scriptText[scriptTextI],editor));
+        if(script[0]==5 && script.size()==5){
+            QComboBox *combo=new QComboBox(editor);
+            for(int i=1;i<5;i++){
+                combo->addItem(specialDoorText[i],QVariant((int)i));
+            }
+            layout->addWidget(combo);
 
-        QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Bind with cell"),editor));
-        layout->addWidget(new QLineEdit(editor));
+            //Immediately commit data from the combobox
+            //TODO: help me rewrite this ugly stuff
+            connect(combo,&QComboBox::currentTextChanged,
+                    [=](){
+                emit commitData(editor);
+                emit closeEditor(editor);
+            });
+        }else{
+            layout->addWidget(new QLineEdit(editor));
+        }
+
         editor->setLayout(layout);
         break;
     }
     case 3:{
         QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Transport to room"),editor));
+        layout->setMargin(0);
+        layout->addWidget(new QLabel(scriptText[3],editor));
         layout->addWidget(new QLineEdit(editor));
         layout->addWidget(new QLabel(tr(",cell"),editor));
         layout->addWidget(new QLineEdit(editor));
         editor->setLayout(layout);
         break;
     }
-    case 4:{
-
-        QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Bind with item"),editor));
-        layout->addWidget(new QLineEdit(editor));
-        editor->setLayout(layout);
-        break;
-    }
-    case 5:{
-        QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Timer"),editor));
-        layout->addWidget(new QLineEdit(editor));
-        editor->setLayout(layout);
-        break;
-    }
-    case 6:{
-        QHBoxLayout *layout=new QHBoxLayout();
-        layout->addWidget(new QLabel(tr("Generate Meta Knights"),editor));
-        layout->addWidget(new QLineEdit(editor));
-        editor->setLayout(layout);
-        break;
-    }
     default:
-        break;
+        assert(0);
     }
     return editor;
 }
@@ -139,17 +193,21 @@ void ScriptDelegate::setEditorData(QWidget *editor, const QModelIndex &index) co
         break;
     }
     case 5:{
-        QString str;
+
         s16 time;
         std::memcpy(&time,script.data()+3,2);
         if(time<0){
-            str=QString::number(-time);
+            (qobject_cast<QComboBox*>(
+                editor->layout()->itemAt(1)->widget()))
+                ->setCurrentIndex(-time-1);
         }else{
+            QString str;
             str=QString("%1,%2").arg(time).arg(script[6]);
+            (qobject_cast<QLineEdit*>(
+                 editor->layout()->itemAt(1)->widget()))
+                 ->setText(str);
         }
-        (qobject_cast<QLineEdit*>(
-             editor->layout()->itemAt(1)->widget()))
-             ->setText(str);
+
         break;
     }
     default:break;
@@ -220,26 +278,28 @@ void ScriptDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 
     }
     case 5:{
-        QString str=(qobject_cast<QLineEdit*>(
-                editor->layout()->itemAt(1)->widget()))
-                ->text();
-        QStringList strL=str.split(',');
-        bool ok;
-        if(strL.size()>1){
+
+
+        if(script.size()==7/*strL.size()>1*/){
+            QString str=(qobject_cast<QLineEdit*>(
+                    editor->layout()->itemAt(1)->widget()))
+                    ->text();
+            QStringList strL=str.split(',');
+            bool ok;
+            if(strL.size()<2)return;
             u16 t=strL[0].toUShort(&ok);
             if(!ok||t>0x7FFF)return;
-            script.resize(7);
             memcpy(script.data()+3,&t,2);
             script[5]=0;
             t=strL[1].toUShort(&ok);
             if(!ok||t>0xFF)return;
             script[6]=t;
         }else{
-            u16 t=strL[0].toUShort(&ok);
+            int t=(qobject_cast<QComboBox*>(
+                       editor->layout()->itemAt(1)->widget()))
+                       ->currentData().toInt();
             s16 time;
-            if(!ok||t>0x7FFF || t==0)return;
             time=-t;
-            script.resize(5);
             memcpy(script.data()+3,&time,2);
         }
         break;
@@ -279,48 +339,8 @@ void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
             painter->drawPixmap(dx+width+i*30+3,dy+3,24,24,QPixmap::fromImage(image));
         }
         break;}
-    case 2:{
-        u16 x,y;
-        std::memcpy(&x,script.data()+3,2);
-        std::memcpy(&y,script.data()+5,2);
-        QString t=scriptText[2].arg(x).arg(y);
-        width=option.fontMetrics.width(t);
-        painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
-        break;}
-    case 3:{
-        u16 r,x,y;
-        std::memcpy(&r,script.data()+3,2);
-        std::memcpy(&x,script.data()+5,2);
-        std::memcpy(&y,script.data()+7,2);
-        QString t=scriptText[3].arg(r).arg(x).arg(y);
-        width=option.fontMetrics.width(t);
-        painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
-        break;}
-    case 4:{
-        QString t=scriptText[4].arg(script[3]);
-        width=option.fontMetrics.width(t);
-        painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
-        break;}
-    case 5:{
-        QString arg1,arg2,t;
-        s16 time;
-        std::memcpy(&time,script.data()+3,2);
-        if(time<0){
-            arg1=QString::number(-time);
-            arg2="VOID";
-        }else{
-            arg1=QString::number(time);
-            arg2=QString::number(script[6]);
-        }
-        t=scriptText[5].arg(arg1,arg2);
-        width=option.fontMetrics.width(t);
-        painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
-        break;}
-    case 6:{
-        QString t=scriptText[6];
-        for(int i=0;i<script[3];i++){
-            t+=" #"+QString::number(script[4+2*i]);
-        }
+    case 2:case 3:case 4:case 5:case 6:{
+        QString t=scriptToString(script);
         width=option.fontMetrics.width(t);
         painter->drawText(dx,dy,width,30,Qt::AlignCenter,t);
         break;}
@@ -335,43 +355,9 @@ QSize ScriptDelegate::sizeHint(const QStyleOptionViewItem &option,
     case 1:
         width=option.fontMetrics.width(scriptText[1])+30*script[3];
         break;
-    case 2:{
-        u16 x,y;
-        std::memcpy(&x,script.data()+3,2);
-        std::memcpy(&y,script.data()+5,2);
-        width=option.fontMetrics.width(scriptText[2].arg(x).arg(y));
-        break;}
-    case 3:{
-        u16 r,x,y;
-        std::memcpy(&r,script.data()+3,2);
-        std::memcpy(&x,script.data()+5,2);
-        std::memcpy(&y,script.data()+7,2);
-        width=option.fontMetrics.width(scriptText[3].arg(r).arg(x).arg(y));
-        break;}
-    case 4:
-        width=option.fontMetrics.width(scriptText[4].arg(script[3]));
+    case 2:case 3:case 4:case 5:case 6:
+        width=option.fontMetrics.width(scriptToString(script));
         break;
-    case 5:{
-        QString arg1,arg2,t;
-        s16 time;
-        std::memcpy(&time,script.data()+3,2);
-        if(time<0){
-            arg1=QString::number(-time);
-            arg2="VOID";
-        }else{
-            arg1=QString::number(time);
-            arg2=QString::number(script[6]);
-        }
-        t=scriptText[5].arg(arg1,arg2);
-        width=option.fontMetrics.width(t);
-        break;}
-    case 6:{
-        QString t=scriptText[6];
-        for(int i=0;i<script[3];i++){
-            t+=" #"+QString::number(script[4+2*i]);
-        }
-        width=option.fontMetrics.width(t);
-        break;}
     }
 
     return QSize(width,30);
@@ -395,11 +381,13 @@ DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWind
         ui->scriptListWidget->addItem(pItem);
     }
 
+    ui->buttonAdd->setMenu(&menu);
     menu.addAction(ui->actionAddScript1);
     menu.addAction(ui->actionAddScript2);
     menu.addAction(ui->actionAddScript3);
     menu.addAction(ui->actionAddScript4);
     menu.addAction(ui->actionAddScript5);
+    menu.addAction(ui->actionAddScript5Door);
     menu.addAction(ui->actionAddScript6);
 
 }
@@ -428,12 +416,7 @@ void DialogScripts::on_buttonRemove_clicked()
                 ui->scriptListWidget->currentRow());
 }
 
-void DialogScripts::on_buttonAdd_clicked()
-{
 
-
-    menu.exec(ui->buttonAdd->mapToGlobal(ui->buttonAdd->rect().bottomLeft()));
-}
 void DialogScripts::addScript(const KfMap::Script& script){
     QListWidgetItem *pItem=new QListWidgetItem();
     pItem->setData(Qt::DisplayRole,QVariant::fromValue
@@ -464,10 +447,15 @@ void DialogScripts::on_actionAddScript4_triggered()
 
 void DialogScripts::on_actionAddScript5_triggered()
 {
-    addScript(KfMap::Script{5,0xCC,0xCC,0xFF,0xFF});
+    addScript(KfMap::Script{5,0xCC,0xCC,0x0,0x0,0x0,0x0});
 }
 
 void DialogScripts::on_actionAddScript6_triggered()
 {
     addScript(KfMap::Script{6,0xCC,0xCC,1,0,0});
+}
+
+void DialogScripts::on_actionAddScript5Door_triggered()
+{
+    addScript(KfMap::Script{5,0xCC,0xCC,0xff,0xff});
 }
