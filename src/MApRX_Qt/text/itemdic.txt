@@ -373,27 +373,27 @@ P.-
 0.-
 +130.Maxim Tomato
 0.-
-+131.Food
++131.Food 1
 0.-
-+132.Food
++132.Food 2
 0.-
-+133.Food
++133.Food 3
 0.-
-+134.Food
++134.Food 3 with gravity
 0.-
-+136.1UP
++136.1UP with gravity
 0.-
-+137.Invincibility Candy
++137.Invincibility Candy with gravity
 0.-
-+138.Maxim Tomato
++138.Maxim Tomato with gravity
 0.-
-+139.Food
++139.Food 1 with gravity
 0.-
-+140.Food
++140.Food 2 with gravity
 0.-
-+141.Food
++141.Food 3 with gravity
 0.-
-+143.Maxim Tomato
++143.Maxim Tomato with gravity
 0.-
 +144.Copy Essence 1
 P.-
