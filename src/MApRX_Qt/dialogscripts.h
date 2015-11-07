@@ -35,15 +35,10 @@ class ScriptDelegate:public QStyledItemDelegate{
     Q_OBJECT
 private:
     MainWindow* pMainWindow;
-    const QString scriptText[7]={
-        tr(""),
-        tr(" - Change block to "),
-        tr(" - Bind with cell(%1,%2)"),
-        tr(" - Transport to room#%1, cell(%2,%3)"),
-        tr(" - Bind with item#%1"),
-        tr(" - Timer: %1, %2"),
-        tr(" - Generate Meta Knights:")
-    };
+
+    static QString scriptText[8];
+    static QString specialDoorText[5];
+    static QString scriptToString(const KfMap::Script& script);
 public:
     ScriptDelegate(MainWindow* pMainWindow,QWidget *parent = 0);
 
@@ -73,8 +68,6 @@ private slots:
 
     void on_buttonRemove_clicked();
 
-    void on_buttonAdd_clicked();
-
     void on_actionAddScript1_triggered();
 
     void on_actionAddScript2_triggered();
@@ -86,6 +79,8 @@ private slots:
     void on_actionAddScript5_triggered();
 
     void on_actionAddScript6_triggered();
+
+    void on_actionAddScript5Door_triggered();
 
 private:
     Ui::DialogScripts *ui;

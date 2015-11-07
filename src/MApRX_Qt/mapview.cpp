@@ -87,6 +87,71 @@ void MapView::paintEvent(QPaintEvent *){
 
 
     }
+    auto drawBinding=[&painter,this](){
+        QColor cSrc(0,255,0),cDst(255,0,255);
+        QBrush nullBrush(Qt::transparent);
+
+        QPen penBSrc(cSrc),penBDst(cDst);
+        painter.setBrush(nullBrush);
+        auto drawLink=[&painter,cSrc,cDst]
+                (int x1,int y1,int x2,int y2){
+            QLinearGradient brushBLinkG(x1,y1,x2,y2);
+            brushBLinkG.setColorAt(0,cSrc);
+            brushBLinkG.setColorAt(1,cDst);
+            painter.setPen(QPen(QBrush(brushBLinkG),1));
+            painter.drawLine(x1,y1,x2,y2);
+        };
+
+        for(u16 x=0;x<pMainWindow->map.metaData.width;x++)
+            for(u16 y=0;y<pMainWindow->map.metaData.height;y++)
+                for(KfMap::Script& s:pMainWindow->map.cellAt(x,y).scripts)
+                    if(s[0]==2){
+                        u16 dx,dy;
+                        memcpy(&dx,s.data()+3,2);
+                        memcpy(&dy,s.data()+5,2);
+                        painter.setPen(penBSrc);
+                        painter.drawRect(x*24+8,y*24+8,8,8);
+                        painter.setPen(penBDst);
+                        painter.drawRect(dx*24+8,dy*24+8,8,8);
+                        drawLink(x*24+12,y*24+12,
+                                 dx*24+12,dy*24+12);
+
+                    }else if(s[0]==4){
+                        KfMap::RipeItem& item=pMainWindow->map.itemAt(s[3]);
+                        painter.setPen(penBSrc);
+                        painter.drawRect(x*24+8,y*24+8,8,8);
+                        painter.setPen(penBDst);
+                        painter.drawEllipse(QPointF(item.basic.x,item.basic.y),20,20);
+                        drawLink(x*24+12,y*24+12,
+                                 item.basic.x,item.basic.y);
+                    }
+
+        for(u8 i=0;i<pMainWindow->map.metaData.itemCount;i++){
+            KfMap::RipeItem ii=pMainWindow->map.itemAt(i);
+            for(KfMap::Script& s:ii.scripts)
+                if(s[0]==2){
+                    u16 dx,dy;
+                    memcpy(&dx,s.data()+3,2);
+                    memcpy(&dy,s.data()+5,2);
+                    painter.setPen(penBSrc);
+                    painter.drawEllipse(QPointF(ii.basic.x,ii.basic.y),20,20);
+                    painter.setPen(penBDst);
+                    painter.drawRect(dx*24+8,dy*24+8,8,8);
+                    drawLink(ii.basic.x,ii.basic.y,
+                             dx*24+12,dy*24+12);
+
+                }else if(s[0]==4){
+                    KfMap::RipeItem& item=pMainWindow->map.itemAt(s[3]);
+                    painter.setPen(penBSrc);
+                    painter.drawEllipse(QPointF(ii.basic.x,ii.basic.y),20,20);
+                    painter.setPen(penBDst);
+                    painter.drawEllipse(QPointF(item.basic.x,item.basic.y),20,20);
+                    drawLink(ii.basic.x,ii.basic.y,
+                             item.basic.x,item.basic.y);
+                }
+        }
+    };
+
     if(pMainWindow->showScript){
         if(!pMainWindow->showItems){
             QBrush brushScript(QColor(255,0,255,100),Qt::SolidPattern);
@@ -96,10 +161,16 @@ void MapView::paintEvent(QPaintEvent *){
                         painter.fillRect(x*24,y*24,24,24,brushScript);
                     }
                 }
+            drawBinding();
         }
 
     }
     if(pMainWindow->showItems){
+        if(pMainWindow->showScript){
+            drawBinding();
+
+        }
+        painter.setPen(QColor(Qt::black));
 
         for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
             KfMap::RipeItem &item=pMainWindow->map.itemAt(i);
