@@ -220,6 +220,11 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
             }
 
         }
+        //issue#22, bad imp, TODO
+        connect(combo,&QComboBox::currentTextChanged,[=](){
+            emit commitData(combo);
+            emit closeEditor(combo);
+        });
         return combo;
     }else if(index.column()==1){
         QComboBox* combo=new QComboBox(parent);
@@ -230,6 +235,11 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
                            arg(res->itemDictionary.entries[species].behaviorName[p]),
                   QVariant(p));
         }
+        //issue#22, bad imp, TODO
+        connect(combo,&QComboBox::currentTextChanged,[=](){
+            emit commitData(combo);
+            emit closeEditor(combo);
+        });
         return combo;
     }
     else return QStyledItemDelegate::createEditor(parent,option,index);
