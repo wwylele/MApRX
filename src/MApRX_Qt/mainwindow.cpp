@@ -682,7 +682,7 @@ void MainWindow::on_buttonItemUp_clicked()
     if(!selection.isValid())return;
     u8 selItem=selection.row();
     if(selItem==0)return;
-    if(selItem>=map.metaData.itemCount)return;
+    if(selItem>=map.getItemCount())return;
     MoSwapItem mo(selItem-1);
     mo.toolTip=QString(tr("Move up Item#%1")).arg(selItem);
     doOperation(&mo);
@@ -696,8 +696,8 @@ void MainWindow::on_buttonItemDown_clicked()
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
-    if(selItem==map.metaData.itemCount-1)return;
-    if(selItem>=map.metaData.itemCount)return;
+    if(selItem==map.getItemCount()-1)return;
+    if(selItem>=map.getItemCount())return;
     MoSwapItem mo(selItem);
     mo.toolTip=QString(tr("Move down Item#%1")).arg(selItem);
     doOperation(&mo);
@@ -711,7 +711,7 @@ void MainWindow::on_buttonItemDelete_clicked()
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
-    if(selItem>=map.metaData.itemCount)return;
+    if(selItem>=map.getItemCount())return;
     MoDeleteItem mo(selItem);
     mo.toolTip=QString(tr("Remove Item#%1")).arg(selItem);
     doOperation(&mo);
@@ -726,13 +726,13 @@ void MainWindow::on_buttonItemNew_clicked()
     item.basic.x=(tx>=0?tx:0);
     int ty=(ui->mapViewScrollArea->verticalScrollBar()->value()+size.height()/2);
     item.basic.y=(ty>=0?ty:0);
-    if(item.basic.x>map.metaData.width*24)item.basic.x=map.metaData.width*24;
-    if(item.basic.y>map.metaData.height*24)item.basic.y=map.metaData.height*24;
-    MoNewItem mo(map.metaData.itemCount,item);
+    if(item.basic.x>map.getWidth()*24)item.basic.x=map.getWidth()*24;
+    if(item.basic.y>map.getHeight()*24)item.basic.y=map.getHeight()*24;
+    MoNewItem mo(map.getItemCount(),item);
     mo.toolTip=tr("Add Item");
     doOperation(&mo);
     ui->itemTable->setCurrentIndex(itemTableModal.getIndex(
-                                       map.metaData.itemCount-1,0));
+                                       map.getItemCount()-1,0));
 }
 
 void MainWindow::on_itemTable_clicked(const QModelIndex &index)
@@ -761,7 +761,7 @@ void MainWindow::on_actionDiscardChanges_triggered(){
 }
 void MainWindow::on_actionResizeMap_triggered(){
     if(!map.isLoaded())return;
-    DialogResizeMap dlg(map.metaData.width,map.metaData.height);
+    DialogResizeMap dlg(map.getWidth(),map.getHeight());
     if(dlg.exec()!=QDialog::Accepted)return;
     MoResizeMap mo(dlg.mapWidth,dlg.mapHeight,dlg.hAlign,dlg.vAlign);
     mo.toolTip=tr("Resize Map");
@@ -773,7 +773,7 @@ void MainWindow::on_actionSaveToImage_triggered(){
         "",
         "PNG(*.png);;BMP(*.bmp)");
     if(fileName==QString::null)return;
-    QImage image(map.metaData.width*24,map.metaData.height*24,QImage::Format_ARGB32);
+    QImage image(map.getWidth()*24,map.getHeight()*24,QImage::Format_ARGB32);
     image.fill(Qt::transparent);
     map.draw([&image](int x,int y,const Color15& c){
         image.setPixel(x,y,c.toARGB32());

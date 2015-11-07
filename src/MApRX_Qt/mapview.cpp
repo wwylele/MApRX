@@ -102,8 +102,8 @@ void MapView::paintEvent(QPaintEvent *){
             painter.drawLine(x1,y1,x2,y2);
         };
 
-        for(u16 x=0;x<pMainWindow->map.metaData.width;x++)
-            for(u16 y=0;y<pMainWindow->map.metaData.height;y++)
+        for(u16 x=0;x<pMainWindow->map.getWidth();x++)
+            for(u16 y=0;y<pMainWindow->map.getHeight();y++)
                 for(KfMap::Script& s:pMainWindow->map.cellAt(x,y).scripts)
                     if(s[0]==2){
                         u16 dx,dy;
@@ -126,7 +126,7 @@ void MapView::paintEvent(QPaintEvent *){
                                  item.basic.x,item.basic.y);
                     }
 
-        for(u8 i=0;i<pMainWindow->map.metaData.itemCount;i++){
+        for(u8 i=0;i<pMainWindow->map.getItemCount();i++){
             KfMap::RipeItem ii=pMainWindow->map.itemAt(i);
             for(KfMap::Script& s:ii.scripts)
                 if(s[0]==2){
@@ -172,7 +172,7 @@ void MapView::paintEvent(QPaintEvent *){
         }
         painter.setPen(QColor(Qt::black));
 
-        for(u32 i=0;i<pMainWindow->map.metaData.itemCount;i++){
+        for(u32 i=0;i<pMainWindow->map.getItemCount();i++){
             KfMap::RipeItem &item=pMainWindow->map.itemAt(i);
             u8 species=item.basic.species();
             ItemImages::ItemImage& image=res->itemImages.images[species];
@@ -194,7 +194,7 @@ void MapView::paintEvent(QPaintEvent *){
 
         }
         if(curItem!=-1){
-            if(curItem>=pMainWindow->map.metaData.itemCount){
+            if(curItem>=pMainWindow->map.getItemCount()){
                 curItem=-1;
             }else{
                 int x,y;
@@ -227,8 +227,8 @@ void MapView::paintEvent(QPaintEvent *){
 }
 
 void MapView::reset(){
-    width=pMainWindow->map.metaData.width*24;
-    height=pMainWindow->map.metaData.height*24;
+    width=pMainWindow->map.getWidth()*24;
+    height=pMainWindow->map.getHeight()*24;
     setMinimumSize(width,height);
     resize(width,height);
     image=QImage(width,height,QImage::Format_ARGB32);
@@ -262,16 +262,16 @@ void MapView::mouseMoveEvent(QMouseEvent * event){
         if(itemShaked){
             dragX=event->x();
             dragY=event->y();
-            dragX=std::min(std::max(0,dragX),pMainWindow->map.metaData.width*24);
-            dragY=std::min(std::max(0,dragY),pMainWindow->map.metaData.height*24);
+            dragX=std::min(std::max(0,dragX),pMainWindow->map.getWidth()*24);
+            dragY=std::min(std::max(0,dragY),pMainWindow->map.getHeight()*24);
             update();
         }
 
     }
     else if(!pMainWindow->showItems){
         curItem=-1;
-        if(event->x()>pMainWindow->map.metaData.width*24||
-           event->y()>pMainWindow->map.metaData.height*24||
+        if(event->x()>pMainWindow->map.getWidth()*24||
+           event->y()>pMainWindow->map.getHeight()*24||
                 event->x()<0||event->y()<0){
             curX=curY=-1;
             emit showStatusTip("");
@@ -284,7 +284,7 @@ void MapView::mouseMoveEvent(QMouseEvent * event){
 
     }else{
         curX=curY=-1;
-        for(int i=pMainWindow->map.metaData.itemCount;i>=0;--i){
+        for(int i=pMainWindow->map.getItemCount();i>=0;--i){
             KfMap::RipeItem &item=pMainWindow->map.itemAt(i);
             ItemImages::ItemImage image=res->itemImages.images[item.basic.species()];
             QRect rect;
@@ -343,7 +343,7 @@ void MapView::mousePressEvent(QMouseEvent* event){
         }
 
     }else{
-        if(curItem!=-1 && curItem<pMainWindow->map.metaData.itemCount){
+        if(curItem!=-1 && curItem<pMainWindow->map.getItemCount()){
             if(event->button()==Qt::LeftButton){
                 emit selectItem(curItem);
                 grabKeyboard();

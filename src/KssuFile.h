@@ -263,8 +263,8 @@ public:
     u8* generateFile(u32 *length);
 
     struct MetaData_Struct{
-        u16 width;
-        u16 height;
+        u16 width; // Should not access directly
+        u16 height; // Should not access directly
         u16 clipTop;
         u16 clipBottom;
         u16 clipLeft;
@@ -275,7 +275,7 @@ public:
         s16 bckSpeedVert;
         u8 globalEffect;
         u8 bgm;
-        u8 itemCount;
+        u8 itemCount; // Should not access directly
         u8 itemPlts[5];
     }metaData;
     assert_size(MetaData_Struct,28);
@@ -307,6 +307,7 @@ public:
     }
     inline u16 getWidth(){ return metaData.width; }
     inline u16 getHeight(){ return metaData.height; }
+    inline u8 getItemCount(){ return metaData.itemCount; }
 
     template <class T/* void (*)(u8& itemIdReference) */>
     void forEachItemReferenceInScripts(T doWhat){
