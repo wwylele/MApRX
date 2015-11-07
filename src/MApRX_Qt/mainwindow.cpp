@@ -747,13 +747,7 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
                 item.y-size.height()/2);
 
     if(index.column()==5){
-        DialogScripts dlg(map.itemAt(itemId).scripts,this);
-        dlg.setWindowTitle(QString(tr("Scripts for item#%1")).arg(itemId));
-        if(dlg.exec()==QDialog::Accepted){
-            MoEditItemScript mo(dlg.scripts,itemId);
-            mo.toolTip=QString(tr("Edit Scripts for item#%1")).arg(itemId);
-            doOperation(&mo);
-        }
+        editItemScripts(itemId);
     }
 
 }
@@ -863,4 +857,13 @@ void MainWindow::on_actionImportMap_triggered()
     MoPasteMap pasteMap(importMap);
     pasteMap.toolTip=tr("Import Map");
     doOperation(&pasteMap);
+}
+void MainWindow::editItemScripts(u8 itemId){
+    DialogScripts dlg(map.itemAt(itemId).scripts,this);
+    dlg.setWindowTitle(QString(tr("Scripts for item#%1")).arg(itemId));
+    if(dlg.exec()==QDialog::Accepted){
+        MoEditItemScript mo(dlg.scripts,itemId);
+        mo.toolTip=QString(tr("Edit Scripts for item#%1")).arg(itemId);
+        doOperation(&mo);
+    }
 }

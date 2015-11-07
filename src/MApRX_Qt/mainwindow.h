@@ -178,6 +178,7 @@ public:
 public slots:
     void undo();
     void redo();
+    void editItemScripts(u8 itemId);
 
 protected:
 

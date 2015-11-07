@@ -344,13 +344,18 @@ void MapView::mousePressEvent(QMouseEvent* event){
 
     }else{
         if(curItem!=-1 && curItem<pMainWindow->map.metaData.itemCount){
-            emit selectItem(curItem);
-            grabKeyboard();
-            grabMouse();
-            itemDraging=true;
-            itemShaked=false;
-            dragX=pMainWindow->map.itemAt(curItem).basic.x;
-            dragY=pMainWindow->map.itemAt(curItem).basic.y;
+            if(event->button()==Qt::LeftButton){
+                emit selectItem(curItem);
+                grabKeyboard();
+                grabMouse();
+                itemDraging=true;
+                itemShaked=false;
+                dragX=pMainWindow->map.itemAt(curItem).basic.x;
+                dragY=pMainWindow->map.itemAt(curItem).basic.y;
+            }
+            else if(event->button()==Qt::RightButton){
+                pMainWindow->editItemScripts(curItem);
+            }
         }
     }
 }
