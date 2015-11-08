@@ -57,35 +57,36 @@ void MapView::paintEvent(QPaintEvent *){
             }
     }
     else{
-        image.fill(Qt::transparent);
-        if(pMainWindow->showItems){
-            pMainWindow->map.draw([this](int x,int y,const Color15& c15){
-                u32 c=c15.toGray32();
-                image.setPixel(x,y,c);
-            },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
-        }
-        else{
-            if(pMainWindow->showBackground &&pMainWindow->bckScr.isLoaded())
-                pMainWindow->bckScr.draw(
-                    [this](int x,int y,const Color15& c15){
-                        u32 c=c15.toARGB32();
-                        for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)
-                            for(int ty=y;ty<height;ty+=pMainWindow->bckScr.getHeight()*8)
-                                image.setPixel(x,ty,c);
-                    },
-                    pMainWindow->bckPlt,
-                    0,0,pMainWindow->bckTiles);
-            pMainWindow->map.draw([this](int x,int y,const Color15& c15){
-                u32 c=c15.toARGB32();
-                image.setPixel(x,y,c);
-            },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
+
+        if(pMainWindow->showBackground &&pMainWindow->bckScr.isLoaded()){
+            for(u16 x=0;x<pMainWindow->bckScr.getWidth();x++)for(u16 y=0;y<pMainWindow->bckScr.getHeight();y++){
+                CharData chard=pMainWindow->bckScr.at(x,y);
+                QImage tile(pMainWindow->bckTiles[
+                            chard&TILE_ID_MASK
+                            ].data,8,8,QImage::Format_Indexed8);
+                tile.setColorTable(pMainWindow->bckPltTransit);
+                for(int px=x*8;px<width;px+=pMainWindow->bckScr.getWidth()*8)
+                    for(int py=y*8;py<height;py+=pMainWindow->bckScr.getHeight()*8)
+                        painter.drawImage(px,py,
+                                  tile.mirrored
+                                  (chard&FLIP_X?true:false,
+                                   chard&FLIP_Y?true:false));
+            }
+        }else{
+            painter.fillRect(0,0,width,height,QBrush(
+                                 transparentPattern));
         }
 
+        for(int x=0;x<pMainWindow->map.getWidth();x++)
+            for(int y=0;y<pMainWindow->map.getHeight();y++){
+                painter.drawPixmap(x*24,y*24,
+                     pMainWindow->blocksTransit[pMainWindow->map.cellAt(x,y).blockId]);
+            }
 
-        painter.fillRect(0,0,width,height,QBrush(transparentPattern));
-        painter.drawPixmap(0,0,QPixmap::fromImage(image));
 
-
+    }
+    if(pMainWindow->showItems){
+        painter.fillRect(0,0,width,height,QBrush(QColor(255,255,255,128)));
     }
     auto drawBinding=[&painter,this](){
         QColor cSrc(0,255,0),cDst(255,0,255);
@@ -231,7 +232,6 @@ void MapView::reset(){
     height=pMainWindow->map.getHeight()*24;
     setMinimumSize(width,height);
     resize(width,height);
-    image=QImage(width,height,QImage::Format_ARGB32);
     curX=curY=-1;
     curItem=-1;
     itemDraging=false;

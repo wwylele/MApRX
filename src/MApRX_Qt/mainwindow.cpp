@@ -420,6 +420,8 @@ void MainWindow::loadRoom(int roomId){
         tiles.readFile(mapdata.rawFrtTileSets(pMapInfo.subFileIdData.subFileIdSlots.rawFrtTileSetId));
         blocks.readFile(mapdata.rawFrtBlockSets(pMapInfo.subFileIdData.subFileIdSlots.rawFrtBlockSetId));
     }
+    pltTransit.doTransit(plt);
+    blocksTransit.doAllTransit(blocks,tiles,pltTransit);
 
 
 
@@ -432,6 +434,7 @@ void MainWindow::loadRoom(int roomId){
         bckPlt.readFile(mapdata.rawBckPlts(pMapInfo.subFileIdData.subFileIdSlots.rawBckPltId));
         bckTiles.readFile(mapdata.rawBckTileSets(pMapInfo.subFileIdData.subFileIdSlots.rawBckTileSetId));
         bckScr.readFile(mapdata.rawBckScrs(pMapInfo.subFileIdData.subFileIdSlots.rawBckScrId));
+        bckPltTransit.doTransit(bckPlt);
     }
 
     resetMap();
@@ -475,16 +478,39 @@ void MainWindow::on_updateMap(){
     timeA+=cTime-lTime;
     if(timeA>1000)timeA=0;
     while(timeA>=16){
+        bool needUpdate=false;
         timeA-=16;
 
         plt.tick();
         tiles.tick();
-        if(bckScr.isLoaded()){
+        if(plt.getTickCounter()){
+            pltTransit.doTransit(plt);
+            blocksTransit.doAllTransit(blocks,tiles,pltTransit);
+            needUpdate=true;
+        }
+        else{
+            blocksTransit.doTransit(blocks,tiles,pltTransit);
+            if(tiles.getTotalTickCounter())needUpdate=true;
+        }
+        plt.clearTickCounter();
+        tiles.clearTickCounter();
+        if(bckScr.isLoaded() && showBackground){
             bckPlt.tick();
             bckTiles.tick();
+            if(bckPlt.getTickCounter()){
+                bckPltTransit.doTransit(bckPlt);
+                needUpdate=true;
+            }else{
+                if(bckTiles.getTotalTickCounter())needUpdate=true;
+            }
+            bckPlt.clearTickCounter();
+            bckTiles.clearTickCounter();
         }
-        ui->mapView->update();
-        ui->blockStore->update();
+
+        if(needUpdate){
+            ui->mapView->update();
+            ui->blockStore->update();
+        }
 
     }
 
@@ -775,9 +801,12 @@ void MainWindow::on_actionSaveToImage_triggered(){
     if(fileName==QString::null)return;
     QImage image(map.getWidth()*24,map.getHeight()*24,QImage::Format_ARGB32);
     image.fill(Qt::transparent);
-    map.draw([&image](int x,int y,const Color15& c){
-        image.setPixel(x,y,c.toARGB32());
-    },plt,0,0,blocks,tiles);
+    QPainter painter(&image);
+    for(int x=0;x<map.getWidth();x++)
+        for(int y=0;y<map.getHeight();y++){
+            painter.drawPixmap(x*24,y*24,
+                 blocksTransit[map.cellAt(x,y).blockId]);
+        }
     image.save(fileName);
 
 }

@@ -66,11 +66,14 @@ protected:
         u8 shiftTime;
     };
     std::vector<Thread> threads;
+    u8 tickCounter;
 public:
     Color15 getColors(u8 i)const{
         return finalColors[i];
     }
     void tick();
+    u8 getTickCounter(){ return tickCounter; }
+    void clearTickCounter(){ tickCounter=0; }
     void readFile(const u8* src);
     void loadDefault();
 };
@@ -98,6 +101,8 @@ protected:
         u16 subLoopingPos;
     };
     std::vector<Thread> threads;
+    std::vector<u8> tickCounter;
+    u8 totalTickCounter;
 
 public:
     static Tile8bpp invalidTile;
@@ -107,27 +112,18 @@ public:
         return finalTiles[tileId];
     }
     void tick();
+    u8* getTickCounter(){ return tickCounter.data(); }
+    u8 getTotalTickCounter(){ return totalTickCounter; }
+    void clearTickCounter(){
+        memset(tickCounter.data(),0,tickCounter.size());
+        totalTickCounter=0;
+    }
 };
 
 struct Block{
     CharData data[9];
     const CharData& tileAt(u8 x/*0~2*/,u8 y/*0~2*/)const{
         return data[x+y*3];
-    }
-    template<typename T/* [](int x,int y,const Color15&) */>
-    void draw(T fSetPixel,const KfPlt& plt,int dx,int dy,const KfTileSet& tileSet)const{
-        for(int x=0;x<3;x++)for(int y=0;y<3;y++){
-            const CharData *pchar;
-            pchar=&tileAt(x,y);
-            tileSet[(*pchar)&TILE_ID_MASK].draw(
-                fSetPixel,
-                [&plt](u8 colorId)->Color15{ return plt.getColors(colorId); },
-                dx+x*8,
-                dy+y*8,
-                ((*pchar)&FLIP_X)!=0,
-                ((*pchar)&FLIP_Y)!=0
-                );
-        }
     }
 };
 typedef u8 BlockEssence;
@@ -297,14 +293,6 @@ public:
     RipeItem& itemAt(u8 i){
         return items[i];
     }
-    template<typename T/* [](int x,int y,const Color15&) */>
-    void draw(T fSetPixel,KfPlt& plt,int dx,int dy,
-        const KfBlockSet& blockSet,const KfTileSet& tileSet){
-        for(u16 x=0;x<metaData.width;x++)for(u16 y=0;y<metaData.height;y++){
-            blockSet[cellAt(x,y).blockId].draw(fSetPixel,plt,dx+x*24,dy+y*24,tileSet);
-
-        }
-    }
     u16 getWidth(){ return metaData.width; }
     u16 getHeight(){ return metaData.height; }
     u8 getItemCount(){ return metaData.itemCount; }
@@ -389,21 +377,11 @@ public:
         loaded=false;
         chars.clear();
     }
-
-    template<typename T/* [](int x,int y,const Color15&) */>
-    void draw(T fSetPixel,KfPlt& plt,int dx,int dy,const KfTileSet& tileSet){
-        for(u16 x=0;x<width;x++)for(u16 y=0;y<height;y++){
-            const CharData *pchar;
-            pchar=&chars[x+y*width];
-            tileSet[(*pchar)&TILE_ID_MASK].draw(
-                fSetPixel,
-                [&plt](u8 colorId)->Color15{return plt.getColors(colorId);},
-                dx+x*8,
-                dy+y*8,
-                ((*pchar)&FLIP_X)!=0,
-                ((*pchar)&FLIP_Y)!=0);
-        }
+    CharData at(u16 x,u16 y){
+        return chars[x+y*width];
     }
+
+
     u16 getWidth(){ return width; }
     u16 getHeight(){ return height; }
 };
