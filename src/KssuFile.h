@@ -66,11 +66,14 @@ protected:
         u8 shiftTime;
     };
     std::vector<Thread> threads;
+    u8 tickCounter;
 public:
     Color15 getColors(u8 i)const{
         return finalColors[i];
     }
     void tick();
+    u8 getTickCounter(){ return tickCounter; }
+    void clearTickCounter(){ tickCounter=0; }
     void readFile(const u8* src);
     void loadDefault();
 };
@@ -98,6 +101,7 @@ protected:
         u16 subLoopingPos;
     };
     std::vector<Thread> threads;
+    std::vector<u8> tickCounter;
 
 public:
     static Tile8bpp invalidTile;
@@ -107,6 +111,10 @@ public:
         return finalTiles[tileId];
     }
     void tick();
+    u8* getTickCounter(){ return tickCounter.data(); }
+    void clearTickCounter(){
+        memset(tickCounter.data(),0,tickCounter.size());
+    }
 };
 
 struct Block{

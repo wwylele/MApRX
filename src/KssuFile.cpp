@@ -71,6 +71,7 @@ void KfPlt::readFile(const u8* src){
         threads[thri].time=0;
         threads[thri].shiftState=Thread::NONE;
     }
+    tickCounter=1;
 }
 void KfPlt::tick(){
     for(u32 thri=0;thri<threads.size();thri++){
@@ -98,6 +99,7 @@ void KfPlt::tick(){
                 std::memcpy(finalColors+threads[thri].frames[frameId].colorId,
                        threads[thri].frames[frameId].aniColors.data(),
                        threads[thri].frames[frameId].aniColors.size()*2);
+                ++tickCounter;
                 threads[thri].shiftState=Thread::NONE;
                 break;
             case 5:
@@ -109,6 +111,7 @@ void KfPlt::tick(){
                 /*std::memcpy(finalColors+threads[thri].frames[frameId].colorId,
                        threads[thri].frames[frameId].aniColors.data(),
                        threads[thri].frames[frameId].aniColors.size()*2);*/
+                ++tickCounter;
                 threads[thri].mixId=threads[thri].frames[frameId].colorId;
                 threads[thri].denom=threads[thri].numer=threads[thri].command[threads[thri].nextCommand++];
                 break;
@@ -138,6 +141,7 @@ void KfPlt::tick(){
                         Color15::lerp(threads[thri].frames[threads[thri].mixFrameId].aniColors[i],
                         threads[thri].beforeMixColor[i],(float)threads[thri].numer/threads[thri].denom);
             }
+            ++tickCounter;
         }
         if(threads[thri].shiftState!=Thread::NONE){
             threads[thri].shiftTime--;
@@ -159,6 +163,7 @@ void KfPlt::tick(){
                             (threads[thri].shiftCount-1)*2);
                     finalColors[threads[thri].shiftId]=temp;
                 }
+                ++tickCounter;
             }
         }
     }
@@ -179,6 +184,8 @@ void KfTileSet::readFile(const u8* src){
     u8 compressed=*(src++);
     u8 threadCount=*(src++);
     tiles.resize(tileCount);
+    tickCounter.clear();
+    tickCounter.resize(tileCount,1);
     if(compressed){
         uncompressLZ(src,(u8*)tiles.data());
         src+=compressedDataLength;
@@ -262,6 +269,9 @@ void KfTileSet::tick(){
                 std::memcpy(finalTiles.data()+threads[thri].frames[frameId].tileIdInTiles,
                        aniTiles.data()+threads[thri].frames[frameId].tileIdInAniTiles,
                        threads[thri].frames[frameId].tileCount*64);
+                for(int i=0;i<threads[thri].frames[frameId].tileCount;i++){
+                    ++counter[i+threads[thri].frames[frameId].tileIdInTiles];
+                }
                 break;
             }
             default:
