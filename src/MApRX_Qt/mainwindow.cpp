@@ -488,10 +488,21 @@ void MainWindow::on_updateMap(){
         else{
             blocksTransit.doTransit(blocks,tiles,pltTransit);
         }
-        if(bckScr.isLoaded()){
+        plt.clearTickCounter();
+        tiles.clearTickCounter();
+        if(bckScr.isLoaded() && showBackground){
             bckPlt.tick();
             bckTiles.tick();
+            if(bckPlt.getTickCounter()){
+                bckPltTransit.doTransit(bckPlt);
+                bckScrTransit.doAllTransit(bckScr,bckTiles,bckPltTransit);
+            }else{
+                bckScrTransit.doTransit(bckScr,bckTiles,bckPltTransit);
+            }
+            bckPlt.clearTickCounter();
+            bckTiles.clearTickCounter();
         }
+
         ui->mapView->update();
         ui->blockStore->update();
 

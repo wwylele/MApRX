@@ -57,21 +57,15 @@ void MapView::paintEvent(QPaintEvent *){
             }
     }
     else{
-        image.fill(Qt::transparent);
-        painter.fillRect(0,0,width,height,QBrush(transparentPattern));
-        if(pMainWindow->showBackground &&pMainWindow->bckScr.isLoaded()){
 
-            pMainWindow->bckScr.draw(
-                        [this](int x,int y,const Color15& c15){
-                    u32 c=c15.toARGB32();
-                    for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)
-                        for(int ty=y;ty<height;ty+=pMainWindow->bckScr.getHeight()*8)
-                            image.setPixel(x,ty,c);
-                },
-                pMainWindow->bckPlt,
-                0,0,pMainWindow->bckTiles);
-                painter.drawPixmap(0,0,QPixmap::fromImage(image));
+        if(pMainWindow->showBackground &&pMainWindow->bckScr.isLoaded()){
+            painter.fillRect(0,0,width,height,QBrush(
+                                 pMainWindow->bckScrTransit.pixmap));
+        }else{
+            painter.fillRect(0,0,width,height,QBrush(
+                                 transparentPattern));
         }
+
         for(int x=0;x<pMainWindow->map.getWidth();x++)
             for(int y=0;y<pMainWindow->map.getHeight();y++){
                 painter.drawPixmap(x*24,y*24,

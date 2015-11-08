@@ -397,6 +397,9 @@ public:
         loaded=false;
         chars.clear();
     }
+    CharData at(u16 x,u16 y){
+        return chars[x+y*width];
+    }
 
     template<typename T/* [](int x,int y,const Color15&) */>
     void draw(T fSetPixel,KfPlt& plt,int dx,int dy,const KfTileSet& tileSet){
