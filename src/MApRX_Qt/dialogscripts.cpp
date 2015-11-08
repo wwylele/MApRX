@@ -325,18 +325,12 @@ void ScriptDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     }
     switch(script[0]){
     case 1:{
-        QImage image(24,24,QImage::Format_ARGB32);
         width=option.fontMetrics.width(scriptText[1]);
         painter->drawText(dx,dy,width,30,Qt::AlignCenter,scriptText[1]);
         for(int i=0;i<script[3];i++){
-            image.fill(Qt::transparent);
             u16 blockId;
             std::memcpy(&blockId,script.data()+4+i*2,2);
-            pMainWindow->blocks[blockId].draw([this,&image](int x,int y,const Color15& c15){
-                u32 c=c15.toARGB32();
-                image.setPixel(x,y,c);
-            }, pMainWindow->plt,0,0,pMainWindow->tiles);
-            painter->drawPixmap(dx+width+i*30+3,dy+3,24,24,QPixmap::fromImage(image));
+            painter->drawPixmap(dx+width+i*30+3,dy+3,pMainWindow->blocksTransit[blockId]);
         }
         break;}
     case 2:case 3:case 4:case 5:case 6:{

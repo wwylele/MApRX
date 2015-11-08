@@ -232,7 +232,6 @@ void MapView::reset(){
     height=pMainWindow->map.getHeight()*24;
     setMinimumSize(width,height);
     resize(width,height);
-    image=QImage(width,height,QImage::Format_ARGB32);
     curX=curY=-1;
     curItem=-1;
     itemDraging=false;

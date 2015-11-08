@@ -801,9 +801,12 @@ void MainWindow::on_actionSaveToImage_triggered(){
     if(fileName==QString::null)return;
     QImage image(map.getWidth()*24,map.getHeight()*24,QImage::Format_ARGB32);
     image.fill(Qt::transparent);
-    map.draw([&image](int x,int y,const Color15& c){
-        image.setPixel(x,y,c.toARGB32());
-    },plt,0,0,blocks,tiles);
+    QPainter painter(&image);
+    for(int x=0;x<map.getWidth();x++)
+        for(int y=0;y<map.getHeight();y++){
+            painter.drawPixmap(x*24,y*24,
+                 blocksTransit[map.cellAt(x,y).blockId]);
+        }
     image.save(fileName);
 
 }

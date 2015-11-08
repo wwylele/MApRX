@@ -27,14 +27,11 @@
 #include <QMainWindow>
 #include <QTreeWidget>
 #include <QTimer>
-#include <QImage>
-#include <QPixmap>
 #include <stack>
 #include <memory>
 #include <QAbstractTableModel>
 #include <QStyledItemDelegate>
-#include <QVector>
-#include <QPainter>
+#include <render_transit.h>
 
 
 namespace Ui {
@@ -189,71 +186,6 @@ protected:
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-    class PltTransit:public QVector<QRgb>{
-    public:
-        PltTransit():QVector<QRgb>(256){data()[0]=0x00000000;}
-        void doTransit(const KfPlt& plt){
-            for(int i=1;i<256;i++){
-                data()[i]=plt.getColors(i).toARGB32();
-            }
-        }
-    };
-    class BlockSetTransit{
-        std::unique_ptr<std::unique_ptr<QPixmap>[]> pImages;
-        u32 size;
-        void adjustSize(u32 blockCount){
-            if(size!=blockCount){
-                size=blockCount;
-                pImages.reset(new std::unique_ptr<QPixmap>[size]);
-                for(u32 i=0;i<size;i++){
-                    pImages[i].reset(new QPixmap(24,24));
-                }
-            }
-        }
-        void doTransitOne(KfBlockSet& blocks,KfTileSet& tiles,QVector<QRgb> colors,int id){
-            pImages[id].get()->fill(Qt::transparent);
-            QPainter painter;
-            painter.begin(pImages[id].get());
-            for(int j=0;j<9;j++){
-                QImage tile(tiles[
-                            blocks[id].data[j]&TILE_ID_MASK
-                        ].data,8,8,QImage::Format_Indexed8);
-                tile.setColorTable(colors);
-                painter.drawImage((j%3)*8,j/3*8,
-                                  tile.mirrored
-                                  (blocks[id].data[j]&FLIP_X?true:false,
-                                   blocks[id].data[j]&FLIP_Y?true:false));
-
-
-            }
-            painter.end();
-        }
-
-    public:
-        BlockSetTransit():size(0){}
-        QPixmap& operator[](int i){
-            return *pImages[i].get();
-        }
-
-        void doTransit(KfBlockSet& blocks,KfTileSet& tiles,QVector<QRgb> colors){
-            adjustSize(blocks.blockCount());
-            for(u32 i=0;i<size;i++){
-                for(int j=0;j<9;j++){
-                    if(tiles.getTickCounter()[blocks[i].data[j]&TILE_ID_MASK]){
-                        doTransitOne(blocks,tiles,colors,i);
-                        break;
-                    }
-                }
-            }
-        }
-        void doAllTransit(KfBlockSet& blocks,KfTileSet& tiles,QVector<QRgb> colors){
-            adjustSize(blocks.blockCount());
-            for(u32 i=0;i<size;i++){
-                doTransitOne(blocks,tiles,colors,i);
-            }
-        }
-    };
 
 
     KfPlt plt,bckPlt;

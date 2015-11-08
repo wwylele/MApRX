@@ -93,15 +93,6 @@ struct Tile8bpp
     u8 pixel(u8 x/*0~7*/,u8 y/*0~7*/)const{
         return data[x|(y<<3)];
     }
-    template<typename T/* [](int x,int y,const Color15&) */,
-             typename U/* [](u8)->Color15*/>
-    void draw(T fSetPixel,U fPlt,int dx,int dy,bool flipX,bool flipY)const{
-        for(int x=0;x<8;x++)for(int y=0;y<8;y++){
-            u8 c;
-            c=pixel(flipX?7-x:x,flipY?7-y:y);
-            if(c)fSetPixel(dx+x,dy+y,fPlt(c));
-        }
-    }
 };
 assert_size(Tile8bpp,64);
 

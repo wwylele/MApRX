@@ -125,21 +125,6 @@ struct Block{
     const CharData& tileAt(u8 x/*0~2*/,u8 y/*0~2*/)const{
         return data[x+y*3];
     }
-    template<typename T/* [](int x,int y,const Color15&) */>
-    void draw(T fSetPixel,const KfPlt& plt,int dx,int dy,const KfTileSet& tileSet)const{
-        for(int x=0;x<3;x++)for(int y=0;y<3;y++){
-            const CharData *pchar;
-            pchar=&tileAt(x,y);
-            tileSet[(*pchar)&TILE_ID_MASK].draw(
-                fSetPixel,
-                [&plt](u8 colorId)->Color15{ return plt.getColors(colorId); },
-                dx+x*8,
-                dy+y*8,
-                ((*pchar)&FLIP_X)!=0,
-                ((*pchar)&FLIP_Y)!=0
-                );
-        }
-    }
 };
 typedef u8 BlockEssence;
 
@@ -308,14 +293,6 @@ public:
     RipeItem& itemAt(u8 i){
         return items[i];
     }
-    template<typename T/* [](int x,int y,const Color15&) */>
-    void draw(T fSetPixel,KfPlt& plt,int dx,int dy,
-        const KfBlockSet& blockSet,const KfTileSet& tileSet){
-        for(u16 x=0;x<metaData.width;x++)for(u16 y=0;y<metaData.height;y++){
-            blockSet[cellAt(x,y).blockId].draw(fSetPixel,plt,dx+x*24,dy+y*24,tileSet);
-
-        }
-    }
     u16 getWidth(){ return metaData.width; }
     u16 getHeight(){ return metaData.height; }
     u8 getItemCount(){ return metaData.itemCount; }
@@ -404,20 +381,7 @@ public:
         return chars[x+y*width];
     }
 
-    template<typename T/* [](int x,int y,const Color15&) */>
-    void draw(T fSetPixel,KfPlt& plt,int dx,int dy,const KfTileSet& tileSet){
-        for(u16 x=0;x<width;x++)for(u16 y=0;y<height;y++){
-            const CharData *pchar;
-            pchar=&chars[x+y*width];
-            tileSet[(*pchar)&TILE_ID_MASK].draw(
-                fSetPixel,
-                [&plt](u8 colorId)->Color15{return plt.getColors(colorId);},
-                dx+x*8,
-                dy+y*8,
-                ((*pchar)&FLIP_X)!=0,
-                ((*pchar)&FLIP_Y)!=0);
-        }
-    }
+
     u16 getWidth(){ return width; }
     u16 getHeight(){ return height; }
 };
