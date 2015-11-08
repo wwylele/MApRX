@@ -186,6 +186,7 @@ void KfTileSet::readFile(const u8* src){
     tiles.resize(tileCount);
     tickCounter.clear();
     tickCounter.resize(tileCount,1);
+    totalTickCounter=1;
     if(compressed){
         uncompressLZ(src,(u8*)tiles.data());
         src+=compressedDataLength;
@@ -272,6 +273,7 @@ void KfTileSet::tick(){
                 for(int i=0;i<threads[thri].frames[frameId].tileCount;i++){
                     ++tickCounter[i+threads[thri].frames[frameId].tileIdInTiles];
                 }
+                ++totalTickCounter;
                 break;
             }
             default:

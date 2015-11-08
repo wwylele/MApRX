@@ -59,8 +59,19 @@ void MapView::paintEvent(QPaintEvent *){
     else{
 
         if(pMainWindow->showBackground &&pMainWindow->bckScr.isLoaded()){
-            painter.fillRect(0,0,width,height,QBrush(
-                                 pMainWindow->bckScrTransit.pixmap));
+            for(u16 x=0;x<pMainWindow->bckScr.getWidth();x++)for(u16 y=0;y<pMainWindow->bckScr.getHeight();y++){
+                CharData chard=pMainWindow->bckScr.at(x,y);
+                QImage tile(pMainWindow->bckTiles[
+                            chard&TILE_ID_MASK
+                            ].data,8,8,QImage::Format_Indexed8);
+                tile.setColorTable(pMainWindow->bckPltTransit);
+                for(int px=x*8;px<width;px+=pMainWindow->bckScr.getWidth()*8)
+                    for(int py=y*8;py<height;py+=pMainWindow->bckScr.getHeight()*8)
+                        painter.drawImage(px,py,
+                                  tile.mirrored
+                                  (chard&FLIP_X?true:false,
+                                   chard&FLIP_Y?true:false));
+            }
         }else{
             painter.fillRect(0,0,width,height,QBrush(
                                  transparentPattern));

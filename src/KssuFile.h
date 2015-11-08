@@ -102,6 +102,7 @@ protected:
     };
     std::vector<Thread> threads;
     std::vector<u8> tickCounter;
+    u8 totalTickCounter;
 
 public:
     static Tile8bpp invalidTile;
@@ -112,8 +113,10 @@ public:
     }
     void tick();
     u8* getTickCounter(){ return tickCounter.data(); }
+    u8 getTotalTickCounter(){ return totalTickCounter; }
     void clearTickCounter(){
         memset(tickCounter.data(),0,tickCounter.size());
+        totalTickCounter=0;
     }
 };
 

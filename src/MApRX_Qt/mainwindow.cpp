@@ -434,6 +434,7 @@ void MainWindow::loadRoom(int roomId){
         bckPlt.readFile(mapdata.rawBckPlts(pMapInfo.subFileIdData.subFileIdSlots.rawBckPltId));
         bckTiles.readFile(mapdata.rawBckTileSets(pMapInfo.subFileIdData.subFileIdSlots.rawBckTileSetId));
         bckScr.readFile(mapdata.rawBckScrs(pMapInfo.subFileIdData.subFileIdSlots.rawBckScrId));
+        bckPltTransit.doTransit(bckPlt);
     }
 
     resetMap();
@@ -477,6 +478,7 @@ void MainWindow::on_updateMap(){
     timeA+=cTime-lTime;
     if(timeA>1000)timeA=0;
     while(timeA>=16){
+        bool needUpdate=false;
         timeA-=16;
 
         plt.tick();
@@ -484,9 +486,11 @@ void MainWindow::on_updateMap(){
         if(plt.getTickCounter()){
             pltTransit.doTransit(plt);
             blocksTransit.doAllTransit(blocks,tiles,pltTransit);
+            needUpdate=true;
         }
         else{
             blocksTransit.doTransit(blocks,tiles,pltTransit);
+            if(tiles.getTotalTickCounter())needUpdate=true;
         }
         plt.clearTickCounter();
         tiles.clearTickCounter();
@@ -495,16 +499,18 @@ void MainWindow::on_updateMap(){
             bckTiles.tick();
             if(bckPlt.getTickCounter()){
                 bckPltTransit.doTransit(bckPlt);
-                bckScrTransit.doAllTransit(bckScr,bckTiles,bckPltTransit);
+                needUpdate=true;
             }else{
-                bckScrTransit.doTransit(bckScr,bckTiles,bckPltTransit);
+                if(bckTiles.getTotalTickCounter())needUpdate=true;
             }
             bckPlt.clearTickCounter();
             bckTiles.clearTickCounter();
         }
 
-        ui->mapView->update();
-        ui->blockStore->update();
+        if(needUpdate){
+            ui->mapView->update();
+            ui->blockStore->update();
+        }
 
     }
 

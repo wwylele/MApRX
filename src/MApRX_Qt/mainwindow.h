@@ -213,7 +213,8 @@ public:
         }
         void doTransitOne(KfBlockSet& blocks,KfTileSet& tiles,QVector<QRgb> colors,int id){
             pImages[id].get()->fill(Qt::transparent);
-            QPainter painter(pImages[id].get());
+            QPainter painter;
+            painter.begin(pImages[id].get());
             for(int j=0;j<9;j++){
                 QImage tile(tiles[
                             blocks[id].data[j]&TILE_ID_MASK
@@ -226,6 +227,7 @@ public:
 
 
             }
+            painter.end();
         }
 
     public:
@@ -252,47 +254,7 @@ public:
             }
         }
     };
-    class ScrTransit{
-    public:
-        QPixmap pixmap;
-    private:
-        u16 w,h;
-        void adjustSize(u16 nw,u16 nh){
-            if(nw!=w || nh!=h){
-                w=nw;
-                h=nh;
-                pixmap=QPixmap(w*8,h*8);
-            }
-        }
-        void doTransitOne(KfBckScr scr,KfTileSet& tiles,QVector<QRgb> colors,u16 x,u16 y){
-            QPainter painter(&pixmap);
-            CharData chard=scr.at(x,y);
-            QImage tile(tiles[
-                        chard&TILE_ID_MASK
-                    ].data,8,8,QImage::Format_Indexed8);
-            tile.setColorTable(colors);
-            painter.drawImage(x*8,y*8,
-                              tile.mirrored
-                              (chard&FLIP_X?true:false,
-                               chard&FLIP_Y?true:false));
-        }
 
-    public:
-        ScrTransit():w(0),h(0){}
-        void doTransit(KfBckScr scr,KfTileSet& tiles,QVector<QRgb> colors){
-            adjustSize(scr.getWidth(),scr.getHeight());
-            for(u16 x=0;x<w;x++)for(u16 y=0;y<h;y++){
-                if(tiles.getTickCounter()[scr.at(x,y)&TILE_ID_MASK])
-                    doTransitOne(scr,tiles,colors,x,y);
-            }
-        }
-        void doAllTransit(KfBckScr scr,KfTileSet& tiles,QVector<QRgb> colors){
-            adjustSize(scr.getWidth(),scr.getHeight());
-            for(u16 x=0;x<w;x++)for(u16 y=0;y<h;y++){
-                doTransitOne(scr,tiles,colors,x,y);
-            }
-        }
-    };
 
     KfPlt plt,bckPlt;
     PltTransit pltTransit,bckPltTransit;
@@ -300,7 +262,6 @@ public:
     KfBlockSet blocks;
     BlockSetTransit blocksTransit;
     KfBckScr bckScr;
-    ScrTransit bckScrTransit;
     KfMap map;
     int curRoomId;
 
