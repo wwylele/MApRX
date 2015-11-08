@@ -906,6 +906,7 @@ void MainWindow::onItemDragging(bool isDragging){
             action->setEnabled(false);
         }else action->setEnabled(prevState[i]);
         ++i;
+    }
 }
 void MainWindow::editItemScripts(u8 itemId){
     DialogScripts dlg(map.itemAt(itemId).scripts,this);
