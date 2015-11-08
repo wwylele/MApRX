@@ -27,12 +27,11 @@
 #include <QMainWindow>
 #include <QTreeWidget>
 #include <QTimer>
-#include <QImage>
-#include <QPixmap>
 #include <stack>
 #include <memory>
 #include <QAbstractTableModel>
 #include <QStyledItemDelegate>
+#include <render_transit.h>
 
 
 namespace Ui {
@@ -178,6 +177,7 @@ public:
 public slots:
     void undo();
     void redo();
+    void editItemScripts(u8 itemId);
 
 protected:
 
@@ -189,8 +189,10 @@ public:
 
 
     KfPlt plt,bckPlt;
+    PltTransit pltTransit,bckPltTransit;
     KfTileSet tiles,bckTiles;
     KfBlockSet blocks;
+    BlockSetTransit blocksTransit;
     KfBckScr bckScr;
     KfMap map;
     int curRoomId;

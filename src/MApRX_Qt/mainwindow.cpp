@@ -422,6 +422,8 @@ void MainWindow::loadRoom(int roomId){
         tiles.readFile(mapdata.rawFrtTileSets(pMapInfo.subFileIdData.subFileIdSlots.rawFrtTileSetId));
         blocks.readFile(mapdata.rawFrtBlockSets(pMapInfo.subFileIdData.subFileIdSlots.rawFrtBlockSetId));
     }
+    pltTransit.doTransit(plt);
+    blocksTransit.doAllTransit(blocks,tiles,pltTransit);
 
 
 
@@ -434,6 +436,7 @@ void MainWindow::loadRoom(int roomId){
         bckPlt.readFile(mapdata.rawBckPlts(pMapInfo.subFileIdData.subFileIdSlots.rawBckPltId));
         bckTiles.readFile(mapdata.rawBckTileSets(pMapInfo.subFileIdData.subFileIdSlots.rawBckTileSetId));
         bckScr.readFile(mapdata.rawBckScrs(pMapInfo.subFileIdData.subFileIdSlots.rawBckScrId));
+        bckPltTransit.doTransit(bckPlt);
     }
 
     resetMap();
@@ -477,16 +480,39 @@ void MainWindow::on_updateMap(){
     timeA+=cTime-lTime;
     if(timeA>1000)timeA=0;
     while(timeA>=16){
+        bool needUpdate=false;
         timeA-=16;
 
         plt.tick();
         tiles.tick();
-        if(bckScr.isLoaded()){
+        if(plt.getTickCounter()){
+            pltTransit.doTransit(plt);
+            blocksTransit.doAllTransit(blocks,tiles,pltTransit);
+            needUpdate=true;
+        }
+        else{
+            blocksTransit.doTransit(blocks,tiles,pltTransit);
+            if(tiles.getTotalTickCounter())needUpdate=true;
+        }
+        plt.clearTickCounter();
+        tiles.clearTickCounter();
+        if(bckScr.isLoaded() && showBackground){
             bckPlt.tick();
             bckTiles.tick();
+            if(bckPlt.getTickCounter()){
+                bckPltTransit.doTransit(bckPlt);
+                needUpdate=true;
+            }else{
+                if(bckTiles.getTotalTickCounter())needUpdate=true;
+            }
+            bckPlt.clearTickCounter();
+            bckTiles.clearTickCounter();
         }
-        ui->mapView->update();
-        ui->blockStore->update();
+
+        if(needUpdate){
+            ui->mapView->update();
+            ui->blockStore->update();
+        }
 
     }
 
@@ -684,7 +710,7 @@ void MainWindow::on_buttonItemUp_clicked()
     if(!selection.isValid())return;
     u8 selItem=selection.row();
     if(selItem==0)return;
-    if(selItem>=map.metaData.itemCount)return;
+    if(selItem>=map.getItemCount())return;
     MoSwapItem mo(selItem-1);
     mo.toolTip=QString(tr("Move up Item#%1")).arg(selItem);
     doOperation(&mo);
@@ -698,8 +724,8 @@ void MainWindow::on_buttonItemDown_clicked()
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
-    if(selItem==map.metaData.itemCount-1)return;
-    if(selItem>=map.metaData.itemCount)return;
+    if(selItem==map.getItemCount()-1)return;
+    if(selItem>=map.getItemCount())return;
     MoSwapItem mo(selItem);
     mo.toolTip=QString(tr("Move down Item#%1")).arg(selItem);
     doOperation(&mo);
@@ -713,7 +739,7 @@ void MainWindow::on_buttonItemDelete_clicked()
     QModelIndex selection=ui->itemTable->currentIndex();
     if(!selection.isValid())return;
     u8 selItem=selection.row();
-    if(selItem>=map.metaData.itemCount)return;
+    if(selItem>=map.getItemCount())return;
     MoDeleteItem mo(selItem);
     mo.toolTip=QString(tr("Remove Item#%1")).arg(selItem);
     doOperation(&mo);
@@ -728,13 +754,13 @@ void MainWindow::on_buttonItemNew_clicked()
     item.basic.x=(tx>=0?tx:0);
     int ty=(ui->mapViewScrollArea->verticalScrollBar()->value()+size.height()/2);
     item.basic.y=(ty>=0?ty:0);
-    if(item.basic.x>map.metaData.width*24)item.basic.x=map.metaData.width*24;
-    if(item.basic.y>map.metaData.height*24)item.basic.y=map.metaData.height*24;
-    MoNewItem mo(map.metaData.itemCount,item);
+    if(item.basic.x>map.getWidth()*24)item.basic.x=map.getWidth()*24;
+    if(item.basic.y>map.getHeight()*24)item.basic.y=map.getHeight()*24;
+    MoNewItem mo(map.getItemCount(),item);
     mo.toolTip=tr("Add Item");
     doOperation(&mo);
     ui->itemTable->setCurrentIndex(itemTableModal.getIndex(
-                                       map.metaData.itemCount-1,0));
+                                       map.getItemCount()-1,0));
 }
 
 void MainWindow::on_itemTable_clicked(const QModelIndex &index)
@@ -749,13 +775,7 @@ void MainWindow::on_itemTable_clicked(const QModelIndex &index)
                 item.y-size.height()/2);
 
     if(index.column()==5){
-        DialogScripts dlg(map.itemAt(itemId).scripts,this);
-        dlg.setWindowTitle(QString(tr("Scripts for item#%1")).arg(itemId));
-        if(dlg.exec()==QDialog::Accepted){
-            MoEditItemScript mo(dlg.scripts,itemId);
-            mo.toolTip=QString(tr("Edit Scripts for item#%1")).arg(itemId);
-            doOperation(&mo);
-        }
+        editItemScripts(itemId);
     }
 
 }
@@ -769,7 +789,7 @@ void MainWindow::on_actionDiscardChanges_triggered(){
 }
 void MainWindow::on_actionResizeMap_triggered(){
     if(!map.isLoaded())return;
-    DialogResizeMap dlg(map.metaData.width,map.metaData.height);
+    DialogResizeMap dlg(map.getWidth(),map.getHeight());
     if(dlg.exec()!=QDialog::Accepted)return;
     MoResizeMap mo(dlg.mapWidth,dlg.mapHeight,dlg.hAlign,dlg.vAlign);
     mo.toolTip=tr("Resize Map");
@@ -781,11 +801,14 @@ void MainWindow::on_actionSaveToImage_triggered(){
         "",
         "PNG(*.png);;BMP(*.bmp)");
     if(fileName==QString::null)return;
-    QImage image(map.metaData.width*24,map.metaData.height*24,QImage::Format_ARGB32);
+    QImage image(map.getWidth()*24,map.getHeight()*24,QImage::Format_ARGB32);
     image.fill(Qt::transparent);
-    map.draw([&image](int x,int y,const Color15& c){
-        image.setPixel(x,y,c.toARGB32());
-    },plt,0,0,blocks,tiles);
+    QPainter painter(&image);
+    for(int x=0;x<map.getWidth();x++)
+        for(int y=0;y<map.getHeight();y++){
+            painter.drawPixmap(x*24,y*24,
+                 blocksTransit[map.cellAt(x,y).blockId]);
+        }
     image.save(fileName);
 
 }
@@ -867,6 +890,7 @@ void MainWindow::on_actionImportMap_triggered()
     doOperation(&pasteMap);
 }
 
+
 void MainWindow::onItemDragging(bool isDragging){
     static bool prevState[5];
     int i=0;
@@ -882,5 +906,13 @@ void MainWindow::onItemDragging(bool isDragging){
             action->setEnabled(false);
         }else action->setEnabled(prevState[i]);
         ++i;
+}
+void MainWindow::editItemScripts(u8 itemId){
+    DialogScripts dlg(map.itemAt(itemId).scripts,this);
+    dlg.setWindowTitle(QString(tr("Scripts for item#%1")).arg(itemId));
+    if(dlg.exec()==QDialog::Accepted){
+        MoEditItemScript mo(dlg.scripts,itemId);
+        mo.toolTip=QString(tr("Edit Scripts for item#%1")).arg(itemId);
+        doOperation(&mo);
     }
 }

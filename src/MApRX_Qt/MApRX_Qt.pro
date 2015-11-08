@@ -46,7 +46,8 @@ HEADERS  += mainwindow.h \
     main.h \
     itemdictionary.h \
     mapview.h \
-    itemimages.h
+    itemimages.h \
+    render_transit.h
 
 FORMS    += mainwindow.ui \
     dialogaboutme.ui \

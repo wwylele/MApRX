@@ -40,28 +40,28 @@ assert_size(s32,4);
 struct Color15
 {
     u16 data;
-    inline Color15(){}
-    inline Color15(u16 tr,u16 tg,u16 tb){
+    Color15(){}
+    Color15(u16 tr,u16 tg,u16 tb){
         data=tr|(tg<<5)|(tb<<10);
     }
-    inline u16 r()const{
+    u16 r()const{
         return data&31;
     }
-    inline u16 g()const{
+    u16 g()const{
         return (data>>5)&31;
     }
-    inline u16 b()const{
+    u16 b()const{
         return (data>>10)&31;
     }
 
-    inline u32 toARGB32()const {
+    u32 toARGB32()const {
         u8 tr,tg,tb;
         tr=(r()*255+15)/31;
         tg=(g()*255+15)/31;
         tb=(b()*255+15)/31;
         return 0xFF000000|(tr<<16)|(tg<<8)|tb;
     }
-    inline u32 toGray32()const {
+    u32 toGray32()const {
         u8 t;
         t=((r()+g()+b())/3*255+15)/31;
         return 0xFF000000|(t<<16)|(t<<8)|t;
@@ -87,20 +87,11 @@ assert_size(CharData,2);
 struct Tile8bpp
 {
     u8 data[64];
-    inline u8& pixel(u8 x/*0~7*/,u8 y/*0~7*/){
+    u8& pixel(u8 x/*0~7*/,u8 y/*0~7*/){
         return data[x|(y<<3)];
     }
-    inline u8 pixel(u8 x/*0~7*/,u8 y/*0~7*/)const{
+    u8 pixel(u8 x/*0~7*/,u8 y/*0~7*/)const{
         return data[x|(y<<3)];
-    }
-    template<typename T/* [](int x,int y,const Color15&) */,
-             typename U/* [](u8)->Color15*/>
-    void draw(T fSetPixel,U fPlt,int dx,int dy,bool flipX,bool flipY)const{
-        for(int x=0;x<8;x++)for(int y=0;y<8;y++){
-            u8 c;
-            c=pixel(flipX?7-x:x,flipY?7-y:y);
-            if(c)fSetPixel(dx+x,dy+y,fPlt(c));
-        }
     }
 };
 assert_size(Tile8bpp,64);

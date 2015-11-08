@@ -66,11 +66,14 @@ protected:
         u8 shiftTime;
     };
     std::vector<Thread> threads;
+    u8 tickCounter;
 public:
-    inline Color15 getColors(u8 i)const{
+    Color15 getColors(u8 i)const{
         return finalColors[i];
     }
     void tick();
+    u8 getTickCounter(){ return tickCounter; }
+    void clearTickCounter(){ tickCounter=0; }
     void readFile(const u8* src);
     void loadDefault();
 };
@@ -98,36 +101,29 @@ protected:
         u16 subLoopingPos;
     };
     std::vector<Thread> threads;
+    std::vector<u8> tickCounter;
+    u8 totalTickCounter;
 
 public:
     static Tile8bpp invalidTile;
     void readFile(const u8* src);
-    inline const Tile8bpp& operator [](u16 tileId)const{
+    const Tile8bpp& operator [](u16 tileId)const{
         if(tileId>=finalTiles.size())return invalidTile;
         return finalTiles[tileId];
     }
     void tick();
+    u8* getTickCounter(){ return tickCounter.data(); }
+    u8 getTotalTickCounter(){ return totalTickCounter; }
+    void clearTickCounter(){
+        memset(tickCounter.data(),0,tickCounter.size());
+        totalTickCounter=0;
+    }
 };
 
 struct Block{
     CharData data[9];
-    inline const CharData& tileAt(u8 x/*0~2*/,u8 y/*0~2*/)const{
+    const CharData& tileAt(u8 x/*0~2*/,u8 y/*0~2*/)const{
         return data[x+y*3];
-    }
-    template<typename T/* [](int x,int y,const Color15&) */>
-    void draw(T fSetPixel,const KfPlt& plt,int dx,int dy,const KfTileSet& tileSet)const{
-        for(int x=0;x<3;x++)for(int y=0;y<3;y++){
-            const CharData *pchar;
-            pchar=&tileAt(x,y);
-            tileSet[(*pchar)&TILE_ID_MASK].draw(
-                fSetPixel,
-                [&plt](u8 colorId)->Color15{ return plt.getColors(colorId); },
-                dx+x*8,
-                dy+y*8,
-                ((*pchar)&FLIP_X)!=0,
-                ((*pchar)&FLIP_Y)!=0
-                );
-        }
     }
 };
 typedef u8 BlockEssence;
@@ -143,18 +139,18 @@ public:
     static Block invalidBlock;
     void readFile(const u8* src);
     void loadDefault();
-    inline const Block& operator [](u16 blockId)const{
+    const Block& operator [](u16 blockId)const{
         if(blockId>=blocks.size())return invalidBlock;
         return blocks[blockId];
     }
-    inline BlockEssence getEssences(u16 blockId)const{
+    BlockEssence getEssences(u16 blockId)const{
         return essences[blockId];
     }
 
-    inline u32 blockCount()const{
+    u32 blockCount()const{
         return blocks.size();
     }
-    inline bool isLoaded(){
+    bool isLoaded(){
         return loaded;
     }
     
@@ -175,7 +171,7 @@ public:
     struct RipeCell{
         u16 blockId;
         std::vector<Script> scripts;
-        inline RipeCell():blockId(0),scripts(){}
+        RipeCell():blockId(0),scripts(){}
     };
 
     struct Item{
@@ -255,7 +251,7 @@ protected:
     std::vector<RipeCell> cells;
     std::vector<RipeItem> items;
 public:
-    inline bool isLoaded(){return loaded;}
+    bool isLoaded(){return loaded;}
     void unload();
 
     void readFile(const u8* src);
@@ -263,8 +259,8 @@ public:
     u8* generateFile(u32 *length);
 
     struct MetaData_Struct{
-        u16 width;
-        u16 height;
+        u16 width; // Should not access directly
+        u16 height; // Should not access directly
         u16 clipTop;
         u16 clipBottom;
         u16 clipLeft;
@@ -275,7 +271,7 @@ public:
         s16 bckSpeedVert;
         u8 globalEffect;
         u8 bgm;
-        u8 itemCount;
+        u8 itemCount; // Should not access directly
         u8 itemPlts[5];
     }metaData;
     assert_size(MetaData_Struct,28);
@@ -291,22 +287,15 @@ public:
 
     static u32 getScripteLength(u8 *pScript);
 
-    inline RipeCell& cellAt(u16 x,u16 y){
+    RipeCell& cellAt(u16 x,u16 y){
         return cells[x+y*metaData.width];
     }
-    inline RipeItem& itemAt(u8 i){
+    RipeItem& itemAt(u8 i){
         return items[i];
     }
-    template<typename T/* [](int x,int y,const Color15&) */>
-    void draw(T fSetPixel,KfPlt& plt,int dx,int dy,
-        const KfBlockSet& blockSet,const KfTileSet& tileSet){
-        for(u16 x=0;x<metaData.width;x++)for(u16 y=0;y<metaData.height;y++){
-            blockSet[cellAt(x,y).blockId].draw(fSetPixel,plt,dx+x*24,dy+y*24,tileSet);
-
-        }
-    }
-    inline u16 getWidth(){ return metaData.width; }
-    inline u16 getHeight(){ return metaData.height; }
+    u16 getWidth(){ return metaData.width; }
+    u16 getHeight(){ return metaData.height; }
+    u8 getItemCount(){ return metaData.itemCount; }
 
     template <class T/* void (*)(u8& itemIdReference) */>
     void forEachItemReferenceInScripts(T doWhat){
@@ -383,28 +372,18 @@ protected:
     bool loaded=false;
 public:
     void readFile(const u8* src);
-    inline bool isLoaded(){return loaded;}
-    inline void unload(){
+    bool isLoaded(){return loaded;}
+    void unload(){
         loaded=false;
         chars.clear();
     }
-
-    template<typename T/* [](int x,int y,const Color15&) */>
-    void draw(T fSetPixel,KfPlt& plt,int dx,int dy,const KfTileSet& tileSet){
-        for(u16 x=0;x<width;x++)for(u16 y=0;y<height;y++){
-            const CharData *pchar;
-            pchar=&chars[x+y*width];
-            tileSet[(*pchar)&TILE_ID_MASK].draw(
-                fSetPixel,
-                [&plt](u8 colorId)->Color15{return plt.getColors(colorId);},
-                dx+x*8,
-                dy+y*8,
-                ((*pchar)&FLIP_X)!=0,
-                ((*pchar)&FLIP_Y)!=0);
-        }
+    CharData at(u16 x,u16 y){
+        return chars[x+y*width];
     }
-    inline u16 getWidth(){ return width; }
-    inline u16 getHeight(){ return height; }
+
+
+    u16 getWidth(){ return width; }
+    u16 getHeight(){ return height; }
 };
 
 #define MAP_COUNT 548
@@ -443,29 +422,29 @@ public:
     void fromFile(std::FILE* file);
     void toFile(std::FILE* file);
 
-    inline u8* rawFrtPlts(u32 i){
+    u8* rawFrtPlts(u32 i){
         return rawSubFiles[0][i].ptr.get();
     }
-    inline u8* rawFrtTileSets(u32 i){
+    u8* rawFrtTileSets(u32 i){
         return rawSubFiles[1][i].ptr.get();
     }
-    inline u8* rawFrtBlockSets(u32 i){
+    u8* rawFrtBlockSets(u32 i){
         return rawSubFiles[2][i].ptr.get();
     }
-    inline u8* rawMaps(u32 i){
+    u8* rawMaps(u32 i){
         return rawSubFiles[3][i].ptr.get();
     }
-    inline u8* rawBckPlts(u32 i){
+    u8* rawBckPlts(u32 i){
         return rawSubFiles[4][i].ptr.get();
     }
-    inline u8* rawBckTileSets(u32 i){
+    u8* rawBckTileSets(u32 i){
         return rawSubFiles[5][i].ptr.get();
     }
-    inline u8* rawBckScrs(u32 i){
+    u8* rawBckScrs(u32 i){
         return rawSubFiles[6][i].ptr.get();
     }
 
-    inline void writeMap(u32 i,const u8* p,u32 len){
+    void writeMap(u32 i,const u8* p,u32 len){
         rawSubFiles[3][i].ptr.reset(new u8[len]);
         rawSubFiles[3][i].length=len;
         std::memcpy(rawSubFiles[3][i].ptr.get(),p,len);
