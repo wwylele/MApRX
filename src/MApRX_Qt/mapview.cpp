@@ -58,34 +58,30 @@ void MapView::paintEvent(QPaintEvent *){
     }
     else{
         image.fill(Qt::transparent);
-        if(pMainWindow->showItems){
-            pMainWindow->map.draw([this](int x,int y,const Color15& c15){
-                u32 c=c15.toGray32();
-                image.setPixel(x,y,c);
-            },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
-        }
-        else{
-            if(pMainWindow->showBackground &&pMainWindow->bckScr.isLoaded())
-                pMainWindow->bckScr.draw(
-                    [this](int x,int y,const Color15& c15){
-                        u32 c=c15.toARGB32();
-                        for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)
-                            for(int ty=y;ty<height;ty+=pMainWindow->bckScr.getHeight()*8)
-                                image.setPixel(x,ty,c);
-                    },
-                    pMainWindow->bckPlt,
-                    0,0,pMainWindow->bckTiles);
-            pMainWindow->map.draw([this](int x,int y,const Color15& c15){
-                u32 c=c15.toARGB32();
-                image.setPixel(x,y,c);
-            },pMainWindow->plt,0,0,pMainWindow->blocks,pMainWindow->tiles);
-        }
-
-
         painter.fillRect(0,0,width,height,QBrush(transparentPattern));
-        painter.drawPixmap(0,0,QPixmap::fromImage(image));
+        if(pMainWindow->showBackground &&pMainWindow->bckScr.isLoaded()){
+
+            pMainWindow->bckScr.draw(
+                        [this](int x,int y,const Color15& c15){
+                    u32 c=c15.toARGB32();
+                    for(;x<width;x+=pMainWindow->bckScr.getWidth()*8)
+                        for(int ty=y;ty<height;ty+=pMainWindow->bckScr.getHeight()*8)
+                            image.setPixel(x,ty,c);
+                },
+                pMainWindow->bckPlt,
+                0,0,pMainWindow->bckTiles);
+                painter.drawPixmap(0,0,QPixmap::fromImage(image));
+        }
+        for(int x=0;x<pMainWindow->map.getWidth();x++)
+            for(int y=0;y<pMainWindow->map.getHeight();y++){
+                painter.drawPixmap(x*24,y*24,
+                     pMainWindow->blocksTransit[pMainWindow->map.cellAt(x,y).blockId]);
+            }
 
 
+    }
+    if(pMainWindow->showItems){
+        painter.fillRect(0,0,width,height,QBrush(QColor(255,255,255,128)));
     }
     auto drawBinding=[&painter,this](){
         QColor cSrc(0,255,0),cDst(255,0,255);

@@ -270,7 +270,7 @@ void KfTileSet::tick(){
                        aniTiles.data()+threads[thri].frames[frameId].tileIdInAniTiles,
                        threads[thri].frames[frameId].tileCount*64);
                 for(int i=0;i<threads[thri].frames[frameId].tileCount;i++){
-                    ++counter[i+threads[thri].frames[frameId].tileIdInTiles];
+                    ++tickCounter[i+threads[thri].frames[frameId].tileIdInTiles];
                 }
                 break;
             }

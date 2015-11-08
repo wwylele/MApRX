@@ -420,6 +420,8 @@ void MainWindow::loadRoom(int roomId){
         tiles.readFile(mapdata.rawFrtTileSets(pMapInfo.subFileIdData.subFileIdSlots.rawFrtTileSetId));
         blocks.readFile(mapdata.rawFrtBlockSets(pMapInfo.subFileIdData.subFileIdSlots.rawFrtBlockSetId));
     }
+    pltTransit.doTransit(plt);
+    blocksTransit.doAllTransit(blocks,tiles,pltTransit);
 
 
 
@@ -479,6 +481,13 @@ void MainWindow::on_updateMap(){
 
         plt.tick();
         tiles.tick();
+        if(plt.getTickCounter()){
+            pltTransit.doTransit(plt);
+            blocksTransit.doAllTransit(blocks,tiles,pltTransit);
+        }
+        else{
+            blocksTransit.doTransit(blocks,tiles,pltTransit);
+        }
         if(bckScr.isLoaded()){
             bckPlt.tick();
             bckTiles.tick();
