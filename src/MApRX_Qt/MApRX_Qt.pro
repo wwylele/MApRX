@@ -59,6 +59,6 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resource.qrc
 
-CONFIG += c++11
+CONFIG += c++11 warn_on rtti_off
 
 RC_FILE = winres.rc
