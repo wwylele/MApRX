@@ -38,6 +38,7 @@ public:
     ItemDictionary itemDictionary;
     ItemImages itemImages;
     QPixmap essenceSheet;
+    QPixmap invalidBlock;
     QBrush itemBackground[13]{
                         QColor(255,255,255),
                         QColor(128,255,128),

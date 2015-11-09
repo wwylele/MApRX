@@ -22,6 +22,8 @@
 
 #ifndef RENDER_TRANSIT
 #define RENDER_TRANSIT
+#include "../KssuFile.h"
+#include "main.h"
 #include <QPainter>
 #include <QVector>
 #include <QPixmap>
@@ -48,7 +50,7 @@ class BlockSetTransit{
             }
         }
     }
-    void doTransitOne(KfBlockSet& blocks,KfTileSet& tiles,QVector<QRgb> colors,int id){
+    void doTransitOne(KfBlockSet& blocks,KfTileSet& tiles,QVector<QRgb> colors,u32 id){
         pImages[id].get()->fill(Qt::transparent);
         QPainter painter;
         painter.begin(pImages[id].get());
@@ -69,7 +71,10 @@ class BlockSetTransit{
 
 public:
     BlockSetTransit():size(0){}
-    QPixmap& operator[](int i){
+    QPixmap& operator[](u32 i){
+        if(i>=size){
+            return res->invalidBlock;
+        }
         return *pImages[i].get();
     }
 

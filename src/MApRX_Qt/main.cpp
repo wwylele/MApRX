@@ -70,5 +70,5 @@ CommonResources::CommonResources(){
     itemImageResFile.close();
 
     essenceSheet.load(":/image/Essence.png");
-
+    invalidBlock.load(":/image/invalid.png");
 }
