@@ -55,6 +55,7 @@ protected:
 signals:
     void showStatusTip(const QString& message);
     void selectItem(int itemId);
+    void itemDragging(bool isDragging);
 
 public slots:
 };

@@ -262,6 +262,8 @@ private slots:
 
     void on_actionImportMap_triggered();
 
+    void onItemDragging(bool);
+
 private:
     Ui::MainWindow *ui;
     QTimer mapUpdateTimer;
