@@ -331,8 +331,8 @@ P.-
 0.-
 +118.Warp Star
 0.-
-+119.Warp Star
-P.-
++119.Force Scroll
+P.Speed
 0.Be0
 1.Be1
 4.Be4
@@ -461,7 +461,7 @@ P.Distance
 +168.Gaol Warp Star
 P.-
 0.-
-+170.Sp170
++170.Fall Down
 0.-
 +171.Meta Knights Controller
 0.Be0
@@ -477,11 +477,11 @@ P.Treasure ID
 0.-
 +186.Saving Point
 0.-
-+188.Messages
++188.Message
 P.Message ID
 0.Be0
 1.Be1
-+189.Sp189
++189.Pause
 P.-
 0.Be0
 1.Be1
