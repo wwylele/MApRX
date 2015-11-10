@@ -350,6 +350,7 @@ void MapView::mousePressEvent(QMouseEvent* event){
                 grabMouse();
                 itemDraging=true;
                 itemShaked=false;
+                emit itemDragging(true);
                 dragX=pMainWindow->map.itemAt(curItem).basic.x;
                 dragY=pMainWindow->map.itemAt(curItem).basic.y;
             }
