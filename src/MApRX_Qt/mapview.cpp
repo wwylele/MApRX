@@ -295,7 +295,7 @@ void MapView::mouseMoveEvent(QMouseEvent * event){
                 rect=QRect(item.basic.x-8,item.basic.y-8,16,16);
             if(rect.contains(event->pos())){
                 curItem=i;
-                emit showStatusTip(QString(tr("Item #%1, %2 at(%3(%4),%5(%6)"))
+                emit showStatusTip(QString(tr("Item #%1, %2 at( %3(%4),%5(%6) )"))
                                    .arg(i)
                                    .arg(res->itemDictionary.entries[item.basic.species()].speciesName)
                                    .arg(item.basic.x/24)
