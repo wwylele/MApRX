@@ -28,7 +28,7 @@ DialogAboutMe::DialogAboutMe(QWidget *parent) :
     ui->setupUi(this);
     ui->aboutMeText->setText(
                 "MApRX<br>"
-                "version 1.0.0.2<br>"
+                "version 1.1.0.3<br>"
                 "by wwylele<br>"
                 "Compiled: " __DATE__" " __TIME__ "<br><br>"
 
