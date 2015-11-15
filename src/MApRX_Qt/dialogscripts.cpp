@@ -120,10 +120,11 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
 
             //Immediately commit data from the combobox
             //TODO: help me rewrite this ugly stuff
+            ScriptDelegate* THIS(const_cast<ScriptDelegate*>(this));
             connect(combo,&QComboBox::currentTextChanged,
-                    [=](){
-                emit commitData(editor);
-                emit closeEditor(editor);
+                    [THIS,editor](){
+                emit THIS->commitData(editor);
+                emit THIS->closeEditor(editor);
             });
         }else{
             layout->addWidget(new QLineEdit(editor));

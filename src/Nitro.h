@@ -25,10 +25,10 @@
 #include <cstdio>
 typedef unsigned char u8;
 typedef unsigned short u16;
-typedef unsigned long u32;
+typedef unsigned int u32;
 typedef signed char s8;
 typedef signed short s16;
-typedef signed long s32;
+typedef signed int s32;
 #define assert_size(type,size) static_assert(sizeof(type)==(size),"sizeof("#type ")!=" #size)
 assert_size(u8,1);
 assert_size(u16,2);

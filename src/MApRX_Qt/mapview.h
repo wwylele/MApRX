@@ -25,7 +25,7 @@
 
 #include <QWidget>
 #include <QImage>
-#include "MainWindow.h"
+#include "mainwindow.h"
 #include "blockstore.h"
 #include "../KssuFile.h"
 

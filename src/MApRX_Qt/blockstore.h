@@ -26,7 +26,7 @@
 #include <QWidget>
 #include <QMouseEvent>
 #include "../KssuFile.h"
-#include "MainWindow.h"
+#include "mainwindow.h"
 
 class BlockStore : public QWidget
 {

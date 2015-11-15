@@ -221,9 +221,10 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
 
         }
         //issue#22, bad imp, TODO
-        connect(combo,&QComboBox::currentTextChanged,[=](){
-            emit commitData(combo);
-            emit closeEditor(combo);
+        ItemTableDelegate* THIS(const_cast<ItemTableDelegate*>(this));
+        connect(combo,&QComboBox::currentTextChanged,[THIS,combo](){
+            emit THIS->commitData(combo);
+            emit THIS->closeEditor(combo);
         });
         return combo;
     }else if(index.column()==1){
@@ -236,9 +237,10 @@ QWidget *ItemTableDelegate::createEditor(QWidget *parent, const QStyleOptionView
                   QVariant(p));
         }
         //issue#22, bad imp, TODO
-        connect(combo,&QComboBox::currentTextChanged,[=](){
-            emit commitData(combo);
-            emit closeEditor(combo);
+        ItemTableDelegate* THIS(const_cast<ItemTableDelegate*>(this));
+        connect(combo,&QComboBox::currentTextChanged,[THIS,combo](){
+            emit THIS->commitData(combo);
+            emit THIS->closeEditor(combo);
         });
         return combo;
     }
