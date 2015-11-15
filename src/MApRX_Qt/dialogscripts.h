@@ -36,9 +36,9 @@ class ScriptDelegate:public QStyledItemDelegate{
 private:
     MainWindow* pMainWindow;
 
-    static QString scriptText[8];
-    static QString specialDoorText[5];
-    static QString scriptToString(const KfMap::Script& script);
+    QString scriptText[8];
+    QString specialDoorText[5];
+    QString scriptToString(const KfMap::Script& script)const;
 public:
     ScriptDelegate(MainWindow* pMainWindow,QWidget *parent = 0);
 

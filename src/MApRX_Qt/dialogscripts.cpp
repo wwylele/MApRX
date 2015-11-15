@@ -28,33 +28,33 @@
 #include <QComboBox>
 #include <QLabel>
 
-QString ScriptDelegate::scriptText[8]={
-    "Error",
-    tr(" - Change block to "),
-    tr(" - Bind with cell"),
-    tr(" - Transport to room#"),
-    tr(" - Bind with item#"),
-    tr(" - Misc:"),
-    tr(" - Generate Meta Knights:"),
-    tr(" - Special Door: ")// for code=5 special door
-};
 
-QString ScriptDelegate::specialDoorText[5]={
-    "Error",
-    tr("Goal"),
-    tr("Save Point"),
-    tr("The Arena"),
-    tr("Hidden"),
-
-};
 
 ScriptDelegate::ScriptDelegate(MainWindow* _pMainWindow,QWidget *parent) :
     QStyledItemDelegate(parent),
-    pMainWindow(_pMainWindow)
+    pMainWindow(_pMainWindow),
+    scriptText{
+        "Error",
+        tr(" - Change block to "),
+        tr(" - Bind with cell"),
+        tr(" - Transport to room#"),
+        tr(" - Bind with item#"),
+        tr(" - Misc:"),
+        tr(" - Generate Meta Knights:"),
+        tr(" - Special Door: ")// for code=5 special door
+    },
+    specialDoorText{
+        "Error",
+        tr("Goal"),
+        tr("Save Point"),
+        tr("The Arena"),
+        tr("Hidden"),
+
+    }
 {
 
 }
-QString ScriptDelegate::scriptToString(const KfMap::Script& script){
+QString ScriptDelegate::scriptToString(const KfMap::Script& script)const{
     switch(script[0]){
     case 1:
         return scriptText[1];
