@@ -457,7 +457,7 @@ void MainWindow::loadRoom(int roomId){
 
     ui->menuMap->setEnabled(true);
 
-    mapUpdateTimer.start(5);
+    mapUpdateTimer.start(16);
 }
 
 void MainWindow::on_listRoom_itemDoubleClicked(QTreeWidgetItem *item)
@@ -475,50 +475,40 @@ void MainWindow::on_listRoom_itemDoubleClicked(QTreeWidgetItem *item)
 }
 
 void MainWindow::on_updateMap(){
-    static long lTime=0,timeA=0;
-    long cTime;
-    if(!showAnimation)return;
-    cTime=std::clock();
-    timeA+=cTime-lTime;
-    if(timeA>1000)timeA=0;
-    while(timeA>=16){
-        bool needUpdate=false;
-        timeA-=16;
+    if(!showAnimation || !map.isLoaded())return;
+    bool needUpdate=false;
 
-        plt.tick();
-        tiles.tick();
-        if(plt.getTickCounter()){
-            pltTransit.doTransit(plt);
-            blocksTransit.doAllTransit(blocks,tiles,pltTransit);
+    plt.tick();
+    tiles.tick();
+    if(plt.getTickCounter()){
+        pltTransit.doTransit(plt);
+        blocksTransit.doAllTransit(blocks,tiles,pltTransit);
+        needUpdate=true;
+    }
+    else{
+        blocksTransit.doTransit(blocks,tiles,pltTransit);
+        if(tiles.getTotalTickCounter())needUpdate=true;
+    }
+    plt.clearTickCounter();
+    tiles.clearTickCounter();
+    if(bckScr.isLoaded() && showBackground){
+        bckPlt.tick();
+        bckTiles.tick();
+        if(bckPlt.getTickCounter()){
+            bckPltTransit.doTransit(bckPlt);
             needUpdate=true;
+        }else{
+            if(bckTiles.getTotalTickCounter())needUpdate=true;
         }
-        else{
-            blocksTransit.doTransit(blocks,tiles,pltTransit);
-            if(tiles.getTotalTickCounter())needUpdate=true;
-        }
-        plt.clearTickCounter();
-        tiles.clearTickCounter();
-        if(bckScr.isLoaded() && showBackground){
-            bckPlt.tick();
-            bckTiles.tick();
-            if(bckPlt.getTickCounter()){
-                bckPltTransit.doTransit(bckPlt);
-                needUpdate=true;
-            }else{
-                if(bckTiles.getTotalTickCounter())needUpdate=true;
-            }
-            bckPlt.clearTickCounter();
-            bckTiles.clearTickCounter();
-        }
-
-        if(needUpdate){
-            ui->mapView->update();
-            ui->blockStore->update();
-        }
-
+        bckPlt.clearTickCounter();
+        bckTiles.clearTickCounter();
     }
 
-    lTime=cTime;
+    if(needUpdate){
+        ui->mapView->update();
+        ui->blockStore->update();
+    }
+
 
 }
 
