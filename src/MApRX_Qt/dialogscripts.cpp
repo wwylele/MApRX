@@ -99,7 +99,7 @@ QString ScriptDelegate::scriptToString(const KfMap::Script& script)const{
 QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/,
                       const QModelIndex &index) const{
     KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
-    QWidget* editor=new QWidget(parent);
+    editor=new QWidget(parent);
     editor->setBackgroundRole(QPalette::Highlight);
     editor->setAutoFillBackground(true);
     switch(script[0]){
@@ -122,9 +122,9 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
             //TODO: help me rewrite this ugly stuff
             ScriptDelegate* THIS(const_cast<ScriptDelegate*>(this));
             connect(combo,&QComboBox::currentTextChanged,
-                    [THIS,editor](){
-                emit THIS->commitData(editor);
-                emit THIS->closeEditor(editor);
+                    [THIS](){
+                emit THIS->commitData(THIS->editor);
+                emit THIS->closeEditor(THIS->editor);
             });
         }else{
             layout->addWidget(new QLineEdit(editor));
@@ -147,6 +147,10 @@ QWidget *ScriptDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
         assert(0);
     }
     return editor;
+}
+void ScriptDelegate::destroyEditor(QWidget *editor, const QModelIndex &index) const{
+    QStyledItemDelegate::destroyEditor(editor,index);
+    this->editor=0;
 }
 void ScriptDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
     KfMap::Script script=qvariant_cast<KfMap::Script>(index.data());
@@ -394,6 +398,16 @@ DialogScripts::~DialogScripts()
 
 void DialogScripts::on_buttonBox_accepted()
 {
+    //[[[
+    //Commit everything
+    //TODO: UGLY
+    ScriptDelegate* del=(ScriptDelegate*)ui->scriptListWidget->itemDelegate();
+    if(del->editor){
+        emit del->commitData(del->editor);
+        emit del->closeEditor(del->editor);
+    }
+    //]]]
+
     scripts.clear();
     for(int i=0;;i++){
         QListWidgetItem* pItem=ui->scriptListWidget->item(i);

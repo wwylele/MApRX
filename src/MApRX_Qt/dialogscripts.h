@@ -40,6 +40,13 @@ private:
     QString specialDoorText[5];
     QString scriptToString(const KfMap::Script& script)const;
 public:
+
+    //[[[These is for commiting everything when press OK
+    //TODO: UGLY
+    mutable QWidget* editor=0;
+    void destroyEditor(QWidget *editor, const QModelIndex &index) const Q_DECL_OVERRIDE;
+    //]]]
+
     ScriptDelegate(MainWindow* pMainWindow,QWidget *parent = 0);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
