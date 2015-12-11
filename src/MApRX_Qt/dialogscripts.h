@@ -70,6 +70,9 @@ public:
                            MainWindow* pMainWindow, QWidget *parent = 0);
     ~DialogScripts();
 
+public slots:
+    int exec() Q_DECL_OVERRIDE;
+
 private slots:
     void on_buttonBox_accepted();
 

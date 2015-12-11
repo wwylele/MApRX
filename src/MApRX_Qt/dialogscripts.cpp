@@ -368,6 +368,7 @@ DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWind
     pMainWindow(_pMainWindow)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::Popup);
 
 
     ui->scriptListWidget->setItemDelegate(
@@ -394,6 +395,12 @@ DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWind
 DialogScripts::~DialogScripts()
 {
     delete ui;
+}
+int DialogScripts::exec(){
+
+    this->move(QCursor::pos());
+    return QDialog::exec();
+
 }
 
 void DialogScripts::on_buttonBox_accepted()
