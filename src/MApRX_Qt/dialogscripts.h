@@ -70,6 +70,9 @@ public:
                            MainWindow* pMainWindow, QWidget *parent = 0);
     ~DialogScripts();
 
+protected:
+    void hideEvent(QHideEvent * event) Q_DECL_OVERRIDE;
+
 public slots:
     int exec() Q_DECL_OVERRIDE;
 

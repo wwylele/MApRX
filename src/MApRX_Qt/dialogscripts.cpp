@@ -368,7 +368,15 @@ DialogScripts::DialogScripts(const std::vector<KfMap::Script> _scripts, MainWind
     pMainWindow(_pMainWindow)
 {
     ui->setupUi(this);
+
+    //Make this dialog like a popup menu
     setWindowFlags(Qt::Popup);
+
+    //No idea how the following works,
+    //but without this, the dialog will
+    //somehow fuck away some actionAddScript event
+    //TODO: what happened, and a better implement
+    grabMouse();
 
 
     ui->scriptListWidget->setItemDelegate(
@@ -398,9 +406,12 @@ DialogScripts::~DialogScripts()
 }
 int DialogScripts::exec(){
 
-    this->move(QCursor::pos());
+    move(QCursor::pos());
     return QDialog::exec();
 
+}
+void DialogScripts::hideEvent(QHideEvent * event){
+    reject();
 }
 
 void DialogScripts::on_buttonBox_accepted()
